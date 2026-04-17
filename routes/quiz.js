@@ -70,7 +70,7 @@ router.post('/generate', (req, res) => {
 
     const sql = `SELECT id, year, subject, question_number, question_text,
       option_1, option_2, option_3, option_4, option_5,
-      keyword, statements
+      keyword, statements, image_path
       FROM questions WHERE ${where.join(' AND ')} ORDER BY RANDOM() LIMIT ?`;
     params.push(limit);
     const questions = db.prepare(sql).all(...params);
@@ -88,7 +88,7 @@ router.post('/answer', (req, res) => {
   try {
     const db = req.app.locals.db;
     const { sessionId, questionId, selectedAnswer, timeSpent } = req.body;
-    const question = db.prepare('SELECT correct_answer, explanation, keyword FROM questions WHERE id = ?').get(questionId);
+    const question = db.prepare('SELECT correct_answer, explanation, ai_explanation, keyword FROM questions WHERE id = ?').get(questionId);
     if (!question) return res.status(404).json({ error: '문제를 찾을 수 없습니다.' });
 
     const isCorrect = parseInt(selectedAnswer) === question.correct_answer;
@@ -123,7 +123,13 @@ router.post('/answer', (req, res) => {
       }
     }
 
-    res.json({ correct: isCorrect, correctAnswer: question.correct_answer, explanation: question.explanation, keyword: question.keyword });
+    res.json({
+      correct: isCorrect,
+      correctAnswer: question.correct_answer,
+      explanation: question.explanation,
+      aiExplanation: question.ai_explanation || '',
+      keyword: question.keyword
+    });
   } catch (err) { res.status(500).json({ error: '답안 제출 실패: ' + err.message }); }
 });
 
@@ -152,6 +158,59 @@ router.get('/wrong-answers', (req, res) => {
     WHERE w.user_id = ? AND w.is_resolved = 0 ORDER BY w.last_wrong_date DESC
   `).all(req.user.id);
   res.json({ wrongAnswers, total: wrongAnswers.length });
+});
+
+// Bookmark routes
+router.get('/bookmarks', (req, res) => {
+  if (!req.user) return res.json({ bookmarks: [], isGuest: true });
+  const db = req.app.locals.db;
+  const bookmarks = db.prepare(`
+    SELECT b.question_id, b.note, b.created_at,
+      q.question_text, q.year, q.subject, q.keyword, q.correct_answer,
+      q.option_1, q.option_2, q.option_3, q.option_4, q.option_5,
+      q.explanation, q.ai_explanation, q.statements, q.image_path
+    FROM bookmarks b JOIN questions q ON b.question_id = q.id
+    WHERE b.user_id = ? ORDER BY b.created_at DESC
+  `).all(req.user.id);
+  res.json({ bookmarks, total: bookmarks.length });
+});
+
+router.post('/bookmark', (req, res) => {
+  if (!req.user) return res.status(401).json({ error: '로그인이 필요합니다.' });
+  try {
+    const db = req.app.locals.db;
+    const { questionId, note } = req.body;
+    const existing = db.prepare('SELECT id FROM bookmarks WHERE user_id = ? AND question_id = ?').get(req.user.id, questionId);
+    if (existing) {
+      return res.json({ bookmarked: true, alreadyExists: true });
+    }
+    db.prepare('INSERT INTO bookmarks (user_id, question_id, note) VALUES (?,?,?)').run(req.user.id, questionId, note || '');
+    const { save } = require('../database');
+    save();
+    res.json({ bookmarked: true });
+  } catch (err) {
+    res.status(500).json({ error: '북마크 저장 실패: ' + err.message });
+  }
+});
+
+router.delete('/bookmark/:questionId', (req, res) => {
+  if (!req.user) return res.status(401).json({ error: '로그인이 필요합니다.' });
+  try {
+    const db = req.app.locals.db;
+    db.prepare('DELETE FROM bookmarks WHERE user_id = ? AND question_id = ?').run(req.user.id, parseInt(req.params.questionId));
+    const { save } = require('../database');
+    save();
+    res.json({ bookmarked: false });
+  } catch (err) {
+    res.status(500).json({ error: '북마크 삭제 실패: ' + err.message });
+  }
+});
+
+router.get('/bookmark-status/:questionId', (req, res) => {
+  if (!req.user) return res.json({ bookmarked: false });
+  const db = req.app.locals.db;
+  const row = db.prepare('SELECT id FROM bookmarks WHERE user_id = ? AND question_id = ?').get(req.user.id, parseInt(req.params.questionId));
+  res.json({ bookmarked: !!row });
 });
 
 module.exports = router;

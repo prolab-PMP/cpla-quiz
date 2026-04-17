@@ -30,8 +30,31 @@ async function initDatabase(db) {
       keyword TEXT DEFAULT '',
       explanation TEXT DEFAULT '',
       statements TEXT DEFAULT '',
+      image_path TEXT DEFAULT '',
       seq_id INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  // Add image_path column to existing DBs that don't have it
+  try {
+    db.exec("ALTER TABLE questions ADD COLUMN image_path TEXT DEFAULT ''");
+  } catch (e) { /* column already exists */ }
+
+  // Add ai_explanation column (v2) - structured detailed explanation
+  try {
+    db.exec("ALTER TABLE questions ADD COLUMN ai_explanation TEXT DEFAULT ''");
+  } catch (e) { /* column already exists */ }
+
+  // Bookmarks table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS bookmarks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      question_id INTEGER NOT NULL,
+      note TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(user_id, question_id)
     )
   `);
 
@@ -143,8 +166,8 @@ async function initDatabase(db) {
       const insertQ = db.prepare(`INSERT OR REPLACE INTO questions (
         year, subject, question_number, question_text,
         option_1, option_2, option_3, option_4, option_5,
-        correct_answer, keyword, explanation, statements, seq_id
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+        correct_answer, keyword, explanation, statements, image_path, seq_id
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
 
       const insertStat = db.prepare('INSERT OR IGNORE INTO question_stats (question_id) VALUES (?)');
 
@@ -156,7 +179,7 @@ async function initDatabase(db) {
           opts[0]?.text || '', opts[1]?.text || '', opts[2]?.text || '',
           opts[3]?.text || '', opts[4]?.text || '',
           q.correct_answer, q.keyword || '', q.explanation || '',
-          JSON.stringify(q.statements || []), q.seq_id || 0
+          JSON.stringify(q.statements || []), q.image_path || '', q.seq_id || 0
         );
         insertStat.run(i + 1);
       }
