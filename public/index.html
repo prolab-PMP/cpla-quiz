@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공인노무사 1차 기출문제 풀이</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <meta name="description" content="공인노무사 1차 시험 기출문제 풀이 - 키워드별 분류, 고빈도 키워드 학습">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo" onclick="app.navigate('home')">
+        <i class="fas fa-balance-scale"></i>
+        노무사 Quiz
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="header-nav" id="headerNav">
+        <button onclick="app.navigate('home')" data-page="home"><i class="fas fa-home"></i> 홈</button>
+        <button onclick="app.navigate('quiz-setup')" data-page="quiz-setup"><i class="fas fa-play"></i> 문제풀이</button>
+        <button onclick="app.navigate('keywords')" data-page="keywords"><i class="fas fa-tags"></i> 키워드</button>
+        <button onclick="app.navigate('wrong-answers')" data-page="wrong-answers"><i class="fas fa-times-circle"></i> 오답노트</button>
+        <button onclick="app.navigate('dashboard')" data-page="dashboard"><i class="fas fa-chart-bar"></i> 성적</button>
+        <div id="authArea"></div>
+      </nav>
+    </div>
+  </header>
+  <main class="main" id="app"></main>
+  <div id="toastContainer"></div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
