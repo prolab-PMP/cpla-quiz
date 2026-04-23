@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>과목·키워드별 풀이 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="공인노무사 6개 과목(노동법, 민법, 사회보험법, 경제학, 경영학) 및 핵심 키워드별 문제 풀이.">
+<meta name="keywords" content="과목별풀이, 키워드풀이, 노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학, 안전공학">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://공인노무사.com/subjects.html">
+<meta property="og:title" content="과목·키워드별 풀이 · 공인노무사">
+<meta property="og:description" content="6개 과목 및 핵심 키워드별 학습">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://공인노무사.com/subjects.html">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="과목·키워드별 풀이 · 공인노무사">
+<meta name="twitter:description" content="6개 과목 및 핵심 키워드별 학습">
+<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
+<meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "과목·키워드별 풀이",
+  "url": "https://공인노무사.com/subjects.html",
+  "description": "노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학 과목 및 핵심 키워드별 학습"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "공인노무사 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "inLanguage": "ko"
+}
+</script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공인노무사">
+</head>
+<body>
+<script src="data/problems.js"></script>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('subjects');</script>
+
+<main class="container">
+  <div class="hero" style="padding:30px 32px">
+    <h1 style="font-size:26px">📚 과목 · 키워드별 풀이</h1>
+    <p>공인노무사 1차 6개 과목과 핵심 키워드로 집중 학습하세요. 아래 검색창에서 원하는 키워드를 찾을 수 있습니다.</p>
+  </div>
+
+  <section class="section-title"><span class="tag">과목별</span> 과목을 선택하여 풀이 시작</section>
+  <div class="grid cols-3" id="subject-grid"></div>
+
+  <section class="section-title"><span class="tag">키워드별</span> 핵심 키워드 (출제빈도 순)</section>
+
+  <div class="filter-bar">
+    <label>검색:</label>
+    <input type="text" class="search" id="kw-search" list="kw-suggest" autocomplete="off"
+      placeholder="예: 안전보건관리책임자, 위험성평가, 하인리히... (자동완성 지원)" style="max-width:380px">
+    <datalist id="kw-suggest"></datalist>
+    <label>정렬:</label>
+    <select class="select" id="kw-sort">
+      <option value="freq">출제빈도 높은 순</option>
+      <option value="name">가나다 순</option>
+    </select>
+    <label>최소 출제:</label>
+    <select class="select" id="kw-min">
+      <option value="1">1회 이상</option>
+      <option value="3" selected>3회 이상</option>
+      <option value="5">5회 이상</option>
+      <option value="10">10회 이상</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <div class="kw-cloud" id="kw-cloud"></div>
+  </div>
+</main>
+
+<script>
+const ps = CPLA.getProblems();
+
+// 과목별 카드
+const bySub = {};
+ps.forEach(p => { (bySub[p.subject] = bySub[p.subject] || []).push(p); });
+const subjectMeta = {
+  "노동법1":{icon:"📕", cls:"ib-danger", desc:"근로기준법, 근로자참여 및 협력증진에 관한 법률 등"},
+  "노동법2":{icon:"📗", cls:"ib-warn", desc:"노동조합 및 노동관계조정법, 근로자퇴직급여보장법 등"},
+  "민법":{icon:"⚖️", cls:"ib-purple", desc:"총칙, 물권, 채권 등 민법 전반"},
+  "사회보험법":{icon:"🛡️", cls:"ib-blue", desc:"국민연금법, 국민건강보험법, 고용보험법, 산재보험법 등"},
+  "경제학":{icon:"📊", cls:"ib-green", desc:"미시·거시경제학 원론, 수요공급·시장 균형 등"},
+  "경영학":{icon:"🏢", cls:"ib-green", desc:"조직·마케팅·재무·생산관리 등 경영 전반"},
+};
+const sg = document.getElementById('subject-grid');
+sg.innerHTML = Object.keys(bySub).map(s => {
+  const list = bySub[s];
+  const stats = CPLA.calcStats(list);
+  const meta = subjectMeta[s] || {icon:"📘", cls:"ib-blue", desc:""};
+  return `
+    <a class="card link" href="exam.html?mode=subject&subject=${encodeURIComponent(s)}">
+      <div class="icon-badge ${meta.cls}">${meta.icon}</div>
+      <h3>${s}</h3>
+      <p class="desc">${meta.desc}</p>
+      <div class="stat">
+        <span class="stat-small">${list.length}문항 · 진도 ${stats.solved}/${stats.total}</span>
+        <span class="stat-big">${stats.accuracy||0}%</span>
+      </div>
+      <div class="progress"><i style="width:${stats.progress}%"></i></div>
+    </a>`;
+}).join('');
+
+// 키워드 카운트
+const kwCount = {};
+ps.forEach(p => (p.keywords||[]).forEach(k => { kwCount[k] = (kwCount[k]||0)+1; }));
+
+// 자동완성 데이터리스트 (키워드 출제빈도 상위 200 + 연도 13 + 과목 3)
+(function buildSuggest(){
+  const dl = document.getElementById('kw-suggest');
+  const topKw = Object.entries(kwCount).sort((a,b)=>b[1]-a[1]).slice(0,300);
+  const suggest = [
+    ...topKw.map(([k,v]) => ({value:k, label:`${k} (${v}회 출제)`})),
+    ...[...new Set(ps.map(p=>p.year))].sort().map(y=>({value:y+'년', label:`${y}년 기출`})),
+    ...[...new Set(ps.map(p=>p.subject))].map(s=>({value:s, label:`과목: ${s}`}))
+  ];
+  dl.innerHTML = suggest.map(o =>
+    `<option value="${o.value.replace(/"/g,'&quot;')}">${o.label.replace(/</g,'&lt;')}</option>`
+  ).join('');
+})();
+
+function renderCloud(){
+  const min = parseInt(document.getElementById('kw-min').value);
+  const sort = document.getElementById('kw-sort').value;
+  const q = document.getElementById('kw-search').value.trim();
+  let entries = Object.entries(kwCount).filter(([k,v]) => v >= min);
+  if(q) entries = entries.filter(([k]) => k.includes(q));
+  if(sort==='freq') entries.sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
+  else entries.sort((a,b)=> a[0].localeCompare(b[0]));
+  const cloud = document.getElementById('kw-cloud');
+  if(!entries.length){ cloud.innerHTML = '<span class="desc">조건에 맞는 키워드가 없습니다.</span>'; return; }
+  cloud.innerHTML = entries.map(([k,v])=>{
+    const sz = v >= 15 ? 'purple' : v >= 8 ? 'blue' : v >= 4 ? 'green' : '';
+    return `<a class="chip ${sz}" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
+      #${k} <b style="margin-left:3px;opacity:.65">${v}</b>
+    </a>`;
+  }).join('');
+}
+document.getElementById('kw-search').addEventListener('input', renderCloud);
+document.getElementById('kw-sort').addEventListener('change', renderCloud);
+document.getElementById('kw-min').addEventListener('change', renderCloud);
+renderCloud();
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>

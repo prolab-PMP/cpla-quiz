@@ -18,13 +18,6 @@ if errorlevel 1 (
   exit /b 1
 )
 
-REM Ensure .gitignore
-if not exist .gitignore (
-  > .gitignore echo node_modules/
-  >> .gitignore echo .env
-  >> .gitignore echo data/cpla.db
-)
-
 REM Git config (local to repo)
 git config user.email "prolab-PMP@users.noreply.github.com"
 git config user.name "prolab-PMP"
@@ -41,7 +34,7 @@ git remote add origin https://github.com/prolab-PMP/cpla-quiz.git
 
 REM Stage, commit, push
 git add -A
-git commit -m "Add question data and expanded explanations (labor law 1: 2013-2014)"
+git commit -m "Initial commit: 공인노무사 1차 기출문제 풀이 사이트"
 git branch -M main
 git push -u origin main --force
 

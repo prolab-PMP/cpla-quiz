@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>문제풀이 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="공인노무사 1차 기출문제 풀이. 선택지별 정답 채점, 오답 분석, 핵심 키워드 분류.">
+<meta name="keywords" content="문제풀이, 기출문제, 객관식, 정답률, 오답노트, 키워드">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://공인노무사.com/exam.html">
+<meta property="og:title" content="문제풀이 · 공인노무사">
+<meta property="og:description" content="기출문제 풀이 및 실시간 채점">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://공인노무사.com/exam.html">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="문제풀이 · 공인노무사">
+<meta name="twitter:description" content="기출문제 풀이 및 실시간 채점">
+<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
+<meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Quiz",
+  "name": "공인노무사 1차 기출문제 풀이",
+  "description": "기출문제 풀이 및 실시간 채점",
+  "url": "https://공인노무사.com/exam.html"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "공인노무사 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "inLanguage": "ko"
+}
+</script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공인노무사">
+</head>
+<body>
+<script src="data/problems.js"></script>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('');</script>
+
+<main class="container">
+  <div id="empty" class="empty" style="display:none">
+    <div class="big">🗂️</div>
+    <h3>해당 조건에 맞는 문제가 없습니다</h3>
+    <p>다른 조건을 선택하거나 먼저 몇 문제 풀어보세요.</p>
+    <a class="btn primary" href="index.html">홈으로</a>
+  </div>
+
+  <div id="exam-mode-banner" style="display:none" class="exam-banner" role="region" aria-label="시험 모드">
+    <div class="exam-banner-inner">
+      <div>
+        <strong>📝 시험 모드</strong>
+        <span class="desc" style="font-size:12px;margin-left:8px">총 <span id="exam-total-q">0</span>문제 · 제한시간 150분 · 최종 제출 전까지 정답이 표시되지 않습니다.</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="timer-chip" id="exam-timer">02:30:00</span>
+        <button class="btn primary sm" id="btn-final-submit">최종 제출</button>
+        <a class="btn sm" href="exam.html?mode=year&year=2025" title="시험 모드 종료" id="btn-exit-exam">시험 모드 종료</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 시험 결과 모달 -->
+  <div id="exam-result-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="exam-result-title" aria-hidden="true">
+    <div class="modal exam-result">
+      <button class="close" id="exam-result-close" aria-label="결과 모달 닫기">×</button>
+      <h3 id="exam-result-title">📊 시험 결과</h3>
+      <div id="exam-result-body"></div>
+      <div class="exam-result-actions">
+        <button class="btn" id="exam-result-close2">닫기</button>
+        <a class="btn" id="exam-result-review" href="#">✏️ 오답만 다시 풀기</a>
+        <a class="btn primary" id="exam-result-home" href="index.html">🏠 홈으로</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="exam-root" class="exam-layout" style="display:none">
+    <aside class="exam-sidebar">
+      <div style="margin-bottom:14px">
+        <div id="filter-title" style="font-size:15px;font-weight:800;margin-bottom:4px"></div>
+        <div id="filter-sub" class="desc" style="font-size:12px;color:var(--muted)"></div>
+      </div>
+
+      <div class="progress" style="margin-bottom:10px"><i id="prog-bar"></i></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:14px">
+        <span id="prog-text">0/0</span>
+        <span id="acc-text">정답률 0%</span>
+      </div>
+
+      <h4>문제 번호</h4>
+      <div class="q-grid" id="qgrid"></div>
+
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+        <button class="btn sm" id="btn-next-unsolved">▶ 안 푼 문제로</button>
+        <button class="btn sm" id="btn-reset">↻ 이 세트 기록 초기화</button>
+        <a class="btn sm" href="index.html">🏠 홈으로</a>
+      </div>
+    </aside>
+
+    <section class="exam-main">
+      <div class="exam-head">
+        <div class="left">
+          <span class="qnum" id="qnum-label">1/0</span>
+          <span class="chip blue" id="c-year"></span>
+          <span class="chip green" id="c-subject"></span>
+          <span class="chip" id="c-form"></span>
+          <span class="chip purple" id="c-original"></span>
+        </div>
+        <div>
+          <button class="btn sm" id="btn-bookmark">☆ 북마크</button>
+        </div>
+      </div>
+
+      <div class="exam-question" id="q-text"></div>
+      <div class="exam-passages" id="q-passages" style="display:none"></div>
+      <div class="exam-images" id="q-images" style="display:none"></div>
+
+      <div class="choices" id="q-choices"></div>
+
+      <div id="q-explanation" style="display:none"></div>
+
+      <div class="exam-actions">
+        <button class="btn" id="btn-prev">◀ 이전</button>
+        <button class="btn primary" id="btn-grade">채점하기</button>
+        <div class="spacer"></div>
+        <button class="btn" id="btn-next">다음 ▶</button>
+      </div>
+
+      <div style="margin-top:22px">
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">핵심 키워드</div>
+        <div class="kw-cloud" id="q-keywords"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  const {list, mode, year, subject, keyword, onlyWrong, onlyBookmark} = CPLA.filterByMode();
+  const root = document.getElementById('exam-root');
+  if(list.length === 0){
+    document.getElementById('empty').style.display='block';
+    return;
+  }
+  root.style.display = 'grid';
+
+  // ==== 시험 모드 (?exam=1) ====
+  const urlParams = new URLSearchParams(location.search);
+  const isExam = urlParams.get('exam') === '1';
+  const EXAM_STORE = 'sas_exam_session_v1';
+  const EXAM_DURATION_MIN = parseInt(urlParams.get('min') || '150', 10);
+  // provisional answers (key -> selected answer number)
+  const exam = {
+    active: isExam,
+    answers: {},
+    startedAt: null,
+    endsAt: null,
+    submitted: false,
+  };
+  if(isExam){
+    try{
+      const saved = JSON.parse(localStorage.getItem(EXAM_STORE) || 'null');
+      const sigKeys = list.map(p=>p.key).join('|');
+      if(saved && saved.signature === sigKeys && !saved.submitted && saved.endsAt > Date.now()){
+        exam.answers = saved.answers || {};
+        exam.startedAt = saved.startedAt;
+        exam.endsAt = saved.endsAt;
+      }else{
+        exam.startedAt = Date.now();
+        exam.endsAt = exam.startedAt + EXAM_DURATION_MIN*60*1000;
+      }
+      exam.signature = sigKeys;
+      persistExam();
+    }catch(e){
+      exam.startedAt = Date.now();
+      exam.endsAt = exam.startedAt + EXAM_DURATION_MIN*60*1000;
+      exam.signature = list.map(p=>p.key).join('|');
+    }
+    document.getElementById('exam-mode-banner').style.display='block';
+    document.getElementById('exam-total-q').textContent = list.length;
+    document.getElementById('btn-final-submit').onclick = finalSubmit;
+    // 종료 링크는 현재 필터 유지한 채 exam 파라미터만 제거
+    const exitParams = new URLSearchParams(location.search);
+    exitParams.delete('exam');
+    document.getElementById('btn-exit-exam').href = 'exam.html?' + exitParams.toString();
+    startTimer();
+  }
+  function persistExam(){
+    if(!isExam) return;
+    localStorage.setItem(EXAM_STORE, JSON.stringify({
+      signature: exam.signature, answers: exam.answers,
+      startedAt: exam.startedAt, endsAt: exam.endsAt, submitted: exam.submitted
+    }));
+  }
+  function startTimer(){
+    const el = document.getElementById('exam-timer');
+    function tick(){
+      if(exam.submitted) return;
+      const remain = Math.max(0, exam.endsAt - Date.now());
+      const h = Math.floor(remain/3600000);
+      const m = Math.floor((remain%3600000)/60000);
+      const s = Math.floor((remain%60000)/1000);
+      el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      // 남은 시간 5분 이하면 pulse
+      if(remain <= 5*60000) el.classList.add('low'); else el.classList.remove('low');
+      // 마일스톤 토스트
+      const mm = Math.round(remain/60000);
+      if([30,10,5,1].includes(mm) && exam.__lastToast !== mm){
+        exam.__lastToast = mm;
+        CPLA.toast(`⏰ 시험 종료까지 ${mm}분 남았습니다`);
+      }
+      if(remain <= 0){ CPLA.toast('⏰ 시간 종료 — 자동 제출합니다'); finalSubmit(true); return; }
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+  function finalSubmit(auto){
+    if(exam.submitted) return;
+    const unanswered = list.filter(p => !exam.answers[p.key]).length;
+    if(!auto){
+      if(!confirm(`최종 제출하시겠습니까?\n미응답 문제: ${unanswered}개 (오답 처리됩니다)\n제출 후에는 정답과 해설이 공개되며, 기록이 학습 통계에 반영됩니다.`)) return;
+    }
+    exam.submitted = true;
+    // 기존 기록에 저장
+    let correctCnt = 0;
+    list.forEach(p => {
+      const sel = exam.answers[p.key] || 0;
+      const ok = p.answer === 12345 ? (sel > 0) : (sel === p.answer);
+      if(ok) correctCnt++;
+      if(sel){ CPLA.recordAttempt(p.key, sel, ok); }
+      else { CPLA.recordAttempt(p.key, 0, false); } // 미응답=오답
+    });
+    persistExam();
+    const pct = Math.round(correctCnt/list.length*1000)/10;
+    // 결과 모달 표시 (alert 대체)
+    showResultModal({correctCnt, total: list.length, pct, unanswered});
+    // banner 갱신
+    document.getElementById('btn-final-submit').disabled = true;
+    document.getElementById('btn-final-submit').textContent = `제출 완료 (${correctCnt}/${list.length})`;
+    render(); renderGrid();
+  }
+
+  function showResultModal({correctCnt, total, pct, unanswered}){
+    // 과목별 집계 + 오답/미응답 목록
+    const subjects = ['노동법1','노동법2','민법','사회보험법','경제학','경영학'];
+    const bySubj = {};
+    subjects.forEach(s => bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]});
+    const wrongList = [];
+    list.forEach((p, i) => {
+      const sel = exam.answers[p.key] || 0;
+      const ok = p.answer === 12345 ? (sel > 0) : (sel === p.answer);
+      const s = p.subject;
+      if(!bySubj[s]) bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]};
+      bySubj[s].total++;
+      if(ok) bySubj[s].correct++;
+      else if(sel === 0) bySubj[s].unanswered++;
+      else bySubj[s].wrong++;
+      if(!ok){
+        wrongList.push({p, sel, i});
+      }
+    });
+    // 합격 판정(공인노무사 1차: 전과목 평균 60점 이상 + 각 과목 40점 이상)
+    const perSubjRates = Object.values(bySubj).filter(x=>x.total>0).map(x => x.correct/x.total*100);
+    const minSubj = perSubjRates.length ? Math.min(...perSubjRates) : 0;
+    const avgAll = pct; // list 전체 정답률 = 과목별 합계 가중평균과 동일
+    let passStatus = null;
+    const allSubjectsPresent = subjects.every(s => bySubj[s].total > 0);
+    if(allSubjectsPresent){
+      if(avgAll >= 60 && minSubj >= 40) passStatus = {ok:true, msg:'✅ 합격 기준 충족', detail:`평균 ${avgAll.toFixed(1)}% · 최저과목 ${minSubj.toFixed(1)}%`};
+      else if(avgAll < 60 && minSubj >= 40) passStatus = {ok:false, msg:`❌ 평균 미달 (60%↑ 필요, 현재 ${avgAll.toFixed(1)}%)`};
+      else if(avgAll >= 60 && minSubj < 40) passStatus = {ok:false, msg:`❌ 과목별 과락 (40%↑ 필요, 최저 ${minSubj.toFixed(1)}%)`};
+      else passStatus = {ok:false, msg:`❌ 평균·과목 모두 미달 (평균 ${avgAll.toFixed(1)}% / 최저 ${minSubj.toFixed(1)}%)`};
+    }
+
+    // HTML 조립
+    const esc = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const ringPct = Math.max(0, Math.min(100, pct));
+    const headerHtml = `
+      <div class="result-header">
+        <div class="result-ring" style="--pct:${ringPct}">
+          <span>${pct.toFixed(1)}%</span>
+        </div>
+        <div class="result-stats">
+          <div class="big">정답 <strong>${correctCnt}</strong> / ${total}</div>
+          <div class="desc">미응답 ${unanswered}문제는 오답 처리되었습니다.</div>
+          ${passStatus ? `<div class="pass-status ${passStatus.ok?'ok':'ng'}">${esc(passStatus.msg)}${passStatus.detail?` · <span class="desc">${esc(passStatus.detail)}</span>`:''}</div>` : ''}
+        </div>
+      </div>`;
+
+    const subjRows = subjects
+      .filter(s => bySubj[s].total > 0)
+      .map(s => {
+        const x = bySubj[s];
+        const rate = x.total ? Math.round(x.correct/x.total*1000)/10 : 0;
+        const fail40 = rate < 40;
+        return `<tr${fail40?' class="fail"':''}>
+          <td>${esc(s)}</td>
+          <td class="num">${x.correct}/${x.total}</td>
+          <td class="num ${rate>=60?'ok':(rate>=40?'warn':'ng')}">${rate.toFixed(1)}%</td>
+          <td class="num">${x.wrong}</td>
+          <td class="num">${x.unanswered}</td>
+        </tr>`;
+      }).join('');
+
+    const wrongHtml = wrongList.length === 0
+      ? '<div class="desc" style="margin-top:12px">🎉 오답이 없습니다!</div>'
+      : `<details class="wrong-details"><summary>❌ 오답·미응답 ${wrongList.length}개 (클릭하여 확장)</summary>
+        <ul class="wrong-list">
+          ${wrongList.map(({p,sel,i}) => {
+            const ansLbl = p.answer === 12345 ? '전항정답' : (p.answer+'번');
+            const selLbl = sel ? sel+'번' : '미응답';
+            const keepParams = new URLSearchParams(location.search);
+            keepParams.delete('exam');
+            keepParams.set('q', p.key);
+            return `<li><a href="exam.html?${keepParams.toString()}" title="이 문제로 이동">${i+1}번 (${esc(p.year+'년 '+p.subject+' '+p.num+'번')}) · 내 답 <strong>${selLbl}</strong> / 정답 <strong>${esc(ansLbl)}</strong></a></li>`;
+          }).join('')}
+        </ul></details>`;
+
+    document.getElementById('exam-result-body').innerHTML = `
+      ${headerHtml}
+      <table class="result-table">
+        <thead><tr><th>과목</th><th>맞춤</th><th>정답률</th><th>오답</th><th>미응답</th></tr></thead>
+        <tbody>${subjRows}</tbody>
+      </table>
+      ${wrongHtml}
+    `;
+
+    // "오답만 다시 풀기" 링크: 동일 필터 유지, exam 제거, wrong=1 추가
+    const reviewParams = new URLSearchParams(location.search);
+    reviewParams.delete('exam');
+    reviewParams.set('wrong', '1');
+    document.getElementById('exam-result-review').href = 'exam.html?' + reviewParams.toString();
+
+    const overlay = document.getElementById('exam-result-overlay');
+    const open = () => { overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.getElementById('exam-result-close').focus(); };
+    const close = () => { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); };
+    document.getElementById('exam-result-close').onclick = close;
+    document.getElementById('exam-result-close2').onclick = close;
+    overlay.onclick = (e) => { if(e.target === overlay) close(); };
+    document.addEventListener('keydown', function onEsc(e){
+      if(e.key === 'Escape' && overlay.classList.contains('open')){ close(); }
+    });
+    open();
+  }
+
+
+  // 필터 제목
+  let title = "전체 문제";
+  if(mode==='year') title = `${year}년 기출`;
+  else if(mode==='subject') title = `과목 · ${subject}`;
+  else if(mode==='keyword') title = `키워드 · ${keyword}`;
+  if(onlyWrong) title = "오답노트";
+  if(onlyBookmark) title = "★ 북마크";
+  document.getElementById('filter-title').textContent = title;
+  document.getElementById('filter-sub').textContent = `총 ${list.length}문제`;
+
+  let idx = 0;
+  // 쿼리스트링에 q=key 있으면 해당 문제부터
+  const targetKey = new URLSearchParams(location.search).get('q');
+  if(targetKey){
+    const i = list.findIndex(p => p.key === targetKey);
+    if(i >= 0) idx = i;
+  }
+
+  function renderGrid(){
+    const state = CPLA.loadState();
+    const grid = document.getElementById('qgrid');
+    grid.innerHTML = list.map((p,i)=>{
+      const a = state.attempts[p.key];
+      const bk = state.bookmarks[p.key];
+      const img = CPLA.hasImage(p);
+      const examPick = isExam && !exam.submitted ? exam.answers[p.key] : null;
+      let cls = '';
+      if(i === idx) cls += ' current';
+      else if(isExam && !exam.submitted){
+        if(examPick) cls += ' answered'; // 시험 모드에선 정·오답 숨김
+      }else if(a){
+        cls += a.correct ? ' correct' : ' wrong';
+      }
+      if(bk) cls += ' bookmarked';
+      if(img) cls += ' has-img';
+      const tipExtra = (img?' · 이미지 있음':'') + (bk?' · ★':'') +
+        (isExam && !exam.submitted
+          ? (examPick ? ` · 답안 ${examPick}` : ' · 미응답')
+          : (a ? ` · ${a.correct?'정답':'오답'}` : ''));
+      return `<button class="${cls.trim()}" data-i="${i}" title="${p.year}·${p.subject}·${p.num}번${tipExtra}" aria-label="${i+1}번 문제로 이동${tipExtra}">${i+1}</button>`;
+    }).join('');
+    grid.querySelectorAll('button').forEach(b => {
+      b.onclick = () => { idx = parseInt(b.dataset.i); render(); };
+    });
+
+    // progress & accuracy
+    const stats = CPLA.calcStats(list);
+    document.getElementById('prog-bar').style.width = stats.progress + '%';
+    document.getElementById('prog-text').textContent = `${stats.solved}/${stats.total} 진도 ${stats.progress}%`;
+    document.getElementById('acc-text').textContent = `정답률 ${stats.accuracy}%`;
+  }
+
+  function render(){
+    const p = list[idx];
+    const state = CPLA.loadState();
+    const attempt = state.attempts[p.key];
+    const bookmarked = !!state.bookmarks[p.key];
+
+    document.getElementById('qnum-label').textContent = `${idx+1} / ${list.length}`;
+    document.getElementById('c-year').textContent = p.year + '년';
+    document.getElementById('c-subject').textContent = p.subject;
+    document.getElementById('c-form').textContent = p.form || '-';
+    document.getElementById('c-original').textContent = `원문번호 ${p.num}`;
+
+    document.getElementById('q-text').textContent = p.question;
+
+    const pas = document.getElementById('q-passages');
+    if(p.passages && p.passages.length){
+      pas.style.display = 'block';
+      pas.innerHTML = p.passages.map(t => `<p>${escapeHtml(t)}</p>`).join('');
+    }else{
+      pas.style.display = 'none';
+    }
+
+    // 문제/지문 이미지
+    const imgBox = document.getElementById('q-images');
+    if(p.images && p.images.length){
+      imgBox.style.display = 'block';
+      imgBox.innerHTML = p.images.map(src =>
+        `<figure class="q-img"><img src="images/${src}" alt="문제 이미지" loading="lazy" onclick="window.open(this.src,'_blank')"></figure>`
+      ).join('');
+    }else{
+      imgBox.style.display = 'none';
+      imgBox.innerHTML = '';
+    }
+
+    // Choices
+    const examHideAnswer = isExam && !exam.submitted;
+    const graded = !!attempt && !examHideAnswer;
+    const qc = document.getElementById('q-choices');
+    qc.innerHTML = '';
+    p.choices.forEach((c,i)=>{
+      if(!c && !(p.choice_images && p.choice_images[i+1])) return;
+      const row = document.createElement('div');
+      row.className = 'choice';
+      let selected;
+      if(examHideAnswer){
+        selected = (exam.answers[p.key] === (i+1)) || (window.__currentSel === i+1);
+      }else{
+        selected = attempt ? attempt.answer === (i+1) : (window.__currentSel === i+1);
+      }
+      if(selected) row.classList.add('selected');
+      if(graded){
+        if(i+1 === p.answer || p.answer === 12345) row.classList.add('correct');
+        else if(attempt.answer === i+1) row.classList.add('wrong');
+      }
+      const choiceImg = p.choice_images && p.choice_images[i+1]
+        ? `<img class="choice-img" src="images/${p.choice_images[i+1]}" alt="선택지 이미지" loading="lazy" onclick="event.stopPropagation();window.open(this.src,'_blank')">` : '';
+      const textPart = c ? escapeHtml(c).replace(/^[①-⑤]\s*/,'') : '';
+      row.innerHTML = `<span class="n">${CPLA.circleNum(i)}</span><span class="txt">${textPart}${choiceImg}</span>`;
+      row.onclick = () => {
+        if(graded) return;
+        if(examHideAnswer){
+          exam.answers[p.key] = i+1;
+          window.__currentSel = i+1;
+          persistExam();
+          render(); renderGrid();
+        }else{
+          window.__currentSel = i+1;
+          render();
+        }
+      };
+      qc.appendChild(row);
+    });
+
+    // 채점 버튼 상태
+    const gb = document.getElementById('btn-grade');
+    if(examHideAnswer){
+      gb.textContent = exam.answers[p.key] ? '✓ 답안 저장됨' : '답안 선택 후 자동 저장';
+      gb.classList.remove('primary');
+      gb.onclick = () => CPLA.toast('시험 모드 중에는 상단 "최종 제출" 버튼으로 일괄 채점합니다');
+    }else if(graded){
+      gb.textContent = '✓ 다시 풀기';
+      gb.classList.remove('primary');
+      gb.onclick = () => {
+        const s = CPLA.loadState();
+        delete s.attempts[p.key];
+        CPLA.saveState(s);
+        window.__currentSel = null;
+        render(); renderGrid();
+      };
+    }else{
+      gb.textContent = '채점하기';
+      gb.classList.add('primary');
+      gb.onclick = () => {
+        const sel = window.__currentSel;
+        if(!sel){ alert('선택지를 골라주세요'); return; }
+        const correct = (p.answer === 12345) ? true : (sel === p.answer);
+        CPLA.recordAttempt(p.key, sel, correct);
+        render(); renderGrid();
+      };
+    }
+
+    // 해설
+    const exp = document.getElementById('q-explanation');
+    if(examHideAnswer){
+      exp.style.display = 'none';
+    }else if(graded){
+      const ok = attempt.correct;
+      const ansLabel = p.answer === 12345 ? '전항정답' : CPLA.circleNum(p.answer-1)+' ('+p.answer+'번)';
+      exp.style.display = 'block';
+      exp.className = 'explanation' + (ok? '' : ' wrong');
+      exp.innerHTML = `
+        <h5>${ok?'✅ 정답':'❌ 오답'} · 정답 ${ansLabel}</h5>
+        <p>${escapeHtml(p.explanation || '해설이 준비되어 있지 않습니다.')}</p>
+        ${p.keywords && p.keywords.length ? `<div class="kw">${p.keywords.map(k=>`<span class="chip blue">${escapeHtml(k)}</span>`).join('')}</div>` : ''}`;
+    }else{
+      exp.style.display = 'none';
+    }
+
+    // 키워드 클라우드
+    const kwel = document.getElementById('q-keywords');
+    kwel.innerHTML = (p.keywords||[]).map(k =>
+      `<a class="chip" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">#${escapeHtml(k)}</a>`
+    ).join('') || '<span class="desc">키워드 없음</span>';
+
+    // 북마크
+    const bb = document.getElementById('btn-bookmark');
+    bb.textContent = bookmarked ? '★ 북마크됨' : '☆ 북마크';
+    bb.onclick = () => { CPLA.toggleBookmark(p.key); render(); };
+
+    // prev/next
+    document.getElementById('btn-prev').disabled = idx === 0;
+    document.getElementById('btn-prev').onclick = () => { if(idx>0){ idx--; window.__currentSel=null; render(); renderGrid(); } };
+    document.getElementById('btn-next').disabled = idx === list.length-1;
+    document.getElementById('btn-next').onclick = () => { if(idx < list.length-1){ idx++; window.__currentSel=null; render(); renderGrid(); } };
+
+    // 리셋 & 이동 버튼
+    document.getElementById('btn-reset').onclick = () => {
+      if(!confirm('이 세트 풀이 기록을 초기화할까요? (북마크는 유지)')) return;
+      const s = CPLA.loadState();
+      list.forEach(p => { delete s.attempts[p.key]; });
+      CPLA.saveState(s);
+      window.__currentSel = null; render(); renderGrid();
+    };
+    document.getElementById('btn-next-unsolved').onclick = () => {
+      if(isExam && !exam.submitted){
+        // 시험 모드에선 exam.answers 기준으로 다음 미응답 찾기
+        for(let i=0;i<list.length;i++){
+          const j = (idx+1+i) % list.length;
+          if(!exam.answers[list[j].key]){ idx = j; window.__currentSel=null; render(); renderGrid(); return; }
+        }
+        CPLA.toast('모든 문제에 답안을 입력했습니다. 상단 "최종 제출" 버튼을 눌러주세요');
+        return;
+      }
+      const s = CPLA.loadState();
+      for(let i=0;i<list.length;i++){
+        const j = (idx+1+i) % list.length;
+        if(!s.attempts[list[j].key]){ idx = j; window.__currentSel=null; render(); renderGrid(); return; }
+      }
+      alert('모든 문제를 풀었습니다! 🎉');
+    };
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // 키보드 단축키
+  document.addEventListener('keydown', (e) => {
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    // 전역 단축키(?, Shift+D, Esc)는 common.js가 처리. 여기는 문제풀이 단축키만.
+    if(e.key === 'ArrowLeft' && idx>0){ idx--; window.__currentSel=null; render(); renderGrid(); }
+    else if(e.key === 'ArrowRight' && idx<list.length-1){ idx++; window.__currentSel=null; render(); renderGrid(); }
+    else if(e.key >= '1' && e.key <= '5'){
+      const sel = parseInt(e.key);
+      if(isExam && !exam.submitted){
+        const p = list[idx];
+        exam.answers[p.key] = sel;
+        persistExam();
+      }
+      window.__currentSel = sel; render(); renderGrid();
+    }
+    else if(e.key === 'Enter'){ document.getElementById('btn-grade').click(); }
+    else if(e.key === 'b' || e.key === 'B'){ document.getElementById('btn-bookmark').click(); }
+    else if(e.key === 'n' || e.key === 'N'){ document.getElementById('btn-next-unsolved').click(); }
+  });
+
+  window.__currentSel = null;
+  render();
+  renderGrid();
+})();
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>

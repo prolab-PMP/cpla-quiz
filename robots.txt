@@ -1,0 +1,22 @@
+# Robots.txt for 공인노무사 (Industrial Safety Instructor) website
+# Allow all search engine crawlers
+
+User-agent: *
+Allow: /
+Disallow: /backup/
+Disallow: /data/
+
+# Sitemap location
+Sitemap: https://공인노무사.com/sitemap.xml
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+
+# Naver specific
+User-agent: Yeti
+Allow: /
+
+# Bing specific
+User-agent: Bingbot
+Allow: /

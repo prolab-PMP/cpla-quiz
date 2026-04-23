@@ -1,0 +1,44 @@
+{
+  "name": "공인노무사 1차 기출문제 풀이",
+  "short_name": "공인노무사",
+  "description": "공인노무사 1차 2013~2025년 기출문제를 과목·연도·키워드별로 풀이하고, 오프라인에서도 학습할 수 있는 기출문제 풀이 웹앱입니다.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "ko",
+  "background_color": "#f6f8fb",
+  "theme_color": "#2563eb",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "연도별 풀이",
+      "short_name": "연도별",
+      "url": "./years.html",
+      "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "과목·키워드별 풀이",
+      "short_name": "과목",
+      "url": "./subjects.html",
+      "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "학습 통계",
+      "short_name": "통계",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "2025년 실전 모의고사",
+      "short_name": "2025 모의",
+      "url": "./exam.html?mode=year&year=2025&exam=1",
+      "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

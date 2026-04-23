@@ -1,6 +1,9 @@
 node_modules/
+*.bak
+*.bak.*
+backup/
+reports/
+.DS_Store
+Thumbs.db
+*.log
 .env
-data/cpla.db
-data/cpla.db-*
-data/*.bak*
-data/*.old

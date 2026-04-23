@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>공인노무사 1차 기출문제 풀이</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="공인노무사 1차 2013-2025년 2,130문제 기출문제 풀이. 과목별, 연도별, 키워드별 자유로운 학습. 오답노트 및 통계 자동 저장.">
+<meta name="keywords" content="공인노무사, 기출문제, 1차시험, 문제풀이, 노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://공인노무사.com/">
+<meta property="og:title" content="공인노무사 1차 기출문제 풀이">
+<meta property="og:description" content="2013-2025년 2,130문제 기출풀이 · 과목/연도/키워드별 학습">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://공인노무사.com/">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="공인노무사 1차 기출문제 풀이">
+<meta name="twitter:description" content="2013-2025년 2,130문제 기출풀이 · 과목/연도/키워드별 학습">
+<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
+<meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "공인노무사 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "공인노무사 1차 2013-2025년 2,130문제 기출문제 풀이 플랫폼",
+  "inLanguage": "ko",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://공인노무사.com/exam.html?mode=keyword&keyword={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalApplication",
+  "name": "공인노무사 1차 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "기출문제 풀이 및 학습 통계",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "공인노무사 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "inLanguage": "ko"
+}
+</script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공인노무사">
+</head>
+<body>
+<script src="data/problems.js"></script>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('home');</script>
+
+<main class="container">
+  <section class="hero">
+    <h1>공인노무사 1차 기출문제 풀이</h1>
+    <p>2013년부터 2025년까지 13개년 기출문제 2,130문항을 과목·연도·키워드별로 자유롭게 학습하세요. 풀이 기록은 브라우저에 자동 저장되며, 오답노트와 학습통계를 언제든 확인할 수 있습니다.</p>
+    <div class="badges" id="hero-badges"></div>
+  </section>
+
+  <section class="section-title"><span class="tag">내 학습 현황</span> 빠른 진척도 요약</section>
+  <div class="grid cols-4" id="summary-cards"></div>
+
+  <section class="section-title"><span class="tag">메뉴</span> 원하는 학습 방식을 선택하세요</section>
+  <div class="grid cols-3">
+    <a class="card link" href="years.html">
+      <div class="icon-badge ib-blue">📅</div>
+      <h3>연도별 기출문제</h3>
+      <p class="desc">2013 ~ 2025년 회차별 문제를 순서대로 풀며 연도별 출제 경향을 파악합니다.</p>
+      <div class="stat"><span class="stat-small">선택 가능 회차</span><span class="stat-big">13개년</span></div>
+    </a>
+    <a class="card link" href="subjects.html">
+      <div class="icon-badge ib-green">📚</div>
+      <h3>과목·키워드별 풀이</h3>
+      <p class="desc">노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학 과목 및 핵심 키워드로 필터링하여 집중 학습합니다.</p>
+      <div class="stat"><span class="stat-small">핵심 키워드</span><span class="stat-big" id="kw-count">-</span></div>
+    </a>
+    <a class="card link" href="dashboard.html">
+      <div class="icon-badge ib-purple">📊</div>
+      <h3>오답노트·학습통계</h3>
+      <p class="desc">틀린 문제를 한눈에 모아보고 과목별 정답률·키워드 취약점을 시각화합니다.</p>
+      <div class="stat"><span class="stat-small">오답 수</span><span class="stat-big" id="wrong-count">-</span></div>
+    </a>
+  </div>
+
+  <section class="section-title"><span class="tag">빠른 시작</span> 추천 풀이</section>
+  <div class="grid cols-3">
+    <a class="card link" href="exam.html?mode=year&year=2025">
+      <div class="icon-badge ib-warn">🆕</div>
+      <h3>2025년 최신 기출</h3>
+      <p class="desc">가장 최근 시행된 2025년 제34회 1차 시험을 풀어봅니다.</p>
+    </a>
+    <a class="card link" href="exam.html?wrong=1">
+      <div class="icon-badge ib-danger">❌</div>
+      <h3>오답노트 다시 풀기</h3>
+      <p class="desc">지금까지 틀린 문제만 모아 집중 복습합니다.</p>
+    </a>
+    <a class="card link" href="exam.html?bookmark=1">
+      <div class="icon-badge ib-purple">⭐</div>
+      <h3>북마크한 문제</h3>
+      <p class="desc">★ 표시해둔 문제만 골라서 풀이합니다.</p>
+    </a>
+  </div>
+
+  <section class="section-title"><span class="tag">실전</span> 시험 모드 (150분 타이머 · 최종 일괄 채점)</section>
+  <div class="grid cols-3">
+    <a class="card link" href="exam.html?mode=year&year=2025&exam=1">
+      <div class="icon-badge ib-warn">⏱️</div>
+      <h3>2025년 실전 모의고사</h3>
+      <p class="desc">제34회 시험을 150분 제한으로 풀이합니다. 제출 전까지 정답·해설이 공개되지 않습니다.</p>
+    </a>
+    <a class="card link" href="exam.html?mode=year&year=2024&exam=1">
+      <div class="icon-badge ib-blue">⏱️</div>
+      <h3>2024년 실전 모의고사</h3>
+      <p class="desc">제33회 시험을 150분 제한으로 풀이합니다.</p>
+    </a>
+    <a class="card link" href="exam.html?mode=year&year=2023&exam=1">
+      <div class="icon-badge ib-green">⏱️</div>
+      <h3>2023년 실전 모의고사</h3>
+      <p class="desc">제32회 시험을 150분 제한으로 풀이합니다.</p>
+    </a>
+  </div>
+</main>
+
+<script>
+  const ps = CPLA.getProblems();
+  const stats = CPLA.calcStats(ps);
+  // Hero badges
+  const years = [...new Set(ps.map(p=>p.year))].sort();
+  const subjects = [...new Set(ps.map(p=>p.subject))];
+  document.getElementById('hero-badges').innerHTML = `
+    <span>📂 총 ${ps.length}문제</span>
+    <span>📅 ${years[0]}~${years[years.length-1]}</span>
+    <span>📚 ${subjects.length}개 과목</span>
+  `;
+  // Summary cards
+  const sc = document.getElementById('summary-cards');
+  sc.innerHTML = `
+    <div class="card"><div class="icon-badge ib-blue">📘</div>
+      <h3>${stats.total}</h3><p class="desc">전체 문제</p></div>
+    <div class="card"><div class="icon-badge ib-green">✅</div>
+      <h3>${stats.solved}</h3><p class="desc">푼 문제 (${stats.progress}%)</p>
+      <div class="progress"><i style="width:${stats.progress}%"></i></div></div>
+    <div class="card"><div class="icon-badge ib-purple">🎯</div>
+      <h3>${stats.accuracy}%</h3><p class="desc">정답률 (${stats.correct}/${stats.solved})</p></div>
+    <div class="card"><div class="icon-badge ib-danger">📝</div>
+      <h3>${stats.wrong}</h3><p class="desc">오답 · ⭐ ${stats.bookmark}</p></div>
+  `;
+  // Keyword count
+  const kws = new Set();
+  ps.forEach(p => (p.keywords||[]).forEach(k=>kws.add(k)));
+  document.getElementById('kw-count').textContent = kws.size;
+  document.getElementById('wrong-count').textContent = stats.wrong;
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>
