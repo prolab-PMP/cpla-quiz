@@ -1,4 +1,4 @@
-/* ==== 공인노무사 문제풀이 사이트 공통 스타일 ==== */
+/* ==== 산업안전지도사 문제풀이 사이트 공통 스타일 ==== */
 :root{
   --bg:#0f172a;
   --bg-2:#111827;
@@ -515,3 +515,61 @@ html[data-theme="dark"] .exam-banner{background:linear-gradient(135deg, #1e40af 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;transition:none!important}
 }
+
+/* ──────────────────────────────────────────────────────
+   Learning Progress (SVG Ring + Subject Bars)
+   ────────────────────────────────────────────────────── */
+.lp-coverage{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;padding:24px 22px}
+.lp-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.lp-ring{--lp-ring-circ:360}
+.lp-ring-bg{stroke:var(--border)}
+.lp-ring-fg{stroke:var(--primary);animation:lp-ring-fill .9s cubic-bezier(.22,.61,.36,1) both}
+.lp-ring-label{fill:var(--text);font-size:24px;font-weight:800;animation:lp-ring-count .6s ease .2s both}
+.lp-ring-sub{color:var(--muted);font-size:12px;font-weight:600}
+.lp-bars{display:flex;flex-direction:column;gap:10px}
+.lp-bar-row{display:flex;flex-direction:column;gap:4px}
+.lp-bar-label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:600}
+.lp-bar{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.lp-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:999px;animation:lp-bar-grow .7s cubic-bezier(.22,.61,.36,1) both}
+@keyframes lp-ring-fill{from{stroke-dashoffset:var(--lp-ring-circ,360)}}
+@keyframes lp-ring-count{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lp-bar-grow{from{width:0!important}}
+@media(max-width:640px){.lp-coverage{grid-template-columns:1fr;text-align:center}.lp-bars{text-align:left}}
+
+/* ──────────────────────────────────────────────────────
+   Recommendation Card — 오늘의 10문항
+   ────────────────────────────────────────────────────── */
+.recom-card{padding:24px 22px}
+.recom-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.recom-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px}
+.recom-item{display:flex;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s}
+.recom-item:hover{border-color:var(--primary);background:var(--panel-2);transform:translateY(-1px)}
+.recom-n{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--purple-soft);color:var(--purple);font-weight:800;font-size:13px;flex-shrink:0}
+.recom-body{flex:1;min-width:0}
+.recom-q{font-size:13px;line-height:1.45;color:var(--text);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.recom-meta{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px}
+.recom-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ──────────────────────────────────────────────────────
+   Resume Card — 이어하기
+   ────────────────────────────────────────────────────── */
+.resume-card{margin-bottom:20px;padding:20px 22px}
+.resume-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.resume-head .icon-badge{margin-bottom:0}
+.resume-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Section title tag variants (purple/green/warn) */
+.section-title .tag.purple{background:var(--purple-soft);color:var(--purple)}
+.section-title .tag.green{background:var(--success-soft);color:var(--success)}
+.section-title .tag.warn{background:var(--warn-soft);color:var(--warn)}
+
+/* Sort tabs for 오답/즐겨찾기 (dashboard 사용) */
+.sort-tabs{display:inline-flex;gap:4px;padding:3px;background:var(--panel-2);border-radius:10px;border:1px solid var(--border)}
+.sort-tab{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);background:transparent;border:none;cursor:pointer;transition:.15s}
+.sort-tab:hover{color:var(--text)}
+.sort-tab.active{background:var(--primary);color:#fff}
+
+/* Button sm/light variants */
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-light{background:var(--panel-2);color:var(--text);border:1px solid var(--border)}
+.btn-light:hover{background:var(--border);color:var(--primary)}

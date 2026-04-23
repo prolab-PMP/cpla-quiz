@@ -1,4 +1,4 @@
-/* ==== 공인노무사 문제풀이 공통 스크립트 ==== */
+/* ==== 산업안전지도사 문제풀이 공통 스크립트 ==== */
 (function(){
   // ---- 테마 (다크모드) — body 그리기 전에 적용 ----
   const THEME_KEY = "cpla_theme";
@@ -32,8 +32,12 @@
     return {
       // key -> { answer:number, correct:bool, ts:number }
       attempts:{},
-      // key set
+      // key -> ts(number) as 저장순 rank
       bookmarks:{},
+      // { review: 'added'|'numAsc'|'recent', fav: ... }
+      sortPref:{ review:'added', fav:'added' },
+      // { title, ids:[key], answers:[1..5|null], mode, startedAt, timer, remaining, savedAt }
+      resume: null,
     };
   }
   function saveState(s){
@@ -73,16 +77,135 @@
   function calcStats(problems){
     const state = loadState();
     let solved=0, correct=0, wrong=0, bookmark=0;
+    const bySubject = {}, byYear = {};
     for(const p of problems){
       const a = state.attempts[p.key];
-      if(a){ solved++; if(a.correct) correct++; else wrong++; }
+      const sub = p.subject, yr = p.year;
+      if (!bySubject[sub]) bySubject[sub] = { a:0, c:0, total:0 };
+      if (!byYear[yr]) byYear[yr] = { a:0, c:0, total:0 };
+      bySubject[sub].total++; byYear[yr].total++;
+      if(a){
+        solved++;
+        bySubject[sub].a++; byYear[yr].a++;
+        if(a.correct){ correct++; bySubject[sub].c++; byYear[yr].c++; }
+        else wrong++;
+      }
       if(state.bookmarks[p.key]) bookmark++;
     }
     return {
       total: problems.length, solved, correct, wrong, bookmark,
       accuracy: solved? Math.round(correct/solved*1000)/10 : 0,
-      progress: problems.length? Math.round(solved/problems.length*1000)/10 : 0
+      progress: problems.length? Math.round(solved/problems.length*1000)/10 : 0,
+      bySubject, byYear,
     };
+  }
+
+  // ---- 진도율 커버리지 (ring + bars 용) ----
+  function computeCoverage(problems){
+    const state = loadState();
+    const seenAll = Object.keys(state.attempts).length;
+    const totalAll = problems.length;
+    const coveragePct = totalAll ? (seenAll/totalAll*100) : 0;
+    const subjects = [...new Set(problems.map(p=>p.subject))];
+    const bars = subjects.map(sub => {
+      const subProblems = problems.filter(p=>p.subject===sub);
+      const seen = subProblems.filter(p=>state.attempts[p.key]).length;
+      return { subject: sub, seen, total: subProblems.length,
+        pct: subProblems.length ? (seen/subProblems.length*100) : 0 };
+    });
+    return { seenAll, totalAll, coveragePct, bars };
+  }
+
+  // ---- 추천 엔진: "오늘의 10문항" ----
+  function pickRecommended(problems, n=10, seed=Date.now()){
+    if(!problems.length) return [];
+    const state = loadState();
+    const stats = calcStats(problems);
+
+    // 약점 과목
+    let weakSubj = null;
+    for (const [s, v] of Object.entries(stats.bySubject)){
+      if (!v.a) continue;
+      const acc = v.c/v.a;
+      if (!weakSubj || acc < weakSubj.acc) weakSubj = { s, acc };
+    }
+    // 약점 연도: 전체 평균 미만
+    const accEntries = Object.entries(stats.byYear)
+      .map(([y,v]) => v.a ? { y, acc:v.c/v.a } : null).filter(Boolean);
+    const avgAcc = accEntries.length
+      ? accEntries.reduce((s,x)=>s+x.acc,0)/accEntries.length : 1;
+    const weakYears = new Set(accEntries.filter(x=>x.acc<avgAcc).map(x=>x.y));
+    const seen = new Set(Object.keys(state.attempts));
+    const wrong = new Set(Object.keys(state.attempts).filter(k=>state.attempts[k].correct===false));
+
+    // seeded RNG
+    let rs = seed >>> 0;
+    const rnd = () => (rs = (rs*1664525 + 1013904223) >>> 0) / 0xFFFFFFFF;
+
+    const scored = problems.map(q => {
+      let sc = 0;
+      if (weakSubj && q.subject === weakSubj.s) sc += 3;
+      if (weakYears.has(q.year)) sc += 2;
+      if (!seen.has(q.key)) sc += 2;
+      if (wrong.has(q.key)) sc += 4;
+      sc += rnd();
+      return { q, s: sc };
+    });
+    const wrongPool = scored.filter(x=>wrong.has(x.q.key)).sort((a,b)=>b.s-a.s);
+    const nonWrong  = scored.filter(x=>!wrong.has(x.q.key)).sort((a,b)=>b.s-a.s);
+    const picked = [], pickedKeys = new Set();
+    const take = (list, max) => {
+      for (const x of list) {
+        if (picked.length >= n) break;
+        if (pickedKeys.has(x.q.key)) continue;
+        picked.push(x.q); pickedKeys.add(x.q.key);
+        if (max && picked.length >= max) break;
+      }
+    };
+    take(wrongPool, Math.min(2, n));
+    take(nonWrong);
+    take(wrongPool);
+    // seeded shuffle
+    for (let i = picked.length-1; i > 0; i--){
+      const j = Math.floor(rnd()*(i+1));
+      [picked[i], picked[j]] = [picked[j], picked[i]];
+    }
+    return { picks: picked.slice(0,n), weakSubj: weakSubj?weakSubj.s:null, weakSubjAcc: weakSubj?weakSubj.acc:null };
+  }
+
+  // ---- Resume 스냅샷 ----
+  function saveResume(snap){ const s=loadState(); s.resume=snap; saveState(s); }
+  function loadResume(){ return loadState().resume || null; }
+  function clearResume(){ const s=loadState(); s.resume=null; saveState(s); }
+
+  // ---- Sort pref ----
+  function getSortPref(){ return loadState().sortPref || { review:'added', fav:'added' }; }
+  function setSortPref(kind, mode){
+    const s = loadState();
+    s.sortPref = s.sortPref || { review:'added', fav:'added' };
+    s.sortPref[kind] = mode;
+    saveState(s);
+  }
+  // kind = 'review' | 'fav'; returns sorted problems
+  function sortProblems(problems, mode){
+    const state = loadState();
+    const list = problems.slice();
+    if (mode === 'numAsc') {
+      list.sort((a,b)=>a.year.localeCompare(b.year) || a.subject.localeCompare(b.subject) || a.num-b.num);
+    } else if (mode === 'recent') {
+      list.sort((a,b)=>{
+        const ta = state.attempts[a.key]?.ts || state.bookmarks[a.key] || 0;
+        const tb = state.attempts[b.key]?.ts || state.bookmarks[b.key] || 0;
+        return tb - ta;
+      });
+    } else { // 'added' — 저장 순서 (ts 오름차순)
+      list.sort((a,b)=>{
+        const ta = state.attempts[a.key]?.ts || state.bookmarks[a.key] || 0;
+        const tb = state.attempts[b.key]?.ts || state.bookmarks[b.key] || 0;
+        return ta - tb;
+      });
+    }
+    return list;
   }
 
   // ---- 네비 렌더 ----
@@ -91,9 +214,9 @@
     const header = `
       <header class="site-header">
         <div class="inner">
-          <a href="index.html" class="brand" aria-label="홈으로 가기 - 공인노무사 기출문제 풀이">
+          <a href="index.html" class="brand" aria-label="홈으로 가기 - 산업안전지도사 기출문제 풀이">
             <span class="dot" aria-hidden="true">산</span>
-            <span>공인노무사</span><small>1차 기출문제 풀이</small>
+            <span>산업안전지도사</span><small>1차 기출문제 풀이</small>
           </a>
           <nav class="nav" aria-label="주 메뉴">
             <a href="index.html" ${active==='home'?'class="active" aria-current="page"':''}>🏠 홈</a>
@@ -135,18 +258,18 @@
 
   // ---- 키보드 단축키 도움말 ----
   function openShortcutHelp(){
-    let m = document.getElementById('sas-shortcut-modal');
+    let m = document.getElementById('cpla-shortcut-modal');
     if (!m) {
       m = document.createElement('div');
-      m.id = 'sas-shortcut-modal';
+      m.id = 'cpla-shortcut-modal';
       m.className = 'modal-overlay';
       m.setAttribute('role','dialog');
       m.setAttribute('aria-modal','true');
-      m.setAttribute('aria-labelledby','sas-shortcut-title');
+      m.setAttribute('aria-labelledby','cpla-shortcut-title');
       m.innerHTML = `
         <div class="modal" onclick="event.stopPropagation()">
           <button class="close" aria-label="닫기" id="cpla-shortcut-close">×</button>
-          <h3 id="sas-shortcut-title">⌨️ 키보드 단축키</h3>
+          <h3 id="cpla-shortcut-title">⌨️ 키보드 단축키</h3>
           <div class="shortcut-list">
             <span class="keys"><kbd>←</kbd> <kbd>→</kbd></span><span>이전 / 다음 문제</span>
             <span class="keys"><kbd>1</kbd>~<kbd>5</kbd></span><span>선택지 ①~⑤ 고르기 (시험 모드에선 자동 저장)</span>
@@ -167,7 +290,7 @@
     m.classList.add('open');
   }
   function closeShortcutHelp(){
-    const m = document.getElementById('sas-shortcut-modal');
+    const m = document.getElementById('cpla-shortcut-modal');
     if (m) m.classList.remove('open');
   }
 
@@ -227,7 +350,7 @@
   }
   function renderFooter(){
     const f = `<footer class="footer">
-      공인노무사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
+      산업안전지도사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
       <small>본 자료는 학습 목적으로 제공되며, 공식 정답은 한국산업인력공단 발표를 따릅니다.</small>
     </footer>`;
     document.body.insertAdjacentHTML("beforeend", f);
@@ -236,6 +359,9 @@
   // ---- 내보내기 ----
   window.CPLA = {
     loadState, saveState, getProblems, filterByMode, calcStats,
+    computeCoverage, pickRecommended,
+    saveResume, loadResume, clearResume,
+    getSortPref, setSortPref, sortProblems,
     renderHeader, renderFooter,
     toggleTheme, openShortcutHelp, closeShortcutHelp, toast,
     exportState, importState,

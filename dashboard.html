@@ -2,19 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>학습통계 · 오답노트 · 공인노무사</title>
+<title>학습통계 · 오답노트 · 산업안전지도사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="공인노무사 학습통계 및 오답노트. 과목별/연도별 정답률 분석, 취약점 파악, 학습 진도율 추적.">
+<meta name="description" content="산업안전지도사 학습통계 및 오답노트. 과목별/연도별 정답률 분석, 취약점 파악, 학습 진도율 추적.">
 <meta name="keywords" content="학습통계, 오답노트, 정답률, 과목별분석, 연도별분석, 학습대시보드">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://공인노무사.com/dashboard.html">
-<meta property="og:title" content="학습통계 · 오답노트 · 공인노무사">
+<link rel="canonical" href="https://산업안전지도사.com/dashboard.html">
+<meta property="og:title" content="학습통계 · 오답노트 · 산업안전지도사">
 <meta property="og:description" content="개인별 학습 진도 및 통계 분석">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://공인노무사.com/dashboard.html">
+<meta property="og:url" content="https://산업안전지도사.com/dashboard.html">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="학습통계 · 오답노트 · 공인노무사">
+<meta name="twitter:title" content="학습통계 · 오답노트 · 산업안전지도사">
 <meta name="twitter:description" content="개인별 학습 진도 및 통계 분석">
 <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
 <meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
@@ -24,8 +24,8 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "공인노무사 학습통계",
-  "url": "https://공인노무사.com/dashboard.html",
+  "name": "산업안전지도사 학습통계",
+  "url": "https://산업안전지도사.com/dashboard.html",
   "description": "학습 진도, 정답률 분석, 오답 관리",
   "applicationCategory": "EducationalApplication"
 }
@@ -34,9 +34,9 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "공인노무사 기출문제 풀이",
-  "url": "https://공인노무사.com/",
-  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "name": "산업안전지도사 기출문제 풀이",
+  "url": "https://산업안전지도사.com/",
+  "description": "산업안전지도사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
   "inLanguage": "ko"
 }
 </script>
@@ -44,7 +44,7 @@
 <meta name="theme-color" content="#2563eb">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="공인노무사">
+<meta name="apple-mobile-web-app-title" content="산업안전지도사">
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -198,7 +198,9 @@ new Chart(document.getElementById('chart-kw'), {
 });
 
 // ---- 탭 ----
+let currentTab = 'wrong';
 function renderTab(tab){
+  currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
   const s = CPLA.loadState();
   let rows = [];
@@ -211,6 +213,12 @@ function renderTab(tab){
     rows.sort((a,b)=> (s.attempts[b.key].ts||0) - (s.attempts[a.key].ts||0));
     rows = rows.slice(0, 50);
   }
+  // 정렬 적용 (wrong/bookmark만 — recent는 이미 ts desc)
+  if (tab === 'wrong' || tab === 'bookmark') {
+    const kind = tab === 'wrong' ? 'review' : 'fav';
+    const pref = CPLA.getSortPref()[kind] || 'added';
+    rows = CPLA.sortProblems(rows, pref);
+  }
   if(rows.length === 0){
     document.getElementById('tab-body').innerHTML = `
       <div class="empty"><div class="big">🗒️</div>
@@ -218,7 +226,24 @@ function renderTab(tab){
         <p>문제를 풀고 다시 오면 여기에 표시됩니다.</p></div>`;
     return;
   }
-  const html = `<table class="table">
+  // 정렬 탭 UI (wrong/bookmark만)
+  let sortBar = '';
+  if (tab === 'wrong' || tab === 'bookmark') {
+    const kind = tab === 'wrong' ? 'review' : 'fav';
+    const cur = CPLA.getSortPref()[kind] || 'added';
+    sortBar = `
+      <div style="margin:0 0 12px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px">
+        정렬:
+        <span class="sort-tabs">
+          <button class="sort-tab ${cur==='added'?'active':''}" data-sort="added">저장순</button>
+          <button class="sort-tab ${cur==='numAsc'?'active':''}" data-sort="numAsc">번호순</button>
+          <button class="sort-tab ${cur==='recent'?'active':''}" data-sort="recent">최근순</button>
+        </span>
+        <span style="margin-left:auto">${rows.length}건</span>
+      </div>`;
+  }
+
+  const html = sortBar + `<table class="table">
     <thead><tr>
       <th style="width:90px">연도</th>
       <th style="width:140px">과목</th>
@@ -247,6 +272,16 @@ function renderTab(tab){
       }).join('')}
     </tbody></table>`;
   document.getElementById('tab-body').innerHTML = html;
+  // Sort tab clicks
+  document.querySelectorAll('.sort-tab').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const mode = btn.dataset.sort;
+      const kind = currentTab === 'wrong' ? 'review' : 'fav';
+      CPLA.setSortPref(kind, mode);
+      renderTab(currentTab);
+    };
+  });
 }
 function escapeHtml(s){
   return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

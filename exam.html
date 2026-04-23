@@ -2,19 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>문제풀이 · 공인노무사</title>
+<title>문제풀이 · 산업안전지도사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="공인노무사 1차 기출문제 풀이. 선택지별 정답 채점, 오답 분석, 핵심 키워드 분류.">
+<meta name="description" content="산업안전지도사 1차 기출문제 풀이. 선택지별 정답 채점, 오답 분석, 핵심 키워드 분류.">
 <meta name="keywords" content="문제풀이, 기출문제, 객관식, 정답률, 오답노트, 키워드">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://공인노무사.com/exam.html">
-<meta property="og:title" content="문제풀이 · 공인노무사">
+<link rel="canonical" href="https://산업안전지도사.com/exam.html">
+<meta property="og:title" content="문제풀이 · 산업안전지도사">
 <meta property="og:description" content="기출문제 풀이 및 실시간 채점">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://공인노무사.com/exam.html">
+<meta property="og:url" content="https://산업안전지도사.com/exam.html">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="문제풀이 · 공인노무사">
+<meta name="twitter:title" content="문제풀이 · 산업안전지도사">
 <meta name="twitter:description" content="기출문제 풀이 및 실시간 채점">
 <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
 <meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
@@ -23,18 +23,18 @@
 {
   "@context": "https://schema.org",
   "@type": "Quiz",
-  "name": "공인노무사 1차 기출문제 풀이",
+  "name": "산업안전지도사 1차 기출문제 풀이",
   "description": "기출문제 풀이 및 실시간 채점",
-  "url": "https://공인노무사.com/exam.html"
+  "url": "https://산업안전지도사.com/exam.html"
 }
 </script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "공인노무사 기출문제 풀이",
-  "url": "https://공인노무사.com/",
-  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "name": "산업안전지도사 기출문제 풀이",
+  "url": "https://산업안전지도사.com/",
+  "description": "산업안전지도사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
   "inLanguage": "ko"
 }
 </script>
@@ -42,7 +42,7 @@
 <meta name="theme-color" content="#2563eb">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="공인노무사">
+<meta name="apple-mobile-web-app-title" content="산업안전지도사">
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -155,10 +155,34 @@
   }
   root.style.display = 'grid';
 
+  // Resume snapshot save — called after each answer or navigation
+  function saveResumeSnapshot(){
+    try {
+      const s = CPLA.loadState();
+      const answered = list.filter(p => s.attempts[p.key]).length;
+      // 모든 문제 완료 상태면 스냅샷 제거 (완료 후 재방문 유도 X)
+      if (answered >= list.length) { CPLA.clearResume(); return; }
+      // 제목 구성
+      let title = '';
+      if (onlyWrong) title = '오답노트 복습';
+      else if (onlyBookmark) title = '북마크 문제';
+      else if (mode === 'year' && year) title = `${year}년 기출`;
+      else if (mode === 'subject' && subject) title = `과목: ${subject}`;
+      else if (mode === 'keyword' && keyword) title = `키워드: ${keyword}`;
+      else title = '기출문제 풀이';
+      CPLA.saveResume({
+        title, url: location.pathname + location.search,
+        ids: list.map(p=>p.key),
+        total: list.length, answered,
+        savedAt: Date.now()
+      });
+    } catch(e){}
+  }
+
   // ==== 시험 모드 (?exam=1) ====
   const urlParams = new URLSearchParams(location.search);
   const isExam = urlParams.get('exam') === '1';
-  const EXAM_STORE = 'sas_exam_session_v1';
+  const EXAM_STORE = 'cpla_exam_session_v1';
   const EXAM_DURATION_MIN = parseInt(urlParams.get('min') || '150', 10);
   // provisional answers (key -> selected answer number)
   const exam = {
@@ -253,7 +277,7 @@
 
   function showResultModal({correctCnt, total, pct, unanswered}){
     // 과목별 집계 + 오답/미응답 목록
-    const subjects = ['노동법1','노동법2','민법','사회보험법','경제학','경영학'];
+    const subjects = ['산업안전보건','산업안전일반','기업진단지도'];
     const bySubj = {};
     subjects.forEach(s => bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]});
     const wrongList = [];
@@ -270,7 +294,7 @@
         wrongList.push({p, sel, i});
       }
     });
-    // 합격 판정(공인노무사 1차: 전과목 평균 60점 이상 + 각 과목 40점 이상)
+    // 합격 판정(산업안전지도사 1차: 전과목 평균 60점 이상 + 각 과목 40점 이상)
     const perSubjRates = Object.values(bySubj).filter(x=>x.total>0).map(x => x.correct/x.total*100);
     const minSubj = perSubjRates.length ? Math.min(...perSubjRates) : 0;
     const avgAll = pct; // list 전체 정답률 = 과목별 합계 가중평균과 동일
@@ -504,6 +528,7 @@
         if(!sel){ alert('선택지를 골라주세요'); return; }
         const correct = (p.answer === 12345) ? true : (sel === p.answer);
         CPLA.recordAttempt(p.key, sel, correct);
+        saveResumeSnapshot();
         render(); renderGrid();
       };
     }
@@ -538,9 +563,9 @@
 
     // prev/next
     document.getElementById('btn-prev').disabled = idx === 0;
-    document.getElementById('btn-prev').onclick = () => { if(idx>0){ idx--; window.__currentSel=null; render(); renderGrid(); } };
+    document.getElementById('btn-prev').onclick = () => { if(idx>0){ idx--; window.__currentSel=null; saveResumeSnapshot(); render(); renderGrid(); } };
     document.getElementById('btn-next').disabled = idx === list.length-1;
-    document.getElementById('btn-next').onclick = () => { if(idx < list.length-1){ idx++; window.__currentSel=null; render(); renderGrid(); } };
+    document.getElementById('btn-next').onclick = () => { if(idx < list.length-1){ idx++; window.__currentSel=null; saveResumeSnapshot(); render(); renderGrid(); } };
 
     // 리셋 & 이동 버튼
     document.getElementById('btn-reset').onclick = () => {
