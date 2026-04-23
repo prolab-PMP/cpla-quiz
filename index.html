@@ -166,11 +166,15 @@
     <span>📅 ${years[0]}~${years[years.length-1]}</span>
     <span>📚 ${subjects.length}개 과목</span>
   `;
-  // Summary cards
+  // Summary cards — 무료 사용자는 이용가능 / 전체 모두 표시
+  const totalAll = (access && access.totalCount) || ps.length;
+  const showTotal = (access && access.user && !access.user.isPremiumActive && !access.user.is_admin)
+    ? `<h3>${stats.total}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${totalAll.toLocaleString()}</span></h3><p class="desc">이용 가능 / 전체</p>`
+    : `<h3>${stats.total.toLocaleString()}</h3><p class="desc">전체 문제</p>`;
   const sc = document.getElementById('summary-cards');
   sc.innerHTML = `
     <div class="card"><div class="icon-badge ib-blue">📘</div>
-      <h3>${stats.total}</h3><p class="desc">전체 문제</p></div>
+      ${showTotal}</div>
     <div class="card"><div class="icon-badge ib-green">✅</div>
       <h3>${stats.solved}</h3><p class="desc">푼 문제 (${stats.progress}%)</p>
       <div class="progress"><i style="width:${stats.progress}%"></i></div></div>
@@ -248,20 +252,21 @@
   })();
 
   // 로그인 유도 배너 (비로그인 & 무료 사용자)
+  const totalCount = (access && access.totalCount) || ps.length;
   if (!access || !access.user) {
     const hero = document.querySelector('.hero');
     if (hero) {
       const notice = document.createElement('div');
-      notice.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.18);border-radius:10px;font-size:13px;color:#fff';
-      notice.innerHTML = '💡 <a href="signup.html" style="color:#fff;font-weight:700;text-decoration:underline">무료 가입</a>하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다.';
+      notice.style.cssText = 'margin-top:16px;padding:14px 18px;background:rgba(255,235,59,0.22);border:1px solid rgba(255,235,59,0.5);border-radius:12px;font-size:14px;color:#fff;font-weight:600';
+      notice.innerHTML = `💡 <a href="signup.html" style="color:#ffe082;font-weight:800;text-decoration:underline">무료 가입</a>하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다. (총 ${totalCount.toLocaleString()}문제)`;
       hero.appendChild(notice);
     }
   } else if (access.user && !access.user.isPremiumActive && !access.user.is_admin) {
     const hero = document.querySelector('.hero');
     if (hero) {
       const notice = document.createElement('div');
-      notice.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.18);border-radius:10px;font-size:13px;color:#fff';
-      notice.innerHTML = `🔓 현재 무료 이용 중 — 전체 문항 열람을 원하시면 관리자에게 Premium 전환을 문의하세요. (${access.problems.length}문제 열람 가능)`;
+      notice.style.cssText = 'margin-top:16px;padding:14px 18px;background:rgba(255,152,0,0.28);border:1px solid rgba(255,152,0,0.6);border-radius:12px;font-size:14px;color:#fff;font-weight:700;box-shadow:0 2px 12px rgba(255,152,0,0.25)';
+      notice.innerHTML = `🔓 <b style="color:#fff5d6">현재 무료 이용 중</b> — 전체 문항 열람을 원하시면 <b>관리자에게 Premium 전환을 문의</b>하세요. <span style="background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:999px;margin-left:6px;font-size:13px">무료회원은 총 ${totalCount.toLocaleString()}문제 중 ${access.problems.length.toLocaleString()}문제 열람 가능</span>`;
       hero.appendChild(notice);
     }
   }
