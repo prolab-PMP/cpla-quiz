@@ -1,4 +1,4 @@
-/* ==== 산업안전지도사 문제풀이 공통 스크립트 ==== */
+/* ==== 공인노무사 문제풀이 공통 스크립트 ==== */
 (function(){
   // ---- 테마 (다크모드) — body 그리기 전에 적용 ----
   const THEME_KEY = "cpla_theme";
@@ -214,9 +214,9 @@
     const header = `
       <header class="site-header">
         <div class="inner">
-          <a href="index.html" class="brand" aria-label="홈으로 가기 - 산업안전지도사 기출문제 풀이">
+          <a href="index.html" class="brand" aria-label="홈으로 가기 - 공인노무사 기출문제 풀이">
             <span class="dot" aria-hidden="true">산</span>
-            <span>산업안전지도사</span><small>1차 기출문제 풀이</small>
+            <span>공인노무사</span><small>1차 기출문제 풀이</small>
           </a>
           <nav class="nav" aria-label="주 메뉴">
             <a href="index.html" ${active==='home'?'class="active" aria-current="page"':''}>🏠 홈</a>
@@ -350,7 +350,7 @@
   }
   function renderFooter(){
     const f = `<footer class="footer">
-      산업안전지도사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
+      공인노무사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
       <small>본 자료는 학습 목적으로 제공되며, 공식 정답은 한국산업인력공단 발표를 따릅니다.</small>
     </footer>`;
     document.body.insertAdjacentHTML("beforeend", f);

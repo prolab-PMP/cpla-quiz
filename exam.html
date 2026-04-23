@@ -2,19 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>문제풀이 · 산업안전지도사</title>
+<title>문제풀이 · 공인노무사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="산업안전지도사 1차 기출문제 풀이. 선택지별 정답 채점, 오답 분석, 핵심 키워드 분류.">
+<meta name="description" content="공인노무사 1차 기출문제 풀이. 선택지별 정답 채점, 오답 분석, 핵심 키워드 분류.">
 <meta name="keywords" content="문제풀이, 기출문제, 객관식, 정답률, 오답노트, 키워드">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://산업안전지도사.com/exam.html">
-<meta property="og:title" content="문제풀이 · 산업안전지도사">
+<link rel="canonical" href="https://공인노무사.com/exam.html">
+<meta property="og:title" content="문제풀이 · 공인노무사">
 <meta property="og:description" content="기출문제 풀이 및 실시간 채점">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://산업안전지도사.com/exam.html">
+<meta property="og:url" content="https://공인노무사.com/exam.html">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="문제풀이 · 산업안전지도사">
+<meta name="twitter:title" content="문제풀이 · 공인노무사">
 <meta name="twitter:description" content="기출문제 풀이 및 실시간 채점">
 <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
 <meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
@@ -23,18 +23,18 @@
 {
   "@context": "https://schema.org",
   "@type": "Quiz",
-  "name": "산업안전지도사 1차 기출문제 풀이",
+  "name": "공인노무사 1차 기출문제 풀이",
   "description": "기출문제 풀이 및 실시간 채점",
-  "url": "https://산업안전지도사.com/exam.html"
+  "url": "https://공인노무사.com/exam.html"
 }
 </script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "산업안전지도사 기출문제 풀이",
-  "url": "https://산업안전지도사.com/",
-  "description": "산업안전지도사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+  "name": "공인노무사 기출문제 풀이",
+  "url": "https://공인노무사.com/",
+  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
   "inLanguage": "ko"
 }
 </script>
@@ -42,7 +42,7 @@
 <meta name="theme-color" content="#2563eb">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="산업안전지도사">
+<meta name="apple-mobile-web-app-title" content="공인노무사">
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -294,7 +294,7 @@
         wrongList.push({p, sel, i});
       }
     });
-    // 합격 판정(산업안전지도사 1차: 전과목 평균 60점 이상 + 각 과목 40점 이상)
+    // 합격 판정(공인노무사 1차: 전과목 평균 60점 이상 + 각 과목 40점 이상)
     const perSubjRates = Object.values(bySubj).filter(x=>x.total>0).map(x => x.correct/x.total*100);
     const minSubj = perSubjRates.length ? Math.min(...perSubjRates) : 0;
     const avgAll = pct; // list 전체 정답률 = 과목별 합계 가중평균과 동일
