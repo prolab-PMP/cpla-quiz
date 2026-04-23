@@ -90,22 +90,19 @@
   <!-- 진도율 커버리지 (SVG ring + 과목별 bars) -->
   <div id="learning-progress"></div>
 
-  <!-- 오늘의 10문항 추천 카드 -->
-  <div id="recom-card"></div>
-
   <section class="section-title"><span class="tag">메뉴</span> 원하는 학습 방식을 선택하세요</section>
   <div class="grid cols-3">
+    <a class="card link" href="subjects.html">
+      <div class="icon-badge ib-green">📚</div>
+      <h3>과목·키워드별 풀이</h3>
+      <p class="desc">산업안전보건, 산업안전일반, 기업진단지도 과목 및 핵심 키워드로 필터링하여 집중 학습합니다.</p>
+      <div class="stat"><span class="stat-small">핵심 키워드</span><span class="stat-big" id="kw-count">-</span></div>
+    </a>
     <a class="card link" href="years.html">
       <div class="icon-badge ib-blue">📅</div>
       <h3>연도별 기출문제</h3>
       <p class="desc">2013 ~ 2025년 회차별 문제를 순서대로 풀며 연도별 출제 경향을 파악합니다.</p>
       <div class="stat"><span class="stat-small">선택 가능 회차</span><span class="stat-big">13개년</span></div>
-    </a>
-    <a class="card link" href="subjects.html">
-      <div class="icon-badge ib-green">📚</div>
-      <h3>과목·키워드별 풀이</h3>
-      <p class="desc">노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학 과목 및 핵심 키워드로 필터링하여 집중 학습합니다.</p>
-      <div class="stat"><span class="stat-small">핵심 키워드</span><span class="stat-big" id="kw-count">-</span></div>
     </a>
     <a class="card link" href="dashboard.html">
       <div class="icon-badge ib-purple">📊</div>
@@ -155,6 +152,10 @@
 </main>
 
 <script>
+(async () => {
+  // 접근권한 기반 문제 목록 로드 (로그인/Premium/무료 별 자동 필터)
+  await (window.__ACCESS_READY__ || Promise.resolve());
+  const access = window.__ACCESS__;
   const ps = CPLA.getProblems();
   const stats = CPLA.calcStats(ps);
   // Hero badges
@@ -246,49 +247,25 @@
       </div>`;
   })();
 
-  // ---- 오늘의 10문항 추천 ----
-  (function renderRecommendation(){
-    const host = document.getElementById('recom-card');
-    if (!host) return;
-    let seed;
-    try { seed = parseInt(sessionStorage.getItem('cpla.recom.seed'),10); } catch(e){}
-    if (!seed || isNaN(seed)) { seed = Date.now(); try{ sessionStorage.setItem('cpla.recom.seed', seed); }catch(e){} }
-    const { picks, weakSubj, weakSubjAcc } = CPLA.pickRecommended(ps, 10, seed);
-    if (!picks.length) return;
-    const metaLine = weakSubj != null
-      ? `약점 과목 <b>${weakSubj}</b> (정답률 ${(weakSubjAcc*100).toFixed(1)}%) 가중 · 신규 문항 우선`
-      : `학습 기록이 적어 전체 풀에서 무작위 추천`;
-    const itemsHtml = picks.map((q, i) => `
-      <a class="recom-item" href="exam.html?mode=recom&seed=${seed}">
-        <div class="recom-n">${i+1}</div>
-        <div class="recom-body">
-          <div class="recom-q">${(q.question||'').substring(0, 80)}${q.question.length>80?'…':''}</div>
-          <div class="recom-meta">${q.year}년 · ${q.subject} · ${q.num}번</div>
-        </div>
-      </a>`).join('');
-    host.innerHTML = `
-      <section class="section-title"><span class="tag purple">오늘의 10문항</span> 추천 풀이 (세션 내 고정)</section>
-      <div class="card recom-card">
-        <div class="recom-head">
-          <p class="desc" style="margin:0">${metaLine}</p>
-          <button class="btn btn-light btn-sm" id="recom-refresh">🔄 새 조합</button>
-        </div>
-        <div class="recom-list">${itemsHtml}</div>
-        <div class="recom-actions">
-          <a class="btn btn-primary" id="recom-start" href="exam.html?mode=recom&seed=${seed}">▶ 이 10문항 풀기</a>
-          <button class="btn btn-light" id="recom-reshuffle">셔플만 다시</button>
-        </div>
-      </div>`;
-    const reshuffle = () => {
-      const newSeed = Date.now();
-      try{ sessionStorage.setItem('cpla.recom.seed', newSeed); }catch(e){}
-      // re-render
-      host.innerHTML = '';
-      renderRecommendation();
-    };
-    document.getElementById('recom-refresh').onclick = reshuffle;
-    document.getElementById('recom-reshuffle').onclick = reshuffle;
-  })();
+  // 로그인 유도 배너 (비로그인 & 무료 사용자)
+  if (!access || !access.user) {
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const notice = document.createElement('div');
+      notice.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.18);border-radius:10px;font-size:13px;color:#fff';
+      notice.innerHTML = '💡 <a href="signup.html" style="color:#fff;font-weight:700;text-decoration:underline">무료 가입</a>하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다.';
+      hero.appendChild(notice);
+    }
+  } else if (access.user && !access.user.isPremiumActive && !access.user.is_admin) {
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const notice = document.createElement('div');
+      notice.style.cssText = 'margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.18);border-radius:10px;font-size:13px;color:#fff';
+      notice.innerHTML = `🔓 현재 무료 이용 중 — 전체 문항 열람을 원하시면 관리자에게 Premium 전환을 문의하세요. (${access.problems.length}문제 열람 가능)`;
+      hero.appendChild(notice);
+    }
+  }
+})();
 </script>
 <script>CPLA.renderFooter();</script>
 </body>

@@ -7,3 +7,5 @@ reports/
 Thumbs.db
 *.log
 .env
+data/users.json
+data/users.sqlite*

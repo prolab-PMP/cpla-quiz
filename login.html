@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>로그인 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<script src="data/problems.js"></script>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('');</script>
+<main class="container" style="max-width:440px">
+  <div class="card" style="margin-top:40px;padding:32px 28px">
+    <h1 style="font-size:22px;margin:0 0 8px">🔐 로그인</h1>
+    <p class="desc" style="margin:0 0 24px">이메일과 비밀번호로 로그인하세요.</p>
+    <form id="login-form">
+      <div style="margin-bottom:14px">
+        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">이메일</label>
+        <input type="email" name="email" required class="search" style="width:100%" placeholder="you@example.com">
+      </div>
+      <div style="margin-bottom:18px">
+        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호</label>
+        <input type="password" name="password" required class="search" style="width:100%" placeholder="4자 이상">
+      </div>
+      <div id="err" style="display:none;color:var(--danger);font-size:13px;margin-bottom:12px;padding:10px;background:var(--danger-soft);border-radius:8px"></div>
+      <button type="submit" class="btn primary" style="width:100%">로그인</button>
+    </form>
+    <p style="margin:18px 0 0;text-align:center;font-size:13px;color:var(--muted)">
+      계정이 없으신가요? <a href="signup.html" style="color:var(--primary);font-weight:600">회원가입</a>
+    </p>
+  </div>
+</main>
+<script>
+document.getElementById('login-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: f.email.value, password: f.password.value })
+    });
+    const j = await r.json();
+    if (!r.ok) { err.textContent = j.error || '로그인 실패'; err.style.display = 'block'; return; }
+    location.href = 'index.html';
+  } catch (ex) { err.textContent = '네트워크 오류'; err.style.display = 'block'; }
+};
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>

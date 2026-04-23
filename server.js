@@ -1,20 +1,328 @@
+/**
+ * 공인노무사 1차 기출문제 사이트 서버 (v2: 회원/관리자/접근제어)
+ *
+ * 환경변수:
+ *   PORT                 (기본 3000)
+ *   DATABASE_URL         Postgres (Railway 자동 주입). 없으면 로컬 SQLite 사용
+ *   SESSION_SECRET       express-session 비밀 (없으면 기본값 경고)
+ *   ADMIN_EMAIL          관리자로 지정할 이메일 (회원가입 시 자동 관리자)
+ *   SITE_NAME            이메일 본문에 쓰는 사이트 이름 (기본: 공인노무사 문제풀이)
+ *   SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS  메일 발송용 (없으면 로그만)
+ *   NOTIFY_EMAIL         신규가입 알림 수신 이메일 (기본 songdoinfo@naver.com)
+ */
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SITE_NAME = process.env.SITE_NAME || '공인노무사 문제풀이';
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'songdoinfo@naver.com';
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'songdoinfo@naver.com').toLowerCase();
 
-// Serve static files from the current directory
+// ─── DB 어댑터 (SQLite 로컬 / Postgres Railway) ────────────────
+const usePg = !!process.env.DATABASE_URL;
+let db;
+if (usePg) {
+  const { Pool } = require('pg');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+  db = {
+    async init() {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS users (
+          id SERIAL PRIMARY KEY,
+          email TEXT UNIQUE NOT NULL,
+          password_hash TEXT NOT NULL,
+          is_admin BOOLEAN DEFAULT FALSE,
+          is_premium BOOLEAN DEFAULT FALSE,
+          premium_until TIMESTAMP NULL,
+          created_at TIMESTAMP DEFAULT NOW()
+        );
+        CREATE TABLE IF NOT EXISTS sessions (
+          sid TEXT PRIMARY KEY,
+          sess JSONB NOT NULL,
+          expire TIMESTAMP NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_sessions_expire ON sessions (expire);
+      `);
+    },
+    async getUserByEmail(email) {
+      const r = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
+      return r.rows[0] || null;
+    },
+    async getUserById(id) {
+      const r = await pool.query('SELECT * FROM users WHERE id=$1', [id]);
+      return r.rows[0] || null;
+    },
+    async createUser({ email, password_hash, is_admin }) {
+      const r = await pool.query(
+        'INSERT INTO users (email, password_hash, is_admin) VALUES ($1,$2,$3) RETURNING *',
+        [email, password_hash, !!is_admin]
+      );
+      return r.rows[0];
+    },
+    async listUsers() {
+      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, created_at FROM users ORDER BY created_at DESC');
+      return r.rows;
+    },
+    async updateUserAccess(id, { is_premium, premium_until }) {
+      await pool.query(
+        'UPDATE users SET is_premium=$1, premium_until=$2 WHERE id=$3',
+        [!!is_premium, premium_until, id]
+      );
+    },
+    async deleteUser(id) {
+      await pool.query('DELETE FROM users WHERE id=$1', [id]);
+    },
+  };
+} else {
+  // 로컬 개발용 JSON 파일 스토어 (데이터 영속성 낮음 — Railway 배포 시 DATABASE_URL 필수)
+  const jsonPath = path.join(__dirname, 'data', 'users.json');
+  let store = { users: [], nextId: 1 };
+  try {
+    if (fs.existsSync(jsonPath)) store = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  } catch (e) { console.warn('[DB] users.json 읽기 실패', e.message); }
+  const save = () => {
+    try { fs.mkdirSync(path.dirname(jsonPath), { recursive: true }); fs.writeFileSync(jsonPath, JSON.stringify(store, null, 2)); }
+    catch (e) { console.warn('[DB] users.json 저장 실패', e.message); }
+  };
+  db = {
+    async init() { /* JSON: 이미 로드됨 */ },
+    async getUserByEmail(email) { return store.users.find(u => u.email === email) || null; },
+    async getUserById(id) { return store.users.find(u => u.id === id) || null; },
+    async createUser({ email, password_hash, is_admin }) {
+      const u = {
+        id: store.nextId++, email, password_hash,
+        is_admin: !!is_admin, is_premium: false, premium_until: null,
+        created_at: new Date().toISOString(),
+      };
+      store.users.push(u); save();
+      return u;
+    },
+    async listUsers() { return store.users.slice().sort((a,b) => b.created_at.localeCompare(a.created_at)); },
+    async updateUserAccess(id, { is_premium, premium_until }) {
+      const u = store.users.find(u => u.id === id);
+      if (u) { u.is_premium = !!is_premium; u.premium_until = premium_until; save(); }
+    },
+    async deleteUser(id) {
+      store.users = store.users.filter(u => u.id !== id); save();
+    },
+  };
+}
+
+// ─── 세션 ─────────────────────────────────────────────────────
+const sessionOpts = {
+  secret: process.env.SESSION_SECRET || 'change-this-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' },
+};
+if (usePg) {
+  try {
+    const pgSession = require('connect-pg-simple')(session);
+    const { Pool } = require('pg');
+    sessionOpts.store = new pgSession({
+      pool: new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      }),
+      tableName: 'sessions',
+      createTableIfMissing: true,
+    });
+  } catch (e) { console.warn('[SESSION] pg store init failed, falling back to memory', e.message); }
+}
+app.use(session(sessionOpts));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ─── 이메일 (nodemailer) ───────────────────────────────────────
+let mailer = null;
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  const nodemailer = require('nodemailer');
+  mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+}
+async function sendSignupNotification(email) {
+  const now = new Date();
+  const date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const body = `${SITE_NAME} 사이트 아이디 ${email} ${now.getMonth()+1}월${now.getDate()}일 가입`;
+  if (!mailer) { console.log('[MAIL][stub]', NOTIFY_EMAIL, body); return; }
+  try {
+    await mailer.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: NOTIFY_EMAIL,
+      subject: `[${SITE_NAME}] 신규 가입: ${email}`,
+      text: body,
+    });
+  } catch (e) { console.warn('[MAIL] send failed:', e.message); }
+}
+
+// ─── 미들웨어: 인증 정보 ────────────────────────────────────────
+app.use(async (req, res, next) => {
+  req.user = null;
+  if (req.session?.userId) {
+    try {
+      const u = await db.getUserById(req.session.userId);
+      if (u) {
+        const now = new Date();
+        const isPremiumActive = u.is_premium && (!u.premium_until || new Date(u.premium_until) > now);
+        req.user = { ...u, isPremiumActive };
+      }
+    } catch (e) { console.warn('[AUTH]', e.message); }
+  }
+  next();
+});
+
+function requireAuth(req, res, next) {
+  if (!req.user) return res.status(401).json({ error: '로그인이 필요합니다.' });
+  next();
+}
+function requireAdmin(req, res, next) {
+  if (!req.user?.is_admin) return res.status(403).json({ error: '관리자만 접근할 수 있습니다.' });
+  next();
+}
+
+// ─── 인증 API ──────────────────────────────────────────────────
+app.post('/api/signup', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const em = String(email || '').trim().toLowerCase();
+    if (!em.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return res.status(400).json({ error: '이메일 형식이 올바르지 않습니다.' });
+    if (String(password || '').length < 4) return res.status(400).json({ error: '비밀번호는 최소 4자 이상이어야 합니다.' });
+    const exists = await db.getUserByEmail(em);
+    if (exists) return res.status(400).json({ error: '이미 가입된 이메일입니다.' });
+    const hash = bcrypt.hashSync(String(password), 10);
+    const isAdmin = em === ADMIN_EMAIL;
+    const u = await db.createUser({ email: em, password_hash: hash, is_admin: isAdmin });
+    req.session.userId = u.id;
+    sendSignupNotification(em).catch(()=>{});
+    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive: false } });
+  } catch (e) { console.error(e); res.status(500).json({ error: '가입 중 오류가 발생했습니다.' }); }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const em = String(email || '').trim().toLowerCase();
+    const u = await db.getUserByEmail(em);
+    if (!u || !bcrypt.compareSync(String(password || ''), u.password_hash)) {
+      return res.status(401).json({ error: '이메일 또는 비밀번호가 일치하지 않습니다.' });
+    }
+    req.session.userId = u.id;
+    const now = new Date();
+    const isPremiumActive = u.is_premium && (!u.premium_until || new Date(u.premium_until) > now);
+    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive } });
+  } catch (e) { console.error(e); res.status(500).json({ error: '로그인 중 오류가 발생했습니다.' }); }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => res.json({ ok: true }));
+});
+
+app.get('/api/me', (req, res) => {
+  if (!req.user) return res.json({ user: null });
+  res.json({ user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: req.user.isPremiumActive, premium_until: req.user.premium_until } });
+});
+
+// ─── 관리자 API ────────────────────────────────────────────────
+app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
+  const users = await db.listUsers();
+  res.json({ users });
+});
+app.post('/api/admin/users/:id/access', requireAuth, requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { is_premium, premium_until } = req.body;
+  await db.updateUserAccess(id, { is_premium: !!is_premium, premium_until: premium_until || null });
+  res.json({ ok: true });
+});
+app.delete('/api/admin/users/:id', requireAuth, requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (id === req.user.id) return res.status(400).json({ error: '자기 계정은 삭제할 수 없습니다.' });
+  await db.deleteUser(id);
+  res.json({ ok: true });
+});
+
+// ─── 문제 접근 제어 API (무료: 최근 50문항 per subject + 키워드 3-5위) ────
+// 프론트엔드는 /api/problems 를 fetch 하여 권한에 따른 필터된 리스트를 받는다.
+function loadAllProblems() {
+  const filePath = path.join(__dirname, 'data', 'problems.js');
+  const src = fs.readFileSync(filePath, 'utf8');
+  const m = src.match(/window\.PROBLEMS\s*=\s*(\[[\s\S]*?\]);?\s*$/m);
+  if (!m) return [];
+  try { return JSON.parse(m[1]); } catch (e) { return []; }
+}
+const ALL_PROBLEMS = loadAllProblems();
+
+function filterForFree(problems) {
+  // 무료: 과목별 최근 50문제 (연도 내림차순 → 번호 내림차순)
+  const bySubject = {};
+  for (const p of problems) {
+    (bySubject[p.subject] = bySubject[p.subject] || []).push(p);
+  }
+  const filtered = [];
+  for (const s of Object.keys(bySubject)) {
+    const sorted = bySubject[s].slice().sort((a,b) => {
+      if (a.year !== b.year) return b.year.localeCompare(a.year);
+      return b.num - a.num;
+    });
+    filtered.push(...sorted.slice(0, 50));
+  }
+  return filtered;
+}
+
+function getAllowedKeywordsForFree(problems) {
+  // 키워드 빈도를 계산하고 정렬(과목별 3~5위)
+  const bySubjectKw = {};
+  for (const p of problems) {
+    const s = p.subject;
+    if (!bySubjectKw[s]) bySubjectKw[s] = {};
+    for (const k of (p.keywords || [])) bySubjectKw[s][k] = (bySubjectKw[s][k]||0) + 1;
+  }
+  const allowed = new Set();
+  for (const s of Object.keys(bySubjectKw)) {
+    const sorted = Object.entries(bySubjectKw[s]).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    // rank 3~5 (0-indexed: 2,3,4)
+    const mid = sorted.slice(2, 5).map(x => x[0]);
+    mid.forEach(k => allowed.add(k));
+  }
+  return allowed;
+}
+
+app.get('/api/problems', (req, res) => {
+  if (!req.user) return res.json({ problems: [], allowedKeywords: null, user: null, locked: 'login' });
+  if (req.user.isPremiumActive || req.user.is_admin) {
+    return res.json({ problems: ALL_PROBLEMS, allowedKeywords: null, user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: true } });
+  }
+  // 무료 사용자
+  const filtered = filterForFree(ALL_PROBLEMS);
+  const allowedKeywords = Array.from(getAllowedKeywordsForFree(ALL_PROBLEMS));
+  res.json({ problems: filtered, allowedKeywords, user: { email: req.user.email, is_admin: false, isPremiumActive: false } });
+});
+
+// ─── Static (기존) ───────────────────────────────────────────
 app.use(express.static(__dirname, {
   extensions: ['html'],
   index: 'index.html'
 }));
-
-// SPA fallback - serve index.html for unknown routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`공인노무사 기출문제 풀이 서버 실행 중: http://localhost:${PORT}`);
-});
+// ─── Start ──────────────────────────────────────────────────
+(async () => {
+  try { await db.init(); } catch (e) { console.error('[DB INIT]', e.message); }
+  app.listen(PORT, () => {
+    console.log(`[${SITE_NAME}] 서버 실행 중: http://localhost:${PORT}`);
+    if (usePg) console.log('[DB] Postgres (DATABASE_URL)'); else console.log('[DB] JSON file (data/users.json) — 로컬 전용');
+    if (!mailer) console.log('[MAIL] SMTP 미설정 — 신규가입 알림은 콘솔 로그로만 출력됩니다.');
+  });
+})();

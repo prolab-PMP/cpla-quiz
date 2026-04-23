@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>관리자 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<script src="data/problems.js"></script>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('');</script>
+<main class="container">
+  <div class="hero" style="padding:28px 32px">
+    <h1 style="font-size:24px">🛠 관리자</h1>
+    <p>가입자 목록과 접속 권한 기간을 설정합니다. Premium 으로 전환한 사용자는 전체 문제에 접근할 수 있습니다.</p>
+  </div>
+
+  <div class="card">
+    <div id="admin-users-table"></div>
+  </div>
+</main>
+<script>
+(async () => {
+  // 권한 확인
+  const me = await fetch('/api/me').then(r => r.json());
+  if (!me.user || !me.user.is_admin) {
+    document.querySelector('main').innerHTML = '<div class="card"><h2>접근 권한이 없습니다.</h2><p>관리자 계정으로 <a href="login.html">로그인</a>하세요.</p></div>';
+    return;
+  }
+  const load = async () => {
+    const r = await fetch('/api/admin/users').then(r => r.json());
+    const users = r.users || [];
+    document.getElementById('admin-users-table').innerHTML = `
+      <table class="table">
+        <thead><tr>
+          <th>#</th><th>이메일</th><th>가입일</th><th>유형</th><th>만료일</th><th style="width:340px">작업</th>
+        </tr></thead>
+        <tbody>
+          ${users.map(u => {
+            const created = u.created_at ? new Date(u.created_at).toISOString().slice(0,10) : '-';
+            const until = u.premium_until ? new Date(u.premium_until).toISOString().slice(0,10) : '';
+            const badge = u.is_admin ? '<span class="chip purple">관리자</span>'
+              : (u.is_premium && (!u.premium_until || new Date(u.premium_until) > new Date())
+                  ? '<span class="chip green">Premium</span>'
+                  : '<span class="chip">무료</span>');
+            return `<tr>
+              <td>${u.id}</td>
+              <td><b>${u.email}</b></td>
+              <td>${created}</td>
+              <td>${badge}</td>
+              <td><input type="date" data-id="${u.id}" class="date-input" value="${until}" style="padding:4px 8px"></td>
+              <td>
+                <button class="btn sm primary" data-act="grant" data-id="${u.id}">Premium 전환</button>
+                <button class="btn sm" data-act="revoke" data-id="${u.id}">무료 전환</button>
+                ${u.is_admin ? '' : `<button class="btn sm danger" data-act="delete" data-id="${u.id}">삭제</button>`}
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+    document.querySelectorAll('[data-act]').forEach(btn => btn.onclick = async () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      if (act === 'delete') {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        await fetch('/api/admin/users/'+id, { method:'DELETE' });
+      } else {
+        const dateInput = document.querySelector(`.date-input[data-id="${id}"]`);
+        const dateVal = dateInput.value;
+        const body = act === 'grant'
+          ? { is_premium: true, premium_until: dateVal ? dateVal + 'T23:59:59' : null }
+          : { is_premium: false, premium_until: null };
+        await fetch('/api/admin/users/'+id+'/access', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
+      }
+      load();
+    });
+  };
+  load();
+})();
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>

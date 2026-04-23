@@ -46,7 +46,27 @@
 
   // ---- 필터 ----
   function getProblems(){
-    return window.PROBLEMS || [];
+    // window.PROBLEMS는 서버가 /api/problems로부터 받아 세팅한 것이 우선 (access-controlled)
+    // 없으면 data/problems.js 에 정적으로 포함된 PROBLEMS 사용 (로컬/비로그인 fallback — 실제 서버는 빈 배열 반환)
+    return window.__FILTERED_PROBLEMS__ || window.PROBLEMS || [];
+  }
+
+  // ---- 서버에서 사용자 맞춤 문제 불러오기 (로그인·접근권한 반영) ----
+  window.__ACCESS__ = null;
+  async function fetchAccessControlled(){
+    try {
+      const r = await fetch('/api/problems');
+      const j = await r.json();
+      window.__ACCESS__ = j;
+      if (Array.isArray(j.problems)) window.__FILTERED_PROBLEMS__ = j.problems;
+      return j;
+    } catch(e){ console.warn('[ACCESS] /api/problems fetch 실패', e); return null; }
+  }
+  // 페이지 로드 시 자동으로 한 번 호출. 서버가 응답하면 페이지 내 getProblems()가
+  // 필터된 목록을 반환하게 됨. 단, 이미 렌더된 UI는 갱신되지 않으므로 페이지별
+  // 초기화 시점에 CPLA.refreshOrWait() 을 사용하면 좋음.
+  if (typeof window !== 'undefined') {
+    window.__ACCESS_READY__ = fetchAccessControlled();
   }
   function filterByMode(){
     const params = new URLSearchParams(location.search);
@@ -220,11 +240,12 @@
           </a>
           <nav class="nav" aria-label="주 메뉴">
             <a href="index.html" ${active==='home'?'class="active" aria-current="page"':''}>🏠 홈</a>
-            <a href="years.html" ${active==='years'?'class="active" aria-current="page"':''}>📅 연도별</a>
             <a href="subjects.html" ${active==='subjects'?'class="active" aria-current="page"':''}>📚 과목·키워드</a>
+            <a href="years.html" ${active==='years'?'class="active" aria-current="page"':''}>📅 연도별</a>
             <a href="dashboard.html" ${active==='dashboard'?'class="active" aria-current="page"':''}>📊 학습통계</a>
           </nav>
           <div class="header-actions">
+            <div id="auth-slot" style="display:flex;gap:6px;align-items:center"></div>
             <button class="icon-btn" id="cpla-help-btn" title="키보드 단축키 (?)" aria-label="키보드 단축키 도움말 열기">⌨️</button>
             <button class="icon-btn" id="cpla-theme-btn" title="다크모드 토글 (Shift+D)" aria-label="다크모드 전환">${isDark?'☀️':'🌙'}</button>
           </div>
@@ -235,6 +256,8 @@
     // 이벤트 바인딩
     document.getElementById('cpla-theme-btn').onclick = CPLA.toggleTheme;
     document.getElementById('cpla-help-btn').onclick = CPLA.openShortcutHelp;
+    // Auth 슬롯 자동 렌더
+    renderAuthSlot();
 
     // 전역 단축키
     document.addEventListener('keydown', (e) => {
@@ -356,12 +379,41 @@
     document.body.insertAdjacentHTML("beforeend", f);
   }
 
+  // ---- Auth 슬롯 렌더 ----
+  async function renderAuthSlot(){
+    const slot = document.getElementById('auth-slot');
+    if (!slot) return;
+    try {
+      const r = await fetch('/api/me');
+      const j = await r.json();
+      const u = j.user;
+      if (!u) {
+        slot.innerHTML = `
+          <a class="btn sm" href="login.html">로그인</a>
+          <a class="btn sm primary" href="signup.html">가입</a>`;
+      } else {
+        const badge = u.is_admin ? '<span class="chip purple">관리자</span>'
+          : (u.isPremiumActive ? '<span class="chip green">Premium</span>' : '<span class="chip">무료</span>');
+        slot.innerHTML = `
+          <span class="desc" style="font-size:12px;margin-right:4px">${u.email}</span>
+          ${badge}
+          ${u.is_admin ? '<a class="btn sm" href="admin.html">관리자</a>' : ''}
+          <button class="btn sm" id="btn-logout">로그아웃</button>`;
+        document.getElementById('btn-logout').onclick = async () => {
+          await fetch('/api/logout', { method:'POST' });
+          location.reload();
+        };
+      }
+    } catch(e){ /* 네트워크 실패 시 아무것도 안 함 */ }
+  }
+
   // ---- 내보내기 ----
   window.CPLA = {
     loadState, saveState, getProblems, filterByMode, calcStats,
     computeCoverage, pickRecommended,
     saveResume, loadResume, clearResume,
     getSortPref, setSortPref, sortProblems,
+    fetchAccessControlled, renderAuthSlot,
     renderHeader, renderFooter,
     toggleTheme, openShortcutHelp, closeShortcutHelp, toast,
     exportState, importState,

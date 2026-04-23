@@ -3,7 +3,7 @@
      - HTML/CSS/JS/manifest: network-first, 실패 시 캐시
      - 데이터(problems.js), 이미지: cache-first (용량 절약)
      - 기타 동일 출처 자원: stale-while-revalidate */
-const VERSION = 'cpla-quiz-work-v3-2026-04-23-features';
+const VERSION = 'cpla-quiz-work-v4-auth-1776954250';
 const CORE = [
   './',
   './index.html',

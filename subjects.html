@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>과목·키워드별 풀이 · 공인노무사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="공인노무사 6개 과목(노동법, 민법, 사회보험법, 경제학, 경영학) 및 핵심 키워드별 문제 풀이.">
-<meta name="keywords" content="과목별풀이, 키워드풀이, 노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학, 안전공학">
+<meta name="description" content="공인노무사 6개 과목(산업안전보건, 안전공학, 기업진단) 및 핵심 키워드별 문제 풀이.">
+<meta name="keywords" content="과목별풀이, 키워드풀이, 산업안전보건, 산업안전일반, 기업진단지도, 안전공학">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://공인노무사.com/subjects.html">
 <meta property="og:title" content="과목·키워드별 풀이 · 공인노무사">
@@ -25,7 +25,7 @@
   "@type": "CollectionPage",
   "name": "과목·키워드별 풀이",
   "url": "https://공인노무사.com/subjects.html",
-  "description": "노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학 과목 및 핵심 키워드별 학습"
+  "description": "산업안전보건, 산업안전일반, 기업진단지도 과목 및 핵심 키워드별 학습"
 }
 </script>
 <script type="application/ld+json">
@@ -58,7 +58,10 @@
   <section class="section-title"><span class="tag">과목별</span> 과목을 선택하여 풀이 시작</section>
   <div class="grid cols-3" id="subject-grid"></div>
 
-  <section class="section-title"><span class="tag">키워드별</span> 핵심 키워드 (출제빈도 순)</section>
+  <section class="section-title"><span class="tag green">과목별 키워드</span> 상위 20 (펼쳐보기 제공)</section>
+  <div id="subject-keywords"></div>
+
+  <section class="section-title"><span class="tag">전체 키워드</span> 검색 · 출제빈도 순</section>
 
   <div class="filter-bar">
     <label>검색:</label>
@@ -85,18 +88,18 @@
 </main>
 
 <script>
+(async () => {
+await (window.__ACCESS_READY__ || Promise.resolve());
 const ps = CPLA.getProblems();
+const __access = window.__ACCESS__;
 
 // 과목별 카드
 const bySub = {};
 ps.forEach(p => { (bySub[p.subject] = bySub[p.subject] || []).push(p); });
 const subjectMeta = {
-  "노동법1":{icon:"📕", cls:"ib-danger", desc:"근로기준법, 근로자참여 및 협력증진에 관한 법률 등"},
-  "노동법2":{icon:"📗", cls:"ib-warn", desc:"노동조합 및 노동관계조정법, 근로자퇴직급여보장법 등"},
-  "민법":{icon:"⚖️", cls:"ib-purple", desc:"총칙, 물권, 채권 등 민법 전반"},
-  "사회보험법":{icon:"🛡️", cls:"ib-blue", desc:"국민연금법, 국민건강보험법, 고용보험법, 산재보험법 등"},
-  "경제학":{icon:"📊", cls:"ib-green", desc:"미시·거시경제학 원론, 수요공급·시장 균형 등"},
-  "경영학":{icon:"🏢", cls:"ib-green", desc:"조직·마케팅·재무·생산관리 등 경영 전반"},
+  "산업안전보건":{icon:"⚠️", cls:"ib-danger", desc:"산업안전보건법령, 안전보건관리 체계, 유해·위험방지 등"},
+  "산업안전일반":{icon:"🦺", cls:"ib-blue", desc:"안전공학, 인간공학, 시스템 안전, 재해 분석"},
+  "기업진단지도":{icon:"🏢", cls:"ib-green", desc:"경영진단, 조직·인사관리, 재무·생산 전략"},
 };
 const sg = document.getElementById('subject-grid');
 sg.innerHTML = Object.keys(bySub).map(s => {
@@ -119,6 +122,58 @@ sg.innerHTML = Object.keys(bySub).map(s => {
 // 키워드 카운트
 const kwCount = {};
 ps.forEach(p => (p.keywords||[]).forEach(k => { kwCount[k] = (kwCount[k]||0)+1; }));
+
+// 과목별 키워드 카운트 & 상위 20 렌더링
+(function renderSubjectKeywords(){
+  const host = document.getElementById('subject-keywords');
+  if (!host) return;
+  const host2 = {};
+  Object.keys(bySub).forEach(s => {
+    const subKw = {};
+    bySub[s].forEach(p => (p.keywords||[]).forEach(k => {
+      subKw[k] = (subKw[k]||0) + 1;
+    }));
+    host2[s] = Object.entries(subKw).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+  });
+  const cards = Object.keys(host2).map(s => {
+    const entries = host2[s];
+    const maxV = entries.length ? entries[0][1] : 1;
+    const meta = subjectMeta[s] || {icon:"📘", cls:"ib-blue"};
+    const top20 = entries.slice(0, 20);
+    const rest = entries.slice(20);
+    const rowHtml = (kv, idx) => {
+      const [k, v] = kv;
+      const widthPct = Math.round((v/maxV)*100);
+      return `
+        <a class="sk-row" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
+          <span class="sk-rank">${idx+1}</span>
+          <span class="sk-name">${k}</span>
+          <span class="sk-bar"><i style="width:${widthPct}%"></i></span>
+          <span class="sk-count">${v}회</span>
+        </a>`;
+    };
+    const topHtml = top20.map(rowHtml).join('');
+    const restHtml = rest.map((kv, i) => rowHtml(kv, i+20)).join('');
+    const expandable = rest.length > 0 ? `
+      <details class="sk-more">
+        <summary>+ ${rest.length}개 더 보기</summary>
+        <div class="sk-list">${restHtml}</div>
+      </details>` : '';
+    return `
+      <div class="card sk-card">
+        <div class="sk-head">
+          <div class="icon-badge ${meta.cls}">${meta.icon}</div>
+          <div>
+            <h3>${s}</h3>
+            <p class="desc">총 ${entries.length}개 키워드 · 상위 20개</p>
+          </div>
+        </div>
+        <div class="sk-list">${topHtml}</div>
+        ${expandable}
+      </div>`;
+  }).join('');
+  host.innerHTML = `<div class="grid cols-3">${cards}</div>`;
+})();
 
 // 자동완성 데이터리스트 (키워드 출제빈도 상위 200 + 연도 13 + 과목 3)
 (function buildSuggest(){
@@ -155,6 +210,35 @@ document.getElementById('kw-search').addEventListener('input', renderCloud);
 document.getElementById('kw-sort').addEventListener('change', renderCloud);
 document.getElementById('kw-min').addEventListener('change', renderCloud);
 renderCloud();
+
+// 무료 사용자: 허용되지 않은 키워드 chip 에 잠금 표시
+if (__access && __access.allowedKeywords && !__access.user?.is_admin) {
+  const allowed = new Set(__access.allowedKeywords);
+  // 전체 키워드 cloud 에서 disabled 처리 (막대는 정보용이라 유지)
+  setTimeout(() => {
+    document.querySelectorAll('.chip[href*="mode=keyword"]').forEach(a => {
+      const m = a.href.match(/keyword=([^&]+)/);
+      if (!m) return;
+      const kw = decodeURIComponent(m[1]);
+      if (!allowed.has(kw)) {
+        a.style.opacity = 0.4;
+        a.style.pointerEvents = 'none';
+        a.title = '무료 사용자는 이 키워드는 이용할 수 없습니다 (Premium 필요)';
+      }
+    });
+    document.querySelectorAll('.sk-row[href*="mode=keyword"]').forEach(a => {
+      const m = a.href.match(/keyword=([^&]+)/);
+      if (!m) return;
+      const kw = decodeURIComponent(m[1]);
+      if (!allowed.has(kw)) {
+        a.style.opacity = 0.4;
+        a.style.pointerEvents = 'none';
+        a.title = '🔒 Premium 필요';
+      }
+    });
+  }, 50);
+}
+})();
 </script>
 <script>CPLA.renderFooter();</script>
 </body>

@@ -277,7 +277,7 @@
 
   function showResultModal({correctCnt, total, pct, unanswered}){
     // 과목별 집계 + 오답/미응답 목록
-    const subjects = ['산업안전보건','산업안전일반','기업진단지도'];
+    const subjects = ['노동법1','노동법2','민법','사회보험법','경제학','경영학'];
     const bySubj = {};
     subjects.forEach(s => bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]});
     const wrongList = [];
