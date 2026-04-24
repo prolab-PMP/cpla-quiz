@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <title>공인노무사 1차 기출문제 풀이</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="공인노무사 1차 2013-2025년 2,130문항 기출문제 풀이. 과목별, 연도별, 키워드별 자유로운 학습. 오답노트 및 통계 자동 저장.">
+<meta name="description" content="공인노무사 1차 2013-2025년 967문제 기출문제 풀이. 과목별, 연도별, 키워드별 자유로운 학습. 오답노트 및 통계 자동 저장.">
 <meta name="keywords" content="공인노무사, 기출문제, 1차시험, 문제풀이, 산업안전보건, 안전공학, 기업진단지도">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://공인노무사.com/">
 <meta property="og:title" content="공인노무사 1차 기출문제 풀이">
-<meta property="og:description" content="2013-2025년 2,130문항 기출풀이 · 과목/연도/키워드별 학습">
+<meta property="og:description" content="2013-2025년 967문제 기출풀이 · 과목/연도/키워드별 학습">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://공인노무사.com/">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="공인노무사 1차 기출문제 풀이">
-<meta name="twitter:description" content="2013-2025년 2,130문항 기출풀이 · 과목/연도/키워드별 학습">
+<meta name="twitter:description" content="2013-2025년 967문제 기출풀이 · 과목/연도/키워드별 학습">
 <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
 <meta name="naver-site-verification" content="YOUR_VERIFICATION_CODE">
 <link rel="stylesheet" href="css/style.css">
@@ -25,7 +25,7 @@
   "@type": "WebSite",
   "name": "공인노무사 기출문제 풀이",
   "url": "https://공인노무사.com/",
-  "description": "공인노무사 1차 2013-2025년 2,130문항 기출문제 풀이 플랫폼",
+  "description": "공인노무사 1차 2013-2025년 967문제 기출문제 풀이 플랫폼",
   "inLanguage": "ko",
   "potentialAction": {
     "@type": "SearchAction",
@@ -77,7 +77,7 @@
 <main class="container">
   <section class="hero">
     <h1>공인노무사 1차 기출문제 풀이</h1>
-    <p>2013년부터 2025년까지 13개년 기출문제 2,130문항을 과목·연도·키워드별로 자유롭게 학습하세요. 풀이 기록은 브라우저에 자동 저장되며, 오답노트와 학습통계를 언제든 확인할 수 있습니다.</p>
+    <p>2013년부터 2025년까지 13개년 기출문제 967문항을 과목·연도·키워드별로 자유롭게 학습하세요. 풀이 기록은 브라우저에 자동 저장되며, 오답노트와 학습통계를 언제든 확인할 수 있습니다.</p>
     <div class="badges" id="hero-badges"></div>
   </section>
 
@@ -117,7 +117,7 @@
     <a class="card link" href="exam.html?mode=year&year=2025">
       <div class="icon-badge ib-warn">🆕</div>
       <h3>2025년 최신 기출</h3>
-      <p class="desc">가장 최근 시행된 제34회 1차 시험 75문항을 풀어봅니다.</p>
+      <p class="desc">가장 최근 시행된 제15회 1차 시험 75문항을 풀어봅니다.</p>
     </a>
     <a class="card link" href="exam.html?wrong=1">
       <div class="icon-badge ib-danger">❌</div>
@@ -136,17 +136,17 @@
     <a class="card link" href="exam.html?mode=year&year=2025&exam=1">
       <div class="icon-badge ib-warn">⏱️</div>
       <h3>2025년 실전 모의고사</h3>
-      <p class="desc">제34회 75문항을 150분 제한으로 풀이합니다. 제출 전까지 정답·해설이 공개되지 않습니다.</p>
+      <p class="desc">제15회 75문항을 150분 제한으로 풀이합니다. 제출 전까지 정답·해설이 공개되지 않습니다.</p>
     </a>
     <a class="card link" href="exam.html?mode=year&year=2024&exam=1">
       <div class="icon-badge ib-blue">⏱️</div>
       <h3>2024년 실전 모의고사</h3>
-      <p class="desc">제33회 73문항을 150분 제한으로 풀이합니다.</p>
+      <p class="desc">제14회 73문항을 150분 제한으로 풀이합니다.</p>
     </a>
     <a class="card link" href="exam.html?mode=year&year=2023&exam=1">
       <div class="icon-badge ib-green">⏱️</div>
       <h3>2023년 실전 모의고사</h3>
-      <p class="desc">제32회 73문항을 150분 제한으로 풀이합니다.</p>
+      <p class="desc">제13회 73문항을 150분 제한으로 풀이합니다.</p>
     </a>
   </div>
 </main>
@@ -251,19 +251,30 @@
       </div>`;
   })();
 
-  // 로그인 유도 배너 (비로그인 & 무료 사용자)
+  // 로그인 유도 배너 (비로그인 한정 — 로그인하면 즉시 숨김)
   const totalCount = (access && access.totalCount) || ps.length;
-  if (!access || !access.user) {
+  const isLoggedIn = !!(access && access.user);
+  if (!isLoggedIn) {
+    // 재방문 감지: localStorage에 'visited' 플래그가 있으면 "로그인" 먼저 강조
+    let returningUser = false;
+    try { returningUser = localStorage.getItem('cpla_visited') === '1'; localStorage.setItem('cpla_visited','1'); } catch(e){}
+    const primaryBtn = returningUser
+      ? `<a href="login.html" style="background:#2563eb;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.2)">🔐 로그인</a>`
+      : `<a href="signup.html" style="background:#22c55e;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.2)">✨ 무료 가입</a>`;
+    const secondaryBtn = returningUser
+      ? `<a href="signup.html" style="background:rgba(255,255,255,.18);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.3)">✨ 가입</a>`
+      : `<a href="login.html" style="background:rgba(255,255,255,.18);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.3)">🔐 로그인</a>`;
     const hero = document.querySelector('.hero');
     if (hero) {
       const notice = document.createElement('div');
+      notice.id = 'free-notice';
       notice.style.cssText = 'margin-top:16px;padding:16px 20px;background:rgba(255,235,59,0.22);border:1px solid rgba(255,235,59,0.5);border-radius:12px;font-size:14px;color:#fff;font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:12px';
+      const mainText = returningUser
+        ? `👋 다시 오셨네요! 로그인하고 학습 기록을 이어가세요.`
+        : `💡 무료 가입하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다.`;
       notice.innerHTML = `
-        <span>💡 무료 가입하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다. <b style="color:#ffe082">(총 ${totalCount.toLocaleString()}문제 중 150문제 무료 열람)</b></span>
-        <span style="margin-left:auto;display:flex;gap:8px">
-          <a href="signup.html" style="background:#22c55e;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.15)">✨ 무료 가입</a>
-          <a href="login.html" style="background:rgba(255,255,255,.18);color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.3)">🔐 로그인</a>
-        </span>`;
+        <span>${mainText} <b style="color:#ffe082">(총 ${totalCount.toLocaleString()}문제 중 150문제 무료 열람)</b></span>
+        <span style="margin-left:auto;display:flex;gap:8px">${primaryBtn}${secondaryBtn}</span>`;
       hero.appendChild(notice);
     }
   } else if (access.user && !access.user.isPremiumActive && !access.user.is_admin) {

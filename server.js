@@ -233,6 +233,25 @@ app.get('/api/me', (req, res) => {
   res.json({ user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: req.user.isPremiumActive, premium_until: req.user.premium_until } });
 });
 
+// 진단 엔드포인트: DB 연결 상태 확인 (계정 영속성 진단용)
+app.get('/api/health', async (req, res) => {
+  try {
+    const userCount = usePg
+      ? parseInt((await require('pg').Pool ? null : null) || '0', 10) // placeholder
+      : null;
+    // 단순 유저 수 조회로 DB 접근 테스트
+    const users = await db.listUsers();
+    res.json({
+      status: 'ok',
+      db: usePg ? 'postgres' : 'json-file (data/users.json — 배포 시 초기화됨!)',
+      userCount: users.length,
+      deployedAt: process.env.RAILWAY_DEPLOYMENT_ID || 'local',
+      sessionStore: usePg ? 'postgres (persistent)' : 'memory (재시작시 초기화)',
+      warning: usePg ? null : '⚠ Postgres 미사용 — DATABASE_URL 환경변수 확인 필요',
+    });
+  } catch (e) { res.status(500).json({ status: 'error', error: e.message, db: usePg ? 'postgres' : 'json' }); }
+});
+
 // ─── 관리자 API ────────────────────────────────────────────────
 app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
   const users = await db.listUsers();

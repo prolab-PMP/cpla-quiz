@@ -3,7 +3,7 @@
      - HTML/CSS/JS/manifest: network-first, 실패 시 캐시
      - 데이터(problems.js), 이미지: cache-first (용량 절약)
      - 기타 동일 출처 자원: stale-while-revalidate */
-const VERSION = 'cpla-quiz-work-v9-dataaudit-1776992868';
+const VERSION = 'cpla-quiz-work-v10-ux-1776993462';
 const CORE = [
   './',
   './index.html',
@@ -40,6 +40,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   // Only cache same-origin
   if (url.origin !== location.origin) return;
+  // ⚠ /api/* 는 절대 캐시하지 않음 (세션·인증·문제 필터 등 실시간 응답 필수)
+  if (url.pathname.startsWith('/api/')) return;
 
   const isHTML = req.destination === 'document' || req.headers.get('accept')?.includes('text/html');
   const isData = url.pathname.endsWith('/problems.js') || url.pathname.endsWith('/manifest.json');

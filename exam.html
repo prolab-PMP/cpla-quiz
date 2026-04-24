@@ -133,6 +133,7 @@
       <div class="exam-actions">
         <button class="btn" id="btn-prev">◀ 이전</button>
         <button class="btn primary" id="btn-grade">채점하기</button>
+        <button class="btn" id="btn-grade-all" style="background:var(--success-soft);color:var(--success);border-color:var(--success-line);font-weight:700" title="현재 세트의 모든 문제를 일괄 채점">📝 전체 채점</button>
         <div class="spacer"></div>
         <button class="btn" id="btn-next">다음 ▶</button>
       </div>
@@ -214,6 +215,33 @@
     document.getElementById('exam-mode-banner').style.display='block';
     document.getElementById('exam-total-q').textContent = list.length;
     document.getElementById('btn-final-submit').onclick = finalSubmit;
+  }
+
+  // 비(非) exam 모드용: "전체 채점" 버튼 처리
+  if (!isExam) {
+    const gradeAllBtn = document.getElementById('btn-grade-all');
+    if (gradeAllBtn) gradeAllBtn.onclick = () => {
+      const state = CPLA.loadState();
+      const unanswered = list.filter(p => !state.attempts[p.key]).length;
+      const msg = unanswered > 0
+        ? `채점하시겠습니까?\n\n답변하지 않은 문제는 오답 처리됩니다.\n미응답 ${unanswered}문제 / 전체 ${list.length}문제`
+        : `전체 ${list.length}문제를 일괄 채점하시겠습니까?`;
+      if (!confirm(msg)) return;
+      // 모든 문제 채점 (응답 없으면 오답 기록)
+      let correct = 0, wrong = 0;
+      for (const p of list) {
+        const a = state.attempts[p.key];
+        if (!a) {
+          CPLA.recordAttempt(p.key, 0, false);
+          wrong++;
+        } else {
+          if (a.correct) correct++; else wrong++;
+        }
+      }
+      const pct = Math.round(correct/list.length*1000)/10;
+      alert(`📊 전체 채점 완료\n\n정답: ${correct}/${list.length}\n오답: ${wrong}\n정답률: ${pct}%`);
+      render(); renderGrid();
+    };
     // 종료 링크는 현재 필터 유지한 채 exam 파라미터만 제거
     const exitParams = new URLSearchParams(location.search);
     exitParams.delete('exam');
@@ -277,7 +305,7 @@
 
   function showResultModal({correctCnt, total, pct, unanswered}){
     // 과목별 집계 + 오답/미응답 목록
-    const subjects = ['노동법1','노동법2','민법','사회보험법','경제학','경영학'];
+    const subjects = ['산업안전보건','산업안전일반','기업진단지도'];
     const bySubj = {};
     subjects.forEach(s => bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]});
     const wrongList = [];
