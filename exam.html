@@ -215,6 +215,7 @@
     document.getElementById('exam-mode-banner').style.display='block';
     document.getElementById('exam-total-q').textContent = list.length;
     document.getElementById('btn-final-submit').onclick = finalSubmit;
+    startTimer();
   }
 
   // 비(非) exam 모드용: "전체 채점" 버튼 처리
@@ -246,7 +247,6 @@
     const exitParams = new URLSearchParams(location.search);
     exitParams.delete('exam');
     document.getElementById('btn-exit-exam').href = 'exam.html?' + exitParams.toString();
-    startTimer();
   }
   function persistExam(){
     if(!isExam) return;
@@ -256,6 +256,7 @@
     }));
   }
   function startTimer(){
+    if(!isExam) return; // 비-시험 모드에서는 타이머 작동 X
     const el = document.getElementById('exam-timer');
     function tick(){
       if(exam.submitted) return;
