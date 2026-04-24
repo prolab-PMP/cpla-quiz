@@ -112,8 +112,9 @@ html[data-theme="dark"] .site-header{background:rgba(15,23,42,.85)}
 .hero::after{
   content:"";position:absolute;right:-60px;bottom:-60px;width:260px;height:260px;
   background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%);
-  border-radius:50%;
+  border-radius:50%;pointer-events:none;z-index:0;
 }
+.hero > *{position:relative;z-index:1}
 .hero h1{margin:0 0 8px;font-size:32px;font-weight:800;letter-spacing:-.5px}
 .hero p{margin:0;opacity:.92;font-size:15px;max-width:640px}
 .hero .badges{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
