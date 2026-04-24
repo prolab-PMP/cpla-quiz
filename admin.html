@@ -5,6 +5,20 @@
 <title>관리자 · 공인노무사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  .admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+  .admin-stat{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 18px;text-align:center}
+  .admin-stat .v{font-size:26px;font-weight:800;color:var(--primary-dark)}
+  .admin-stat .l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600}
+  .admin-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .admin-filter .btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .admin-table th{cursor:pointer;user-select:none;white-space:nowrap}
+  .admin-table th .sort-ic{opacity:.5;font-size:11px;margin-left:3px}
+  .admin-actions-cell{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .admin-actions-cell form,.admin-actions-cell .inline{display:flex;gap:4px;align-items:center}
+  .admin-actions-cell select{padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--panel);color:var(--text)}
+  .chip.sm{font-size:11px;padding:2px 7px}
+</style>
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -13,12 +27,26 @@
 <main class="container">
   <div class="hero" style="padding:28px 32px">
     <h1 style="font-size:24px">🛠 관리자</h1>
-    <p>가입자 목록과 접속 권한 기간을 설정합니다. Premium 으로 전환한 사용자는 전체 문제에 접근할 수 있습니다.</p>
+    <p>가입자 유효기간(Premium 기간)을 설정/연장하고 등급을 관리합니다. <b>설정</b>은 오늘부터 N개월, <b>연장</b>은 현재 만료일 기준 N개월 추가입니다.</p>
   </div>
 
+  <div id="admin-stats" class="admin-stats"></div>
+
   <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <h3 style="margin:0;font-size:16px">👥 사용자 관리 <small style="color:var(--muted);font-weight:400" id="admin-count"></small></h3>
+      <div class="admin-filter" id="admin-filter">
+        <button class="btn sm active" data-grade="all">전체</button>
+        <button class="btn sm" data-grade="premium">유료만</button>
+        <button class="btn sm" data-grade="free">무료만</button>
+      </div>
+    </div>
     <div id="admin-users-table"></div>
   </div>
+
+  <p class="desc" style="margin-top:14px;font-size:12px">
+    💡 관리자 기능은 PC에서 사용을 권장합니다.
+  </p>
 </main>
 <script>
 (async () => {
@@ -28,58 +56,153 @@
     document.querySelector('main').innerHTML = '<div class="card"><h2>접근 권한이 없습니다.</h2><p>관리자 계정으로 <a href="login.html">로그인</a>하세요.</p></div>';
     return;
   }
-  const load = async () => {
-    const r = await fetch('/api/admin/users').then(r => r.json());
-    const users = r.users || [];
+
+  const state = { users: [], grade: 'all', sort: 'created_at', order: 'desc' };
+
+  const fmtDate = (s) => s ? new Date(s).toISOString().slice(0,10) : '-';
+  const addMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMonth() + n); return x; };
+  const toISO = (d) => d.toISOString().slice(0,19);
+  const isActive = (u) => u.is_premium && (!u.premium_until || new Date(u.premium_until) > new Date());
+
+  const renderStats = () => {
+    const total = state.users.length;
+    const premium = state.users.filter(isActive).length;
+    const free = total - premium;
+    document.getElementById('admin-stats').innerHTML = `
+      <div class="admin-stat"><div class="v">${total}</div><div class="l">전체 가입자</div></div>
+      <div class="admin-stat"><div class="v" style="color:var(--success)">${premium}</div><div class="l">유효 Premium</div></div>
+      <div class="admin-stat"><div class="v" style="color:var(--warn)">${free}</div><div class="l">무료 / 만료</div></div>
+    `;
+  };
+
+  const sortUsers = (list) => {
+    const dir = state.order === 'asc' ? 1 : -1;
+    return [...list].sort((a,b) => {
+      const av = a[state.sort] ?? '';
+      const bv = b[state.sort] ?? '';
+      if (av < bv) return -1*dir;
+      if (av > bv) return 1*dir;
+      return 0;
+    });
+  };
+  const filterUsers = (list) => {
+    if (state.grade === 'premium') return list.filter(isActive);
+    if (state.grade === 'free') return list.filter(u => !isActive(u));
+    return list;
+  };
+
+  const monthOpts = Array.from({length:12}, (_,i)=>i+1)
+    .map(m => `<option value="${m}"${m===3?' selected':''}>${m}개월</option>`).join('');
+
+  const renderTable = () => {
+    const list = sortUsers(filterUsers(state.users));
+    document.getElementById('admin-count').textContent = `(${list.length}명)`;
+    const sortHeader = (col, label) => {
+      const ic = state.sort === col ? (state.order === 'asc' ? '▲' : '▼') : '⇅';
+      return `<th data-sort="${col}">${label} <span class="sort-ic">${ic}</span></th>`;
+    };
     document.getElementById('admin-users-table').innerHTML = `
-      <table class="table">
+      <table class="table admin-table">
         <thead><tr>
-          <th>#</th><th>이메일</th><th>가입일</th><th>유형</th><th>만료일</th><th style="width:340px">작업</th>
+          ${sortHeader('email', '이메일')}
+          ${sortHeader('is_premium', '등급')}
+          ${sortHeader('premium_until', '유효기간')}
+          ${sortHeader('created_at', '가입일')}
+          <th style="width:380px">작업</th>
         </tr></thead>
         <tbody>
-          ${users.map(u => {
-            const created = u.created_at ? new Date(u.created_at).toISOString().slice(0,10) : '-';
-            const until = u.premium_until ? new Date(u.premium_until).toISOString().slice(0,10) : '';
-            const badge = u.is_admin ? '<span class="chip purple">관리자</span>'
-              : (u.is_premium && (!u.premium_until || new Date(u.premium_until) > new Date())
-                  ? '<span class="chip green">Premium</span>'
-                  : '<span class="chip">무료</span>');
+          ${list.map(u => {
+            const active = isActive(u);
+            const badge = u.is_admin
+              ? '<span class="chip purple sm">관리자</span>'
+              : (active ? '<span class="chip green sm">유료</span>' : '<span class="chip sm">무료</span>');
+            const validity = u.premium_until
+              ? `${fmtDate(u.premium_until)} ${active ? '<span class="chip green sm">유효</span>' : '<span class="chip danger sm">만료</span>'}`
+              : '<span style="color:var(--muted)">-</span>';
             return `<tr>
-              <td>${u.id}</td>
-              <td><b>${u.email}</b></td>
-              <td>${created}</td>
+              <td><b>${u.email}</b>${u.is_admin ? ' <span class="chip purple sm">관리자</span>':''}</td>
               <td>${badge}</td>
-              <td><input type="date" data-id="${u.id}" class="date-input" value="${until}" style="padding:4px 8px"></td>
+              <td>${validity}</td>
+              <td>${fmtDate(u.created_at)}</td>
               <td>
-                <button class="btn sm primary" data-act="grant" data-id="${u.id}">Premium 전환</button>
-                <button class="btn sm" data-act="revoke" data-id="${u.id}">무료 전환</button>
-                ${u.is_admin ? '' : `<button class="btn sm danger" data-act="delete" data-id="${u.id}">삭제</button>`}
+                <div class="admin-actions-cell">
+                  <div class="inline">
+                    <select data-id="${u.id}" data-role="set-months">${monthOpts}</select>
+                    <button class="btn sm primary" data-act="set" data-id="${u.id}" title="오늘부터 N개월로 재설정">설정</button>
+                  </div>
+                  <div class="inline">
+                    <select data-id="${u.id}" data-role="extend-months">${monthOpts}</select>
+                    <button class="btn sm" data-act="extend" data-id="${u.id}" title="현재 만료일에서 N개월 추가">연장</button>
+                  </div>
+                  ${u.is_admin ? '' : `
+                    <button class="btn sm" data-act="toggle" data-id="${u.id}">${active?'무료 전환':'유료 전환(무기한)'}</button>
+                    <button class="btn sm danger" data-act="delete" data-id="${u.id}">삭제</button>
+                  `}
+                </div>
               </td>
             </tr>`;
           }).join('')}
         </tbody>
       </table>
     `;
+
+    // 정렬 헤더 클릭
+    document.querySelectorAll('[data-sort]').forEach(th => th.onclick = () => {
+      const col = th.dataset.sort;
+      if (state.sort === col) state.order = state.order === 'asc' ? 'desc' : 'asc';
+      else { state.sort = col; state.order = 'asc'; }
+      renderTable();
+    });
+
+    // 액션 버튼
     document.querySelectorAll('[data-act]').forEach(btn => btn.onclick = async () => {
       const id = btn.dataset.id;
       const act = btn.dataset.act;
+      const u = state.users.find(x => String(x.id) === String(id));
+      if (!u) return;
       if (act === 'delete') {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
+        if (!confirm(`${u.email} 계정을 삭제하시겠습니까?`)) return;
         await fetch('/api/admin/users/'+id, { method:'DELETE' });
-      } else {
-        const dateInput = document.querySelector(`.date-input[data-id="${id}"]`);
-        const dateVal = dateInput.value;
-        const body = act === 'grant'
-          ? { is_premium: true, premium_until: dateVal ? dateVal + 'T23:59:59' : null }
-          : { is_premium: false, premium_until: null };
-        await fetch('/api/admin/users/'+id+'/access', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
-        });
+        await load();
+        return;
       }
-      load();
+      let body;
+      if (act === 'set') {
+        const months = parseInt(document.querySelector(`[data-id="${id}"][data-role="set-months"]`).value, 10);
+        const until = addMonths(new Date(), months);
+        body = { is_premium: true, premium_until: toISO(until) };
+      } else if (act === 'extend') {
+        const months = parseInt(document.querySelector(`[data-id="${id}"][data-role="extend-months"]`).value, 10);
+        const baseDate = u.premium_until && new Date(u.premium_until) > new Date()
+          ? new Date(u.premium_until)
+          : new Date();
+        const until = addMonths(baseDate, months);
+        body = { is_premium: true, premium_until: toISO(until) };
+      } else if (act === 'toggle') {
+        body = isActive(u) ? { is_premium: false, premium_until: null } : { is_premium: true, premium_until: null };
+      }
+      await fetch('/api/admin/users/'+id+'/access', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+      });
+      await load();
     });
   };
-  load();
+
+  // 등급 필터 바인딩
+  document.querySelectorAll('#admin-filter button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#admin-filter button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.grade = b.dataset.grade;
+    renderTable();
+  });
+
+  const load = async () => {
+    const r = await fetch('/api/admin/users').then(r => r.json());
+    state.users = r.users || [];
+    renderStats();
+    renderTable();
+  };
+  await load();
 })();
 </script>
 <script>CPLA.renderFooter();</script>
