@@ -257,8 +257,13 @@
     const hero = document.querySelector('.hero');
     if (hero) {
       const notice = document.createElement('div');
-      notice.style.cssText = 'margin-top:16px;padding:14px 18px;background:rgba(255,235,59,0.22);border:1px solid rgba(255,235,59,0.5);border-radius:12px;font-size:14px;color:#fff;font-weight:600';
-      notice.innerHTML = `💡 <a href="signup.html" style="color:#ffe082;font-weight:800;text-decoration:underline">무료 가입</a>하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다. (총 ${totalCount.toLocaleString()}문제)`;
+      notice.style.cssText = 'margin-top:16px;padding:16px 20px;background:rgba(255,235,59,0.22);border:1px solid rgba(255,235,59,0.5);border-radius:12px;font-size:14px;color:#fff;font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:12px';
+      notice.innerHTML = `
+        <span>💡 무료 가입하시면 학습 기록이 저장되고 과목별 최근 50문제를 이용할 수 있습니다. <b style="color:#ffe082">(총 ${totalCount.toLocaleString()}문제 중 150문제 무료 열람)</b></span>
+        <span style="margin-left:auto;display:flex;gap:8px">
+          <a href="signup.html" style="background:#22c55e;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.15)">✨ 무료 가입</a>
+          <a href="login.html" style="background:rgba(255,255,255,.18);color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;border:1px solid rgba(255,255,255,.3)">🔐 로그인</a>
+        </span>`;
       hero.appendChild(notice);
     }
   } else if (access.user && !access.user.isPremiumActive && !access.user.is_admin) {
