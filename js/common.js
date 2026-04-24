@@ -55,18 +55,54 @@
   window.__ACCESS__ = null;
   async function fetchAccessControlled(){
     try {
-      const r = await fetch('/api/problems');
+      const r = await fetch('/api/problems', { credentials:'same-origin' });
       const j = await r.json();
       window.__ACCESS__ = j;
       if (Array.isArray(j.problems)) window.__FILTERED_PROBLEMS__ = j.problems;
       return j;
     } catch(e){ console.warn('[ACCESS] /api/problems fetch 실패', e); return null; }
   }
-  // 페이지 로드 시 자동으로 한 번 호출. 서버가 응답하면 페이지 내 getProblems()가
-  // 필터된 목록을 반환하게 됨. 단, 이미 렌더된 UI는 갱신되지 않으므로 페이지별
-  // 초기화 시점에 CPLA.refreshOrWait() 을 사용하면 좋음.
+
+  // ---- 서버에서 학습 기록(attempts/bookmarks/resume) 불러와 localStorage에 병합 ----
+  async function syncStateFromServer() {
+    try {
+      const r = await fetch('/api/state', { credentials:'same-origin' });
+      if (!r.ok) return; // 비로그인이거나 실패
+      const serverState = await r.json();
+      const local = loadState();
+      // 서버 우선 병합: 서버 값이 있으면 그걸 사용, 없으면 로컬 유지
+      const merged = {
+        ...local,
+        attempts: { ...local.attempts, ...(serverState.attempts || {}) },
+        bookmarks: { ...local.bookmarks, ...(serverState.bookmarks || {}) },
+        resume: serverState.resume || local.resume,
+      };
+      saveState(merged);
+      window.__SERVER_SYNCED__ = true;
+    } catch(e){ /* 네트워크 오류 시 로컬만 사용 */ }
+  }
+
+  // ---- 서버에 한 가지 변경사항 저장 (로그인 상태일 때만) ----
+  async function pushToServer(path, body, method='POST') {
+    if (!window.__ACCESS__ || !window.__ACCESS__.user) return; // 비로그인이면 skip
+    try {
+      await fetch(path, {
+        method,
+        credentials:'same-origin',
+        headers: body ? {'Content-Type':'application/json'} : {},
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch(e){ /* 오프라인 시 localStorage만 보존, 다음 접속 때 동기화됨 */ }
+  }
+
+  // 페이지 로드 시 자동 실행. 서버에서 맞춤 문제 + 학습기록을 같이 당겨옴.
   if (typeof window !== 'undefined') {
-    window.__ACCESS_READY__ = fetchAccessControlled();
+    window.__ACCESS_READY__ = (async () => {
+      await fetchAccessControlled();
+      if (window.__ACCESS__ && window.__ACCESS__.user) {
+        await syncStateFromServer();
+      }
+    })();
   }
   function filterByMode(){
     const params = new URLSearchParams(location.search);
@@ -194,9 +230,15 @@
   }
 
   // ---- Resume 스냅샷 ----
-  function saveResume(snap){ const s=loadState(); s.resume=snap; saveState(s); }
+  function saveResume(snap){
+    const s=loadState(); s.resume=snap; saveState(s);
+    pushToServer('/api/state/resume', { snapshot: snap });
+  }
   function loadResume(){ return loadState().resume || null; }
-  function clearResume(){ const s=loadState(); s.resume=null; saveState(s); }
+  function clearResume(){
+    const s=loadState(); s.resume=null; saveState(s);
+    pushToServer('/api/state/resume', null, 'DELETE');
+  }
 
   // ---- Sort pref ----
   function getSortPref(){ return loadState().sortPref || { review:'added', fav:'added' }; }
@@ -419,15 +461,25 @@
     exportState, importState,
     toggleBookmark(key){
       const s = loadState();
-      if(s.bookmarks[key]) delete s.bookmarks[key]; else s.bookmarks[key] = Date.now();
-      saveState(s); return !!s.bookmarks[key];
+      const nowOn = !s.bookmarks[key];
+      if(nowOn) s.bookmarks[key] = Date.now(); else delete s.bookmarks[key];
+      saveState(s);
+      // 서버 동기화 (로그인 시)
+      pushToServer('/api/state/bookmark', { key, on: nowOn });
+      return nowOn;
     },
     recordAttempt(key, answer, correct){
+      const ts = Date.now();
       const s = loadState();
-      s.attempts[key] = {answer, correct, ts: Date.now()};
+      s.attempts[key] = { answer, correct, ts };
       saveState(s);
+      pushToServer('/api/state/attempt', { key, answer, correct, ts });
     },
-    resetAll(){ localStorage.removeItem(STORE_KEY); },
+    resetAll(){
+      localStorage.removeItem(STORE_KEY);
+      // 로그인 상태면 서버 기록도 초기화 요청
+      pushToServer('/api/state/reset', null);
+    },
     hasImage(p){ return !!((p.images && p.images.length) || (p.choice_images && Object.keys(p.choice_images).length)); },
     circleNum(i){ return ["①","②","③","④","⑤"][i] || String(i+1); }
   };

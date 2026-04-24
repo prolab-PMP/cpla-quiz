@@ -1,5 +1,5 @@
 /**
- * 공인노무사 1차 기출문제 사이트 서버 (v2: 회원/관리자/접근제어)
+ * 산업안전지도사 1차 기출문제 사이트 서버 (v2: 회원/관리자/접근제어)
  *
  * 환경변수:
  *   PORT                 (기본 3000)
@@ -49,6 +49,27 @@ if (usePg) {
           expire TIMESTAMP NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_sessions_expire ON sessions (expire);
+        CREATE TABLE IF NOT EXISTS attempts (
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          problem_key TEXT NOT NULL,
+          answer SMALLINT,
+          correct BOOLEAN,
+          ts BIGINT,
+          PRIMARY KEY (user_id, problem_key)
+        );
+        CREATE INDEX IF NOT EXISTS idx_attempts_user ON attempts (user_id);
+        CREATE TABLE IF NOT EXISTS bookmarks (
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          problem_key TEXT NOT NULL,
+          ts BIGINT,
+          PRIMARY KEY (user_id, problem_key)
+        );
+        CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks (user_id);
+        CREATE TABLE IF NOT EXISTS resumes (
+          user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+          snapshot JSONB,
+          saved_at BIGINT
+        );
       `);
     },
     async getUserByEmail(email) {
@@ -79,6 +100,57 @@ if (usePg) {
     async deleteUser(id) {
       await pool.query('DELETE FROM users WHERE id=$1', [id]);
     },
+    // ---- 학습 기록 (attempts/bookmarks/resume) ----
+    async getUserState(userId) {
+      const [att, bks, res] = await Promise.all([
+        pool.query('SELECT problem_key, answer, correct, ts FROM attempts WHERE user_id=$1', [userId]),
+        pool.query('SELECT problem_key, ts FROM bookmarks WHERE user_id=$1', [userId]),
+        pool.query('SELECT snapshot FROM resumes WHERE user_id=$1', [userId]),
+      ]);
+      const attempts = {};
+      att.rows.forEach(r => attempts[r.problem_key] = { answer: r.answer, correct: r.correct, ts: Number(r.ts) });
+      const bookmarks = {};
+      bks.rows.forEach(r => bookmarks[r.problem_key] = Number(r.ts));
+      return { attempts, bookmarks, resume: res.rows[0]?.snapshot || null };
+    },
+    async saveAttempt(userId, { key, answer, correct, ts }) {
+      await pool.query(
+        `INSERT INTO attempts (user_id, problem_key, answer, correct, ts)
+         VALUES ($1,$2,$3,$4,$5)
+         ON CONFLICT (user_id, problem_key) DO UPDATE SET
+           answer=EXCLUDED.answer, correct=EXCLUDED.correct, ts=EXCLUDED.ts`,
+        [userId, key, answer, correct, ts]
+      );
+    },
+    async deleteAttempt(userId, key) {
+      await pool.query('DELETE FROM attempts WHERE user_id=$1 AND problem_key=$2', [userId, key]);
+    },
+    async setBookmark(userId, key, on) {
+      if (on) {
+        await pool.query(
+          `INSERT INTO bookmarks (user_id, problem_key, ts) VALUES ($1,$2,$3)
+           ON CONFLICT (user_id, problem_key) DO UPDATE SET ts=EXCLUDED.ts`,
+          [userId, key, Date.now()]
+        );
+      } else {
+        await pool.query('DELETE FROM bookmarks WHERE user_id=$1 AND problem_key=$2', [userId, key]);
+      }
+    },
+    async saveResume(userId, snapshot) {
+      await pool.query(
+        `INSERT INTO resumes (user_id, snapshot, saved_at) VALUES ($1,$2,$3)
+         ON CONFLICT (user_id) DO UPDATE SET snapshot=EXCLUDED.snapshot, saved_at=EXCLUDED.saved_at`,
+        [userId, snapshot, Date.now()]
+      );
+    },
+    async clearResume(userId) {
+      await pool.query('DELETE FROM resumes WHERE user_id=$1', [userId]);
+    },
+    async resetUserState(userId) {
+      await pool.query('DELETE FROM attempts WHERE user_id=$1', [userId]);
+      await pool.query('DELETE FROM bookmarks WHERE user_id=$1', [userId]);
+      await pool.query('DELETE FROM resumes WHERE user_id=$1', [userId]);
+    },
   };
 } else {
   // 로컬 개발용 JSON 파일 스토어 (데이터 영속성 낮음 — Railway 배포 시 DATABASE_URL 필수)
@@ -90,6 +162,11 @@ if (usePg) {
   const save = () => {
     try { fs.mkdirSync(path.dirname(jsonPath), { recursive: true }); fs.writeFileSync(jsonPath, JSON.stringify(store, null, 2)); }
     catch (e) { console.warn('[DB] users.json 저장 실패', e.message); }
+  };
+  store.state = store.state || {}; // { userId: { attempts, bookmarks, resume } }
+  const getState = (userId) => {
+    if (!store.state[userId]) store.state[userId] = { attempts:{}, bookmarks:{}, resume:null };
+    return store.state[userId];
   };
   db = {
     async init() { /* JSON: 이미 로드됨 */ },
@@ -110,7 +187,43 @@ if (usePg) {
       if (u) { u.is_premium = !!is_premium; u.premium_until = premium_until; save(); }
     },
     async deleteUser(id) {
-      store.users = store.users.filter(u => u.id !== id); save();
+      store.users = store.users.filter(u => u.id !== id);
+      delete store.state[id];
+      save();
+    },
+    async getUserState(userId) {
+      const s = getState(userId);
+      return { attempts: { ...s.attempts }, bookmarks: { ...s.bookmarks }, resume: s.resume };
+    },
+    async saveAttempt(userId, { key, answer, correct, ts }) {
+      const s = getState(userId);
+      s.attempts[key] = { answer, correct, ts };
+      save();
+    },
+    async deleteAttempt(userId, key) {
+      const s = getState(userId);
+      delete s.attempts[key];
+      save();
+    },
+    async setBookmark(userId, key, on) {
+      const s = getState(userId);
+      if (on) s.bookmarks[key] = Date.now();
+      else delete s.bookmarks[key];
+      save();
+    },
+    async saveResume(userId, snapshot) {
+      const s = getState(userId);
+      s.resume = snapshot;
+      save();
+    },
+    async clearResume(userId) {
+      const s = getState(userId);
+      s.resume = null;
+      save();
+    },
+    async resetUserState(userId) {
+      store.state[userId] = { attempts:{}, bookmarks:{}, resume:null };
+      save();
     },
   };
 }
@@ -250,6 +363,54 @@ app.get('/api/health', async (req, res) => {
       warning: usePg ? null : '⚠ Postgres 미사용 — DATABASE_URL 환경변수 확인 필요',
     });
   } catch (e) { res.status(500).json({ status: 'error', error: e.message, db: usePg ? 'postgres' : 'json' }); }
+});
+
+// ─── 학습 기록 동기화 API (로그인 사용자) ─────────────────────
+app.get('/api/state', requireAuth, async (req, res) => {
+  try {
+    const state = await db.getUserState(req.user.id);
+    res.json(state);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.post('/api/state/attempt', requireAuth, async (req, res) => {
+  try {
+    const { key, answer, correct, ts } = req.body;
+    if (!key) return res.status(400).json({ error: 'key required' });
+    await db.saveAttempt(req.user.id, { key, answer: answer || 0, correct: !!correct, ts: ts || Date.now() });
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.delete('/api/state/attempt/:key', requireAuth, async (req, res) => {
+  try {
+    await db.deleteAttempt(req.user.id, req.params.key);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.post('/api/state/bookmark', requireAuth, async (req, res) => {
+  try {
+    const { key, on } = req.body;
+    if (!key) return res.status(400).json({ error: 'key required' });
+    await db.setBookmark(req.user.id, key, !!on);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.post('/api/state/resume', requireAuth, async (req, res) => {
+  try {
+    await db.saveResume(req.user.id, req.body.snapshot);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.delete('/api/state/resume', requireAuth, async (req, res) => {
+  try {
+    await db.clearResume(req.user.id);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.post('/api/state/reset', requireAuth, async (req, res) => {
+  try {
+    await db.resetUserState(req.user.id);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // ─── 관리자 API ────────────────────────────────────────────────
