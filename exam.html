@@ -156,6 +156,17 @@
   }
   root.style.display = 'grid';
 
+  // 모바일: 문제번호 grid를 접기/펴기 토글 (h4 클릭)
+  (function setupMobileQGridToggle(){
+    const sidebar = document.querySelector('.exam-sidebar');
+    const h4 = sidebar && sidebar.querySelector('h4');
+    if (!sidebar || !h4) return;
+    h4.addEventListener('click', () => {
+      if (window.innerWidth > 900) return;
+      sidebar.classList.toggle('qgrid-open');
+    });
+  })();
+
   // Resume snapshot save — called after each answer or navigation
   function saveResumeSnapshot(){
     try {
@@ -622,7 +633,11 @@
       alert('모든 문제를 풀었습니다! 🎉');
     };
 
-    window.scrollTo({top:0, behavior:'smooth'});
+    // 문제가 바뀔 때만 맨 위로 스크롤. 보기 선택/채점 시에는 그 자리 유지
+    if (window.__lastRenderedIdx !== idx) {
+      window.scrollTo({top:0, behavior:'smooth'});
+      window.__lastRenderedIdx = idx;
+    }
   }
 
   function escapeHtml(s){
