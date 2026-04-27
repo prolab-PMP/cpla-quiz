@@ -10852,7 +10852,7 @@
     ],
     "correct_answer": 3,
     "statements": [],
-    "keyword": "꾸르노경쟁, 복점시장",
+    "keyword": "꾸르노경쟁, 복점",
     "explanation": "정답: ③. 12, 4",
     "seq_id": 12415
   },
@@ -11093,7 +11093,7 @@
     ],
     "correct_answer": 1,
     "statements": [],
-    "keyword": "보수행렬, 내쉬균형",
+    "keyword": "보수, 내쉬균형",
     "explanation": "정답: ①. 내쉬균형의보수조합은(6, 4)이다.",
     "seq_id": 12422
   },
