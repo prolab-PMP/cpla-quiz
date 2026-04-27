@@ -97,6 +97,9 @@ if (usePg) {
         [!!is_premium, premium_until, id]
       );
     },
+    async updateUserAdmin(id, is_admin) {
+      await pool.query('UPDATE users SET is_admin=$1 WHERE id=$2', [!!is_admin, id]);
+    },
     async deleteUser(id) {
       await pool.query('DELETE FROM users WHERE id=$1', [id]);
     },
@@ -286,6 +289,11 @@ app.use(async (req, res, next) => {
     try {
       const u = await db.getUserById(req.session.userId);
       if (u) {
+        // ADMIN_EMAIL 이면 자동 승격 (가입 시 누락된 경우 보완 — idempotent)
+        if ((u.email||'').toLowerCase() === ADMIN_EMAIL && !u.is_admin) {
+          try { await db.updateUserAdmin(u.id, true); u.is_admin = true; console.log('[AUTH] admin auto-promoted:', u.email); }
+          catch (e) { console.warn('[AUTH] admin promote failed:', e.message); }
+        }
         const now = new Date();
         const isPremiumActive = u.is_premium && (!u.premium_until || new Date(u.premium_until) > now);
         req.user = { ...u, isPremiumActive };
