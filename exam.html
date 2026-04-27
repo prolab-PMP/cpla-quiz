@@ -233,31 +233,40 @@
     if (gradeAllBtn) gradeAllBtn.onclick = () => {
       const state = CPLA.loadState();
       state.pending = state.pending || {};
+      state.attempts = state.attempts || {};
       // pending(보기만 선택)도 응답으로 간주 — 미응답에서 제외
       const unanswered = list.filter(p => !state.attempts[p.key] && !state.pending[p.key]).length;
       const msg = unanswered > 0
         ? `채점하시겠습니까?\n\n답변하지 않은 문제는 오답 처리됩니다.\n미응답 ${unanswered}문제 / 전체 ${list.length}문제`
         : `전체 ${list.length}문제를 일괄 채점하시겠습니까?`;
       if (!confirm(msg)) return;
-      // 모든 문제 채점 (응답 없으면 오답 기록)
+      // 모든 문제 채점 — race 회피 위해 state 객체 직접 조작 후 한 번만 saveState
       let correct = 0, wrong = 0;
+      const ts = Date.now();
+      const newAttempts = [];
       for (const p of list) {
         const a = state.attempts[p.key];
         if (a) {
           if (a.correct) correct++; else wrong++;
-        } else if (state.pending[p.key]) {
-          // 보기 선택만 했던 문제 — 채점
-          const sel = state.pending[p.key];
-          const ok = (p.answer === 12345) ? true : (sel === p.answer);
-          CPLA.recordAttempt(p.key, sel, ok);
-          delete state.pending[p.key];
-          if (ok) correct++; else wrong++;
         } else {
-          CPLA.recordAttempt(p.key, 0, false);
-          wrong++;
+          const sel = state.pending[p.key] || 0;
+          const ok = sel ? ((p.answer === 12345) ? true : (sel === p.answer)) : false;
+          state.attempts[p.key] = { answer: sel, correct: ok, ts };
+          delete state.pending[p.key];
+          newAttempts.push({ key: p.key, answer: sel, correct: ok, ts });
+          if (ok) correct++; else wrong++;
         }
       }
       CPLA.saveState(state);
+      // 서버 sync (best effort, 비차단)
+      newAttempts.forEach(att => {
+        fetch('/api/state/attempt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(att)
+        }).catch(()=>{});
+      });
       const pct = Math.round(correct/list.length*1000)/10;
       alert(`📊 전체 채점 완료\n\n정답: ${correct}/${list.length}\n오답: ${wrong}\n정답률: ${pct}%`);
       render(); renderGrid();
