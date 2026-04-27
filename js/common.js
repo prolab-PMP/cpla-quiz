@@ -277,7 +277,7 @@
       <header class="site-header">
         <div class="inner">
           <a href="index.html" class="brand" aria-label="홈으로 가기 - 공인노무사 기출문제 풀이">
-            <span class="dot" aria-hidden="true">산</span>
+            <span class="dot" aria-hidden="true">공</span>
             <span>공인노무사</span><small>1차 기출문제 풀이</small>
           </a>
           <nav class="nav" aria-label="주 메뉴">
