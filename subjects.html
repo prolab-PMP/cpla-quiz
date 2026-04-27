@@ -128,12 +128,18 @@ ps.forEach(p => (p.keywords||[]).forEach(k => { kwCount[k] = (kwCount[k]||0)+1; 
   const host = document.getElementById('subject-keywords');
   if (!host) return;
   const host2 = {};
+  // 전체 데이터 기반 키워드 빈도(서버에서 받음). 무료/유료 동일.
+  const fullKw = (window.__ACCESS__ && window.__ACCESS__.fullSubjectKeywords) || null;
   Object.keys(bySub).forEach(s => {
-    const subKw = {};
-    bySub[s].forEach(p => (p.keywords||[]).forEach(k => {
-      subKw[k] = (subKw[k]||0) + 1;
-    }));
-    host2[s] = Object.entries(subKw).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+    if (fullKw && Array.isArray(fullKw[s])) {
+      host2[s] = fullKw[s];
+    } else {
+      const subKw = {};
+      bySub[s].forEach(p => (p.keywords||[]).forEach(k => {
+        subKw[k] = (subKw[k]||0) + 1;
+      }));
+      host2[s] = Object.entries(subKw).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+    }
   });
   const cards = Object.keys(host2).map(s => {
     const entries = host2[s];

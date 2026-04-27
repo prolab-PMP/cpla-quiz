@@ -442,6 +442,23 @@ function loadAllProblems() {
 }
 const ALL_PROBLEMS = loadAllProblems();
 
+function computeFullSubjectKeywords(problems) {
+  // 전체 데이터 기반 과목별 키워드 빈도. 무료/유료 동일하게 보임.
+  const bySubKw = {};
+  for (const p of problems) {
+    const s = p.subject;
+    if (!bySubKw[s]) bySubKw[s] = {};
+    for (const k of (p.keywords || [])) {
+      bySubKw[s][k] = (bySubKw[s][k] || 0) + 1;
+    }
+  }
+  const result = {};
+  for (const s of Object.keys(bySubKw)) {
+    result[s] = Object.entries(bySubKw[s]).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+  return result;
+}
+
 function filterForFree(problems) {
   // 무료: 과목별 최근 50문제 (연도 내림차순 → 번호 내림차순)
   const bySubject = {};
@@ -479,14 +496,15 @@ function getAllowedKeywordsForFree(problems) {
 
 app.get('/api/problems', (req, res) => {
   const totalCount = ALL_PROBLEMS.length;
-  if (!req.user) return res.json({ problems: [], allowedKeywords: null, user: null, locked: 'login', totalCount });
+  const fullSubjectKeywords = computeFullSubjectKeywords(ALL_PROBLEMS);
+  if (!req.user) return res.json({ problems: [], allowedKeywords: null, user: null, locked: 'login', totalCount, fullSubjectKeywords });
   if (req.user.isPremiumActive || req.user.is_admin) {
-    return res.json({ problems: ALL_PROBLEMS, allowedKeywords: null, user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: true }, totalCount });
+    return res.json({ problems: ALL_PROBLEMS, allowedKeywords: null, user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: true }, totalCount , fullSubjectKeywords });
   }
   // 무료 사용자
   const filtered = filterForFree(ALL_PROBLEMS);
   const allowedKeywords = Array.from(getAllowedKeywordsForFree(ALL_PROBLEMS));
-  res.json({ problems: filtered, allowedKeywords, user: { email: req.user.email, is_admin: false, isPremiumActive: false }, totalCount });
+  res.json({ problems: filtered, allowedKeywords, user: { email: req.user.email, is_admin: false, isPremiumActive: false }, totalCount , fullSubjectKeywords });
 });
 
 // ─── Static (기존) ───────────────────────────────────────────
