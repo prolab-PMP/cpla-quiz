@@ -544,6 +544,18 @@ app.get('*', (req, res) => {
 // ─── Start ──────────────────────────────────────────────────
 (async () => {
   try { await db.init(); } catch (e) { console.error('[DB INIT]', e.message); }
+  // ADMIN_EMAIL 사용자 자동 admin 보장 (재배포 시마다 멱등 실행)
+  try {
+    const adminUser = await db.getUserByEmail(ADMIN_EMAIL);
+    if (adminUser && !adminUser.is_admin) {
+      await db.updateUserAdmin(adminUser.id, true);
+      console.log('[INIT] ADMIN_EMAIL 자동 승격 완료:', adminUser.email);
+    } else if (adminUser) {
+      console.log('[INIT] ADMIN_EMAIL 이미 admin:', adminUser.email);
+    } else {
+      console.log('[INIT] ADMIN_EMAIL 미가입 (가입 시 자동 admin 됨):', ADMIN_EMAIL);
+    }
+  } catch (e) { console.warn('[INIT] admin 보장 실패:', e.message); }
   app.listen(PORT, () => {
     console.log(`[${SITE_NAME}] 서버 실행 중: http://localhost:${PORT}`);
     if (usePg) console.log('[DB] Postgres (DATABASE_URL)'); else console.log('[DB] JSON file (data/users.json) — 로컬 전용');
