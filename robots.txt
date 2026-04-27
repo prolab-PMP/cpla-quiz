@@ -7,7 +7,7 @@ Disallow: /backup/
 Disallow: /data/
 
 # Sitemap location
-Sitemap: https://공인노무사.com/sitemap.xml
+Sitemap: https://web-production-1b878.up.railway.app/sitemap.xml
 
 # Google specific
 User-agent: Googlebot
