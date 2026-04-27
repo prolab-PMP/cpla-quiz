@@ -234,7 +234,9 @@
     const gradeAllBtn = document.getElementById('btn-grade-all');
     if (gradeAllBtn) gradeAllBtn.onclick = () => {
       const state = CPLA.loadState();
-      const unanswered = list.filter(p => !state.attempts[p.key]).length;
+      state.pending = state.pending || {};
+      // pending(보기만 선택)도 응답으로 간주 — 미응답에서 제외
+      const unanswered = list.filter(p => !state.attempts[p.key] && !state.pending[p.key]).length;
       const msg = unanswered > 0
         ? `채점하시겠습니까?\n\n답변하지 않은 문제는 오답 처리됩니다.\n미응답 ${unanswered}문제 / 전체 ${list.length}문제`
         : `전체 ${list.length}문제를 일괄 채점하시겠습니까?`;
@@ -243,13 +245,21 @@
       let correct = 0, wrong = 0;
       for (const p of list) {
         const a = state.attempts[p.key];
-        if (!a) {
+        if (a) {
+          if (a.correct) correct++; else wrong++;
+        } else if (state.pending[p.key]) {
+          // 보기 선택만 했던 문제 — 채점
+          const sel = state.pending[p.key];
+          const ok = (p.answer === 12345) ? true : (sel === p.answer);
+          CPLA.recordAttempt(p.key, sel, ok);
+          delete state.pending[p.key];
+          if (ok) correct++; else wrong++;
+        } else {
           CPLA.recordAttempt(p.key, 0, false);
           wrong++;
-        } else {
-          if (a.correct) correct++; else wrong++;
         }
       }
+      CPLA.saveState(state);
       const pct = Math.round(correct/list.length*1000)/10;
       alert(`📊 전체 채점 완료\n\n정답: ${correct}/${list.length}\n오답: ${wrong}\n정답률: ${pct}%`);
       render(); renderGrid();
@@ -475,6 +485,10 @@
     const p = list[idx];
     const state = CPLA.loadState();
     const attempt = state.attempts[p.key];
+    // pending에 임시 선택값 있으면 __currentSel로 복원 (다른 문제로 이동했다 돌아온 경우)
+    if (!attempt && state.pending && state.pending[p.key]) {
+      window.__currentSel = state.pending[p.key];
+    }
     const bookmarked = !!state.bookmarks[p.key];
 
     document.getElementById('qnum-label').textContent = `${idx+1} / ${list.length}`;
@@ -538,7 +552,12 @@
           render(); renderGrid();
         }else{
           window.__currentSel = i+1;
-          render();
+          // 보기만 선택 — pending 저장 (전체 채점 시 사용)
+          const ps = CPLA.loadState();
+          ps.pending = ps.pending || {};
+          ps.pending[p.key] = i+1;
+          CPLA.saveState(ps);
+          render(); renderGrid();
         }
       };
       qc.appendChild(row);
@@ -568,6 +587,9 @@
         if(!sel){ alert('선택지를 골라주세요'); return; }
         const correct = (p.answer === 12345) ? true : (sel === p.answer);
         CPLA.recordAttempt(p.key, sel, correct);
+        // pending 정리
+        const psg = CPLA.loadState();
+        if (psg.pending && psg.pending[p.key]) { delete psg.pending[p.key]; CPLA.saveState(psg); }
         saveResumeSnapshot();
         render(); renderGrid();
       };
