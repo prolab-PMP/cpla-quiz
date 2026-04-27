@@ -515,6 +515,23 @@ app.get('/api/problems', (req, res) => {
   res.json({ problems: filtered, allowedKeywords, user: { email: req.user.email, is_admin: false, isPremiumActive: false }, totalCount , fullSubjectKeywords });
 });
 
+// ─── /data/problems.js 동적 라우트 (정적 미들웨어보다 위에 위치) ───
+// 무료/비로그인이 정적 파일로 전체 ALL_PROBLEMS을 받는 우회 차단
+app.get('/data/problems.js', (req, res) => {
+  let problems = [];
+  if (req.user) {
+    if (req.user.isPremiumActive || req.user.is_admin) {
+      problems = ALL_PROBLEMS;
+    } else {
+      problems = filterForFree(ALL_PROBLEMS);
+    }
+  }
+  res.set('Content-Type', 'application/javascript; charset=utf-8');
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.send('window.PROBLEMS = ' + JSON.stringify(problems) + ';');
+});
+
 // ─── Static (기존) ───────────────────────────────────────────
 app.use(express.static(__dirname, {
   extensions: ['html'],

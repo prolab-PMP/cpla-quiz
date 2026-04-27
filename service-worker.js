@@ -3,7 +3,7 @@
      - HTML/CSS/JS/manifest: network-first, 실패 시 캐시
      - 데이터(problems.js), 이미지: cache-first (용량 절약)
      - 기타 동일 출처 자원: stale-while-revalidate */
-const VERSION = 'cpla-quiz-v17-20260427-keyword-unify-kw-fullsubject-admin-promote-pending-grade-seo-race-fix';
+const VERSION = 'cpla-quiz-v17-20260427-keyword-unify-kw-fullsubject-admin-promote-pending-grade-seo-race-fix-free-block';
 const CORE = [
   './',
   './index.html',
@@ -14,7 +14,6 @@ const CORE = [
   './manifest.json',
   './css/style.css',
   './js/common.js',
-  './data/problems.js',
   './images/icon-192.png',
   './images/icon-512.png',
   './images/icon-maskable-512.png'
@@ -42,6 +41,8 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;
   // ⚠ /api/* 는 절대 캐시하지 않음 (세션·인증·문제 필터 등 실시간 응답 필수)
   if (url.pathname.startsWith('/api/')) return;
+  // /data/problems.js' bypass — 무료/비로그인 우회 차단 위해 항상 서버 응답
+  if (url.pathname === '/data/problems.js') return;
 
   const isHTML = req.destination === 'document' || req.headers.get('accept')?.includes('text/html');
   const isData = url.pathname.endsWith('/problems.js') || url.pathname.endsWith('/manifest.json');
