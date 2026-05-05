@@ -26,4 +26,8 @@
   </url>
   <url>
     <loc>https://cpla.wayexam.com/years.html</loc>
-    <lastmod>2026-04-27</las
+    <lastmod>2026-04-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>

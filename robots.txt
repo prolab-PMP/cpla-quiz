@@ -18,4 +18,5 @@ User-agent: Yeti
 Allow: /
 
 # Bing specific
-User-agent: 
+User-agent: Bingbot
+Allow: /

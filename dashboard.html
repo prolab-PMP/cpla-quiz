@@ -300,4 +300,9 @@ document.getElementById('file-import').addEventListener('change', (ev) => {
   const f = ev.target.files && ev.target.files[0];
   if (!f) return;
   CPLA.importState(f, (ok) => { if (ok) setTimeout(() => location.reload(), 800); });
-  ev.target.value = ''
+  ev.target.value = '';
+});
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>
