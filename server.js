@@ -22,6 +22,22 @@ const SITE_NAME = process.env.SITE_NAME || '공인노무사 문제풀이';
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'songdoinfo@naver.com';
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'songdoinfo@naver.com').toLowerCase();
 
+// ─── 커스텀 도메인: *.up.railway.app → cpla.wayexam.com 301 redirect ───
+const PRIMARY_HOST = process.env.PRIMARY_HOST || 'cpla.wayexam.com';
+app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  const host = (req.headers.host || '').toLowerCase();
+  if (
+    host &&
+    host !== PRIMARY_HOST.toLowerCase() &&
+    !host.startsWith('localhost') &&
+    !host.startsWith('127.')
+  ) {
+    return res.redirect(301, 'https://' + PRIMARY_HOST + req.originalUrl);
+  }
+  next();
+});
+
 // ─── DB 어댑터 (SQLite 로컬 / Postgres Railway) ────────────────
 const usePg = !!process.env.DATABASE_URL;
 let db;
@@ -352,6 +368,31 @@ app.post('/api/logout', (req, res) => {
 app.get('/api/me', (req, res) => {
   if (!req.user) return res.json({ user: null });
   res.json({ user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: req.user.isPremiumActive, premium_until: req.user.premium_until } });
+});
+
+// ─── Google AdSense ───────────────────────────────────────────
+const ADSENSE_PUBLISHER_ID = process.env.ADSENSE_PUBLISHER_ID || '';
+const ADSENSE_SLOT_INLINE = process.env.ADSENSE_SLOT_INLINE || '';
+const ADSENSE_SLOT_RESULT = process.env.ADSENSE_SLOT_RESULT || '';
+
+app.get('/ads.txt', (req, res) => {
+  if (!ADSENSE_PUBLISHER_ID) return res.status(404).send('Not Found');
+  const pubId = ADSENSE_PUBLISHER_ID.startsWith('ca-pub-')
+    ? ADSENSE_PUBLISHER_ID.replace('ca-pub-', 'pub-')
+    : ADSENSE_PUBLISHER_ID;
+  res.type('text/plain').send(`google.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`);
+});
+
+app.get('/api/ads-config', (req, res) => {
+  // 관리자 / Premium 사용자는 광고 X
+  if (req.user && (req.user.is_admin || req.user.isPremiumActive)) {
+    return res.json({ publisher: '', slotInline: '', slotResult: '' });
+  }
+  res.json({
+    publisher: ADSENSE_PUBLISHER_ID,
+    slotInline: ADSENSE_SLOT_INLINE,
+    slotResult: ADSENSE_SLOT_RESULT,
+  });
 });
 
 // 진단 엔드포인트: DB 연결 상태 확인 (계정 영속성 진단용)

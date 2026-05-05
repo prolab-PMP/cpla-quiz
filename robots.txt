@@ -7,7 +7,7 @@ Disallow: /backup/
 Disallow: /data/
 
 # Sitemap location
-Sitemap: https://web-production-1b878.up.railway.app/sitemap.xml
+Sitemap: https://cpla.wayexam.com/sitemap.xml
 
 # Google specific
 User-agent: Googlebot
@@ -18,5 +18,4 @@ User-agent: Yeti
 Allow: /
 
 # Bing specific
-User-agent: Bingbot
-Allow: /
+User-agent: 

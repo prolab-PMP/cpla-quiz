@@ -7,17 +7,17 @@
 <meta name="description" content="공인노무사 1차 2013-2025년 2,130문제 기출문제 풀이. 과목별, 연도별, 키워드별 자유로운 학습. 오답노트 및 통계 자동 저장.">
 <meta name="keywords" content="공인노무사, 기출문제, 1차시험, 문제풀이, 노동법, 민법, 사회보험법, 경영학, 경제학">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://web-production-1b878.up.railway.app/">
+<link rel="canonical" href="https://cpla.wayexam.com/">
 <meta property="og:title" content="공인노무사 1차 기출문제 풀이">
 <meta property="og:description" content="2013-2025년 2,130문제 기출풀이 · 과목/연도/키워드별 학습">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://web-production-1b878.up.railway.app/">
+<meta property="og:url" content="https://cpla.wayexam.com/">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="https://web-production-1b878.up.railway.app/images/icon-512.png">
+<meta property="og:image" content="https://cpla.wayexam.com/images/icon-512.png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
-<meta name="twitter:image" content="https://web-production-1b878.up.railway.app/images/icon-512.png">
+<meta name="twitter:image" content="https://cpla.wayexam.com/images/icon-512.png">
 <meta name="twitter:title" content="공인노무사 1차 기출문제 풀이">
 <meta name="twitter:description" content="2013-2025년 2,130문제 기출풀이 · 과목/연도/키워드별 학습"><link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
@@ -25,14 +25,14 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "공인노무사 기출문제 풀이",
-  "url": "https://web-production-1b878.up.railway.app/",
+  "url": "https://cpla.wayexam.com/",
   "description": "공인노무사 1차 2013-2025년 2,130문제 기출문제 풀이 플랫폼",
   "inLanguage": "ko",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://web-production-1b878.up.railway.app/exam.html?mode=keyword&keyword={search_term_string}"
+      "urlTemplate": "https://cpla.wayexam.com/exam.html?mode=keyword&keyword={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }
@@ -43,7 +43,7 @@
   "@context": "https://schema.org",
   "@type": "EducationalApplication",
   "name": "공인노무사 1차 기출문제 풀이",
-  "url": "https://web-production-1b878.up.railway.app/",
+  "url": "https://cpla.wayexam.com/",
   "description": "기출문제 풀이 및 학습 통계",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web",
@@ -59,7 +59,7 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "공인노무사 기출문제 풀이",
-  "url": "https://web-production-1b878.up.railway.app/",
+  "url": "https://cpla.wayexam.com/",
   "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
   "inLanguage": "ko"
 }
@@ -69,6 +69,7 @@
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="공인노무사">
+<script src="js/ads.js" defer></script>
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -84,6 +85,9 @@
 
   <!-- 이어하기 스냅샷 카드 (있을 때만) -->
   <div id="resume-card"></div>
+
+  <!-- AdSense slot (non-premium users) -->
+  <ins class="adsbygoogle" style="display:block;text-align:center;min-height:90px;margin:18px auto;max-width:728px;" data-slot-key="inline"></ins>
 
   <section class="section-title"><span class="tag">내 학습 현황</span> 빠른 진척도 요약</section>
   <div class="grid cols-4" id="summary-cards"></div>
@@ -283,12 +287,4 @@
     if (hero) {
       const notice = document.createElement('div');
       notice.style.cssText = 'margin-top:16px;padding:14px 18px;background:rgba(255,152,0,0.28);border:1px solid rgba(255,152,0,0.6);border-radius:12px;font-size:14px;color:#fff;font-weight:700;box-shadow:0 2px 12px rgba(255,152,0,0.25)';
-      notice.innerHTML = `🔓 <b style="color:#fff5d6">현재 무료 이용 중</b> — 전체 문항 열람을 원하시면 <b>관리자에게 Premium 전환을 문의</b>하세요. <span style="background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:999px;margin-left:6px;font-size:13px">무료회원은 총 ${totalCount.toLocaleString()}문제 중 ${access.problems.length.toLocaleString()}문제 열람 가능</span>`;
-      hero.appendChild(notice);
-    }
-  }
-})();
-</script>
-<script>CPLA.renderFooter();</script>
-</body>
-</html>
+      notice.innerHTML = `🔓 <b style="color:#fff5d6">현재 무료 이용 중</b> — 전체 문항 열람을 원하시면 <b>관리자에게 Premium 전환을 문의</b>하세요. <span style="background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:999px;margin-left:6px;font-size:13px">무료회원은 총 ${totalCount.toLocaleString()}문제 중 ${access.problems.length.toLocaleString()
