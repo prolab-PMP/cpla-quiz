@@ -57,8 +57,14 @@ try {
   xhr.send();
   const j = JSON.parse(xhr.responseText || '{}');
   const u = j && j.user;
-  const isPremium = u && (u.is_admin || u.isPremiumActive);
-  if (u && !isPremium) {
+  const isAdmin = u && u.is_admin;
+  const isTrial = u && u.isTrial;
+  const isPaid = u && u.isPremiumActive && !u.isTrial;
+  // Show sample if logged-in user is not admin/paid (covers free + trial)
+  const showSample = u && !isAdmin && !isPaid;
+  window._userMode = isAdmin ? 'admin' : (isPaid ? 'paid' : (isTrial ? 'trial' : (u ? 'free' : 'guest')));
+  window._trialDaysRemaining = (u && u.trialDaysRemaining) || 0;
+  if (showSample) {
     // Build a deterministic sample state: ~120 attempts, 73% accuracy, 8 bookmarks, last 14 days.
     const ps = CPLA.getProblems();
     if (ps && ps.length) {
@@ -690,6 +696,53 @@ if (window._sampleStateInjected) {
   try { renderRadar(); }   catch(e){ console.warn('[pro] radar', e); }
   try { renderGauge(); }   catch(e){ console.warn('[pro] gauge', e); }
   try { renderTrend(); }   catch(e){ console.warn('[pro] trend', e); }
+})();
+</script>
+<script>
+// Trial-aware paywall banner update (PMP KR style)
+(function(){
+  var mode = window._userMode || 'free';
+  var days = window._trialDaysRemaining || 0;
+  var bnr = document.getElementById('premium-paywall');
+  if (!bnr) return;
+  if (mode === 'admin' || mode === 'paid') {
+    bnr.style.display = 'none';
+    return;
+  }
+  // Build PMP KR style banner: gold gradient + emoji + status text + Smart Store CTA
+  var titleHtml, descHtml;
+  if (mode === 'trial') {
+    titleHtml = '🎁 Trial 기간 중 (' + days + '일 남음) — 통계는 결제 후 표시';
+    descHtml = 'Trial 기간 동안 <strong>문제는 자유롭게 풀이</strong> 가능합니다. 아래 통계는 <strong>예시 데이터</strong>이며, 결제 후 본인의 실제 학습 통계가 표시됩니다.';
+  } else {
+    titleHtml = '📊 무료 사용자 — 샘플 데이터 미리보기';
+    descHtml = '아래 모든 통계는 <strong>예시 데이터</strong>입니다. 유료 전환 후 본인의 실제 학습 데이터가 동일한 형태로 표시됩니다.';
+  }
+  var storeUrl = bnr.querySelector('a[href*="smartstore.naver.com"]');
+  var storeHref = storeUrl ? storeUrl.getAttribute('href') : '#';
+  bnr.innerHTML =
+    '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">' +
+    '  <div style="font-size:1.6rem;color:#92400e;flex-shrink:0">' + (mode === 'trial' ? '🎁' : '📊') + '</div>' +
+    '  <div style="flex:1;min-width:240px;text-align:left">' +
+    '    <div style="font-weight:700;color:#78350f;font-size:0.98rem;margin-bottom:4px">' + titleHtml + '</div>' +
+    '    <div style="color:#92400e;font-size:0.85rem;line-height:1.5">' + descHtml + '</div>' +
+    '  </div>' +
+    '  <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">' +
+    '    <a href="' + storeHref + '" target="_blank" rel="noopener" ' +
+    '       style="display:inline-flex;align-items:center;gap:7px;background:#03C75A;color:#fff;padding:9px 18px;border-radius:8px;font-weight:700;font-size:0.88rem;text-decoration:none;white-space:nowrap;">' +
+    '      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155l8.897 12.845H24V0h-7.727z"/></svg>' +
+    '      ' + (mode === 'trial' ? '유료 전환' : '네이버 스마트스토어 구매') +
+    '    </a>' +
+    '  </div>' +
+    '</div>';
+  bnr.style.display = 'block';
+  bnr.style.background = 'linear-gradient(90deg,#fef3c7,#fde68a)';
+  bnr.style.borderLeft = '4px solid #f59e0b';
+  bnr.style.borderTop = 'none';
+  bnr.style.borderRight = 'none';
+  bnr.style.borderBottom = 'none';
+  bnr.style.borderRadius = '8px';
+  bnr.style.textAlign = 'left';
 })();
 </script>
 </body>

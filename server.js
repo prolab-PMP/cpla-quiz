@@ -57,6 +57,7 @@ if (usePg) {
           is_admin BOOLEAN DEFAULT FALSE,
           is_premium BOOLEAN DEFAULT FALSE,
           premium_until TIMESTAMP NULL,
+          validity_start TIMESTAMP NULL,
           referrer_email TEXT NULL,
           created_at TIMESTAMP DEFAULT NOW()
         );
@@ -83,6 +84,7 @@ if (usePg) {
         );
         CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks (user_id);
         ALTER TABLE users ADD COLUMN IF NOT EXISTS referrer_email TEXT;
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS validity_start TIMESTAMP NULL;
         CREATE TABLE IF NOT EXISTS resumes (
           user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
           snapshot JSONB,
@@ -99,21 +101,34 @@ if (usePg) {
       return r.rows[0] || null;
     },
     async createUser({ email, password_hash, is_admin, referrer_email }) {
+      // 가입 직후 자동 7일 Premium trial 부여 (PMP KR pattern)
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + 7 * 86400000);
       const r = await pool.query(
-        'INSERT INTO users (email, password_hash, is_admin, referrer_email) VALUES ($1,$2,$3,$4) RETURNING *',
-        [email, password_hash, !!is_admin, referrer_email || null]
+        `INSERT INTO users (email, password_hash, is_admin, referrer_email,
+                            is_premium, premium_until, validity_start)
+         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        [email, password_hash, !!is_admin, referrer_email || null, true, trialEnd, now]
       );
       return r.rows[0];
     },
     async listUsers() {
-      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, referrer_email, created_at FROM users ORDER BY created_at DESC');
+      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, validity_start, referrer_email, created_at FROM users ORDER BY created_at DESC');
       return r.rows;
     },
-    async updateUserAccess(id, { is_premium, premium_until }) {
-      await pool.query(
-        'UPDATE users SET is_premium=$1, premium_until=$2 WHERE id=$3',
-        [!!is_premium, premium_until, id]
-      );
+    async updateUserAccess(id, { is_premium, premium_until, validity_start }) {
+      // validity_start: undefined → 변경 없음, null → trial 표식 제거 (paid 전환), Date → 갱신
+      if (validity_start !== undefined) {
+        await pool.query(
+          'UPDATE users SET is_premium=$1, premium_until=$2, validity_start=$3 WHERE id=$4',
+          [!!is_premium, premium_until, validity_start, id]
+        );
+      } else {
+        await pool.query(
+          'UPDATE users SET is_premium=$1, premium_until=$2 WHERE id=$3',
+          [!!is_premium, premium_until, id]
+        );
+      }
     },
     async updateUserAdmin(id, is_admin) {
       await pool.query('UPDATE users SET is_admin=$1 WHERE id=$2', [!!is_admin, id]);
@@ -193,19 +208,31 @@ if (usePg) {
     async init() { /* JSON: 이미 로드됨 */ },
     async getUserByEmail(email) { return store.users.find(u => u.email === email) || null; },
     async getUserById(id) { return store.users.find(u => u.id === id) || null; },
-    async createUser({ email, password_hash, is_admin }) {
+    async createUser({ email, password_hash, is_admin, referrer_email }) {
+      // 가입 직후 자동 7일 Premium trial 부여 (PMP KR pattern)
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + 7 * 86400000);
       const u = {
         id: store.nextId++, email, password_hash,
-        is_admin: !!is_admin, is_premium: false, premium_until: null,
-        created_at: new Date().toISOString(),
+        is_admin: !!is_admin,
+        is_premium: true,
+        premium_until: trialEnd.toISOString(),
+        validity_start: now.toISOString(),
+        referrer_email: referrer_email || null,
+        created_at: now.toISOString(),
       };
       store.users.push(u); save();
       return u;
     },
     async listUsers() { return store.users.slice().sort((a,b) => b.created_at.localeCompare(a.created_at)); },
-    async updateUserAccess(id, { is_premium, premium_until }) {
+    async updateUserAccess(id, { is_premium, premium_until, validity_start }) {
       const u = store.users.find(u => u.id === id);
-      if (u) { u.is_premium = !!is_premium; u.premium_until = premium_until; save(); }
+      if (u) {
+        u.is_premium = !!is_premium;
+        u.premium_until = premium_until;
+        if (validity_start !== undefined) u.validity_start = validity_start;
+        save();
+      }
     },
     async deleteUser(id) {
       store.users = store.users.filter(u => u.id !== id);
@@ -314,7 +341,18 @@ app.use(async (req, res, next) => {
         }
         const now = new Date();
         const isPremiumActive = u.is_premium && (!u.premium_until || new Date(u.premium_until) > now);
-        req.user = { ...u, isPremiumActive };
+        // Trial detection: is_premium + validity_start present + total premium duration ≤ 8 days
+        let isTrial = false, trialDaysRemaining = 0;
+        if (isPremiumActive && u.validity_start && u.premium_until) {
+          const start = new Date(u.validity_start);
+          const end = new Date(u.premium_until);
+          const durationDays = (end - start) / 86400000;
+          if (durationDays <= 8.5) {
+            isTrial = true;
+            trialDaysRemaining = Math.max(0, Math.ceil((end - now) / 86400000));
+          }
+        }
+        req.user = { ...u, isPremiumActive, isTrial, trialDaysRemaining };
       }
     } catch (e) { console.warn('[AUTH]', e.message); }
   }
@@ -350,7 +388,7 @@ app.post('/api/signup', async (req, res) => {
     const u = await db.createUser({ email: em, password_hash: hash, is_admin: isAdmin, referrer_email: validRef });
     req.session.userId = u.id;
     sendSignupNotification(em).catch(()=>{});
-    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive: false } });
+    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive: true, isTrial: !u.is_admin, trialDaysRemaining: u.is_admin ? 0 : 7 } });
   } catch (e) { console.error(e); res.status(500).json({ error: '가입 중 오류가 발생했습니다.' }); }
 });
 
@@ -365,7 +403,16 @@ app.post('/api/login', async (req, res) => {
     req.session.userId = u.id;
     const now = new Date();
     const isPremiumActive = u.is_premium && (!u.premium_until || new Date(u.premium_until) > now);
-    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive } });
+    let isTrial = false, trialDaysRemaining = 0;
+    if (isPremiumActive && u.validity_start && u.premium_until) {
+      const start = new Date(u.validity_start);
+      const end = new Date(u.premium_until);
+      if ((end - start) / 86400000 <= 8.5) {
+        isTrial = true;
+        trialDaysRemaining = Math.max(0, Math.ceil((end - now) / 86400000));
+      }
+    }
+    res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive, isTrial, trialDaysRemaining } });
   } catch (e) { console.error(e); res.status(500).json({ error: '로그인 중 오류가 발생했습니다.' }); }
 });
 
@@ -375,7 +422,7 @@ app.post('/api/logout', (req, res) => {
 
 app.get('/api/me', (req, res) => {
   if (!req.user) return res.json({ user: null });
-  res.json({ user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: req.user.isPremiumActive, premium_until: req.user.premium_until } });
+  res.json({ user: { email: req.user.email, is_admin: !!req.user.is_admin, isPremiumActive: req.user.isPremiumActive, isTrial: !!req.user.isTrial, trialDaysRemaining: req.user.trialDaysRemaining || 0, premium_until: req.user.premium_until, validity_start: req.user.validity_start } });
 });
 
 // ─── Google AdSense ───────────────────────────────────────────
