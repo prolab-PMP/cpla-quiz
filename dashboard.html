@@ -48,11 +48,49 @@
 <script src="data/problems.js"></script>
 <script src="js/common.js"></script>
 <script>CPLA.renderHeader('dashboard');</script>
+<script>
+// Premium gating: free users see sample stats (real data is hidden but never replaced).
+window._sampleStateInjected = false;
+try {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', '/api/me', false); // sync so we can override state before charts render
+  xhr.send();
+  const j = JSON.parse(xhr.responseText || '{}');
+  const u = j && j.user;
+  const isPremium = u && (u.is_admin || u.isPremiumActive);
+  if (u && !isPremium) {
+    // Build a deterministic sample state: ~120 attempts, 73% accuracy, 8 bookmarks, last 14 days.
+    const ps = CPLA.getProblems();
+    if (ps && ps.length) {
+      // Seeded RNG
+      let seed = 42; const rnd = () => (seed = (seed*1664525 + 1013904223) >>> 0) / 0xFFFFFFFF;
+      const sampleSize = Math.min(120, Math.floor(ps.length * 0.6));
+      const picked = [...ps].sort(() => rnd() - 0.5).slice(0, sampleSize);
+      const attempts = {};
+      const now = Date.now();
+      picked.forEach((p, i) => {
+        const dayOffset = Math.floor(rnd() * 14);
+        const ts = now - dayOffset * 86400000 - Math.floor(rnd() * 28800000);
+        const correct = rnd() < 0.73;
+        attempts[p.key] = { answer: correct ? 1 : 2, correct, ts };
+      });
+      const bookmarks = {};
+      [...ps].sort(() => rnd() - 0.5).slice(0, 8).forEach(p => { bookmarks[p.key] = { ts: now - Math.floor(rnd()*86400000*7) }; });
+      const SAMPLE = { attempts, bookmarks, resume: null };
+      // Monkey-patch loadState — original real state is preserved on storage.
+      CPLA._origLoadState = CPLA.loadState;
+      CPLA.loadState = () => SAMPLE;
+      window._sampleStateInjected = true;
+    }
+  }
+} catch(e) { console.warn('sample-state check failed', e); }
+</script>
+
 
 <main class="container">
   <div id="premium-paywall" style="display:none;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:12px;padding:18px 22px;margin:20px 0;text-align:center;">
     <div style="font-size:1.1rem;font-weight:700;color:#92400e;margin-bottom:6px;">🔒 학습통계는 Premium 회원 전용</div>
-    <div style="font-size:0.92rem;color:#78350f;margin-bottom:10px;">아래는 샘플 화면입니다. Premium 가입 후 본인 통계를 확인할 수 있습니다.</div>
+    <div style="font-size:0.92rem;color:#78350f;margin-bottom:10px;">아래는 예시 데이터입니다. Premium 가입 후 본인의 실제 학습 통계가 표시됩니다.</div>
     <a href="mailto:songdoinfo@naver.com?subject=Premium 가입 문의" class="btn primary sm">Premium 가입 문의</a>
   </div>
 
@@ -312,6 +350,35 @@ fetch('/api/me', {credentials:'same-origin'}).then(r=>r.json()).then(j=>{
 }).catch(()=>{});
 
 // Streak & weekly trend (extra metrics) — append to summary cards
+(function(){
+  try {
+    const state = CPLA.loadState();
+    const ts = Object.values(state.attempts || {}).map(a => a && a.ts).filter(Boolean);
+    const days = new Set(ts.map(t => new Date(t).toISOString().slice(0,10)));
+    let streak = 0; const today = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today.getTime() - i*86400000).toISOString().slice(0,10);
+      if (days.has(d)) streak++; else break;
+    }
+    const last7 = ts.filter(t => Date.now() - t < 7*86400000).length;
+    const sc = document.getElementById('summary-cards');
+    if (sc) {
+      sc.insertAdjacentHTML('beforeend',
+        '<div class="card"><div class="icon-badge ib-orange">🔥</div><h3>' + streak + '<span style="font-size:14px;color:var(--muted);margin-left:4px">일</span></h3><p class="desc">연속 학습</p></div>' +
+        '<div class="card"><div class="icon-badge ib-blue">📅</div><h3>' + last7 + '</h3><p class="desc">최근 7일 풀이</p></div>'
+      );
+    }
+  } catch(e){}
+})();
+</script>
+<script>
+// Show banner if sample mode is active.
+if (window._sampleStateInjected) {
+  const bnr = document.getElementById('premium-paywall');
+  if (bnr) bnr.style.display = 'block';
+}
+
+// Streak & weekly trend cards (uses possibly-overridden loadState).
 (function(){
   try {
     const state = CPLA.loadState();
