@@ -336,42 +336,6 @@ document.getElementById('btn-reset-all').onclick = () => {
 
 </script>
 <script>
-// Premium gating: hide stats body for non-premium users; show sample (still computed) but overlay paywall banner.
-fetch('/api/me', {credentials:'same-origin'}).then(r=>r.json()).then(j=>{
-  const u = j && j.user;
-  const isPremium = u && (u.is_admin || u.isPremiumActive);
-  if (!isPremium) {
-    const bnr = document.getElementById('premium-paywall');
-    if (bnr) bnr.style.display = 'block';
-    document.querySelectorAll('#summary-cards, .grid.cols-2, #tab-body').forEach(el=>{
-      if (el) { el.style.filter = 'blur(2.5px)'; el.style.pointerEvents = 'none'; el.style.userSelect = 'none'; }
-    });
-  }
-}).catch(()=>{});
-
-// Streak & weekly trend (extra metrics) — append to summary cards
-(function(){
-  try {
-    const state = CPLA.loadState();
-    const ts = Object.values(state.attempts || {}).map(a => a && a.ts).filter(Boolean);
-    const days = new Set(ts.map(t => new Date(t).toISOString().slice(0,10)));
-    let streak = 0; const today = new Date();
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(today.getTime() - i*86400000).toISOString().slice(0,10);
-      if (days.has(d)) streak++; else break;
-    }
-    const last7 = ts.filter(t => Date.now() - t < 7*86400000).length;
-    const sc = document.getElementById('summary-cards');
-    if (sc) {
-      sc.insertAdjacentHTML('beforeend',
-        '<div class="card"><div class="icon-badge ib-orange">🔥</div><h3>' + streak + '<span style="font-size:14px;color:var(--muted);margin-left:4px">일</span></h3><p class="desc">연속 학습</p></div>' +
-        '<div class="card"><div class="icon-badge ib-blue">📅</div><h3>' + last7 + '</h3><p class="desc">최근 7일 풀이</p></div>'
-      );
-    }
-  } catch(e){}
-})();
-</script>
-<script>
 // Show banner if sample mode is active.
 if (window._sampleStateInjected) {
   const bnr = document.getElementById('premium-paywall');

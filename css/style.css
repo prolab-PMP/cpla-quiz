@@ -618,3 +618,6 @@ html[data-theme="dark"] .exam-banner{background:linear-gradient(135deg, #1e40af 
 
 /* hide question-number sidebar label since grid is hidden */
 .exam-sidebar h4{display:none !important}
+
+/* Korean word-break fix: prevent mid-word wrap on hero/cards */
+body, .hero p, .desc, .card p, .card .desc { word-break: keep-all; overflow-wrap: break-word; }
