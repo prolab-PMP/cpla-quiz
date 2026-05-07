@@ -229,10 +229,10 @@ html[data-theme="dark"] .site-header{background:rgba(15,23,42,.85)}
 }
 .exam-sidebar h4{margin:0 0 10px;font-size:13px;color:var(--muted);
   text-transform:uppercase;letter-spacing:.5px}
-.q-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.q-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px}
 .q-grid button{
   aspect-ratio:1;border:1px solid var(--border);background:var(--panel);color:var(--text);
-  border-radius:6px;font-weight:600;font-size:12px;padding:0;
+  border-radius:4px;font-weight:600;font-size:9px;padding:0;
   transition:.1s;position:relative;
 }
 .q-grid button:hover{border-color:var(--primary)}
