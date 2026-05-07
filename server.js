@@ -57,6 +57,7 @@ if (usePg) {
           is_admin BOOLEAN DEFAULT FALSE,
           is_premium BOOLEAN DEFAULT FALSE,
           premium_until TIMESTAMP NULL,
+          referrer_email TEXT NULL,
           created_at TIMESTAMP DEFAULT NOW()
         );
         CREATE TABLE IF NOT EXISTS sessions (
@@ -81,6 +82,7 @@ if (usePg) {
           PRIMARY KEY (user_id, problem_key)
         );
         CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks (user_id);
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS referrer_email TEXT;
         CREATE TABLE IF NOT EXISTS resumes (
           user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
           snapshot JSONB,
@@ -96,15 +98,15 @@ if (usePg) {
       const r = await pool.query('SELECT * FROM users WHERE id=$1', [id]);
       return r.rows[0] || null;
     },
-    async createUser({ email, password_hash, is_admin }) {
+    async createUser({ email, password_hash, is_admin, referrer_email }) {
       const r = await pool.query(
-        'INSERT INTO users (email, password_hash, is_admin) VALUES ($1,$2,$3) RETURNING *',
-        [email, password_hash, !!is_admin]
+        'INSERT INTO users (email, password_hash, is_admin, referrer_email) VALUES ($1,$2,$3,$4) RETURNING *',
+        [email, password_hash, !!is_admin, referrer_email || null]
       );
       return r.rows[0];
     },
     async listUsers() {
-      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, created_at FROM users ORDER BY created_at DESC');
+      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, referrer_email, created_at FROM users ORDER BY created_at DESC');
       return r.rows;
     },
     async updateUserAccess(id, { is_premium, premium_until }) {
@@ -331,15 +333,21 @@ function requireAdmin(req, res, next) {
 // ─── 인증 API ──────────────────────────────────────────────────
 app.post('/api/signup', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, referrer_email } = req.body;
     const em = String(email || '').trim().toLowerCase();
+    const refRaw = String(referrer_email || '').trim().toLowerCase();
     if (!em.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return res.status(400).json({ error: '이메일 형식이 올바르지 않습니다.' });
     if (String(password || '').length < 4) return res.status(400).json({ error: '비밀번호는 최소 4자 이상이어야 합니다.' });
     const exists = await db.getUserByEmail(em);
     if (exists) return res.status(400).json({ error: '이미 가입된 이메일입니다.' });
     const hash = bcrypt.hashSync(String(password), 10);
     const isAdmin = em === ADMIN_EMAIL;
-    const u = await db.createUser({ email: em, password_hash: hash, is_admin: isAdmin });
+    let validRef = null;
+    if (refRaw && refRaw.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && refRaw !== em) {
+      const refUser = await db.getUserByEmail(refRaw);
+      if (refUser) validRef = refUser.email;
+    }
+    const u = await db.createUser({ email: em, password_hash: hash, is_admin: isAdmin, referrer_email: validRef });
     req.session.userId = u.id;
     sendSignupNotification(em).catch(()=>{});
     res.json({ ok: true, user: { email: u.email, is_admin: !!u.is_admin, isPremiumActive: false } });

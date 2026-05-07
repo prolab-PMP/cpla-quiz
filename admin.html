@@ -109,6 +109,7 @@
           ${sortHeader('is_premium', '등급')}
           ${sortHeader('premium_until', '유효기간')}
           ${sortHeader('created_at', '가입일')}
+          <th>추천인</th>
           <th style="width:380px">작업</th>
         </tr></thead>
         <tbody>
@@ -125,6 +126,7 @@
               <td>${badge}</td>
               <td>${validity}</td>
               <td>${fmtDate(u.created_at)}</td>
+              <td style="font-size:12px">${u.referrer_email ? `<span title="${u.referrer_email}">${u.referrer_email}</span>` : '<span style="color:var(--muted)">-</span>'}</td>
               <td>
                 <div class="admin-actions-cell">
                   <div class="inline">

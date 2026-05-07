@@ -28,6 +28,11 @@
         <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호 확인</label>
         <input type="password" name="password2" required minlength="4" class="search" style="width:100%" placeholder="위에 입력한 비밀번호 한 번 더">
       </div>
+            <div style="margin-bottom:18px">
+        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">추천인 이메일 <small style="color:var(--muted);font-weight:400">(선택)</small></label>
+        <input type="email" name="referrer_email" class="search" style="width:100%" placeholder="추천한 분 이메일">
+        <small style="display:block;color:var(--muted);font-size:11px;margin-top:4px">💡 친구가 추천했다면 이메일 입력. 나중 유료 결제 시 <b>두 사람 모두 +1개월 연장</b></small>
+      </div>
       <div id="err" style="display:none;color:var(--danger);font-size:13px;margin-bottom:12px;padding:10px;background:var(--danger-soft);border-radius:8px"></div>
       <button type="submit" class="btn primary" style="width:100%">가입하기</button>
     </form>
@@ -58,7 +63,7 @@ document.getElementById('signup-form').onsubmit = async (e) => {
     const r = await fetch('/api/signup', {
       method:'POST', headers:{'Content-Type':'application/json'},
       credentials: 'same-origin',
-      body: JSON.stringify({ email: f.email.value, password: f.password.value })
+      body: JSON.stringify({ email: f.email.value, password: f.password.value, referrer_email: (f.referrer_email && f.referrer_email.value) || '' })
     });
     const j = await r.json();
     if (!r.ok) { err.textContent = j.error || '가입 실패'; err.style.display = 'block'; return; }
