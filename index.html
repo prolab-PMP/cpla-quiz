@@ -283,7 +283,7 @@
     if (hero) {
       const notice = document.createElement('div');
       notice.style.cssText = 'margin-top:16px;padding:14px 18px;background:rgba(255,152,0,0.28);border:1px solid rgba(255,152,0,0.6);border-radius:12px;font-size:14px;color:#fff;font-weight:700;box-shadow:0 2px 12px rgba(255,152,0,0.25)';
-      notice.innerHTML = `🔓 <b style="color:#fff5d6">현재 무료 이용 중</b> — 전체 문항 열람을 원하시면 <b>관리자에게 Premium 전환을 문의</b>하세요. <span style="background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:999px;margin-left:6px;font-size:13px">무료회원은 총 ${totalCount.toLocaleString()}문제 중 ${access.problems.length.toLocaleString()}문제 열람 가능</span>`;
+      notice.innerHTML = `🔓 <b style="color:#fff5d6">현재 무료 이용 중</b> — 전체 문항을 무제한으로 풀려면 네이버 스마트스토어에서 Premium 회원권을 구매하세요. <span style="background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:999px;margin-left:6px;font-size:13px">현재 ${access.problems.length.toLocaleString()} / ${totalCount.toLocaleString()}문제 열람 가능</span><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;"><a href="https://smartstore.naver.com/sub-note/products/13500101192" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#03C75A;color:#fff;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.18);"><svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155l8.897 12.845H24V0h-7.727z"/></svg>네이버 스마트스토어에서 구매</a></div>`;
       hero.appendChild(notice);
     }
   }
