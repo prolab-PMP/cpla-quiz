@@ -229,10 +229,10 @@ html[data-theme="dark"] .site-header{background:rgba(15,23,42,.85)}
 }
 .exam-sidebar h4{margin:0 0 10px;font-size:13px;color:var(--muted);
   text-transform:uppercase;letter-spacing:.5px}
-.q-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1px}
+.q-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;display:none}
 .q-grid button{
   aspect-ratio:1;border:1px solid var(--border);background:var(--panel);color:var(--text);
-  border-radius:3px;font-weight:500;font-size:6px;padding:0;
+  border-radius:4px;font-weight:600;font-size:9px;padding:0;
   transition:.1s;position:relative;
 }
 .q-grid button:hover{border-color:var(--primary)}
@@ -615,3 +615,6 @@ html[data-theme="dark"] .exam-banner{background:linear-gradient(135deg, #1e40af 
 .sk-more[open] summary::before{content:"▾ "}
 .sk-more summary:hover{background:var(--panel-2)}
 @media(max-width:640px){.sk-row{grid-template-columns:24px 1fr 60px 30px;gap:6px;font-size:12px}}
+
+/* hide question-number sidebar label since grid is hidden */
+.exam-sidebar h4{display:none !important}
