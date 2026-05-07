@@ -109,6 +109,50 @@ try {
     <div class="chart-box"><h4>출제 유형 분포</h4><div class="wrap"><canvas id="chart-form"></canvas></div></div>
     <div class="chart-box"><h4>취약 키워드 TOP 10 (오답 많은 순)</h4><div class="wrap"><canvas id="chart-kw"></canvas></div></div>
   </div>
+  <!-- 프로 분석 (Pro Analytics) -->
+  <section class="section-title">
+    <span class="tag" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:0">프로 분석</span> 데이터 시각화
+  </section>
+
+  <div class="chart-box" id="pro-heatmap-card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <h4 style="margin:0">📅 학습 활동 잔디밭 (최근 1년)</h4>
+      <div id="heatmap-stats" style="font-size:13px;color:var(--muted);text-align:right"></div>
+    </div>
+    <div id="activity-heatmap" style="overflow-x:auto;padding:6px 2px"></div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:6px;justify-content:flex-end">
+      <span>적게</span>
+      <span style="display:inline-block;width:11px;height:11px;background:#ebedf0;border-radius:2px"></span>
+      <span style="display:inline-block;width:11px;height:11px;background:#9be9a8;border-radius:2px"></span>
+      <span style="display:inline-block;width:11px;height:11px;background:#40c463;border-radius:2px"></span>
+      <span style="display:inline-block;width:11px;height:11px;background:#30a14e;border-radius:2px"></span>
+      <span style="display:inline-block;width:11px;height:11px;background:#216e39;border-radius:2px"></span>
+      <span>많이</span>
+    </div>
+  </div>
+
+  <div class="grid cols-2" style="margin-bottom:14px">
+    <div class="chart-box">
+      <h4>🎯 약점 레이더 (과목별 정답률)</h4>
+      <div class="wrap"><canvas id="chart-radar"></canvas></div>
+      <div id="radar-note" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center"></div>
+    </div>
+    <div class="chart-box">
+      <h4>🏁 합격 가능성</h4>
+      <div class="wrap" style="position:relative;min-height:240px">
+        <canvas id="chart-gauge"></canvas>
+        <div id="gauge-text" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-box" id="pro-trend-card" style="margin-bottom:14px">
+    <h4>🔥 키워드별 출제 트렌드 (TOP 20 × 연도)</h4>
+    <p style="font-size:12px;color:var(--muted);margin:4px 0 12px">진한 빨강일수록 자주 출제. 셀 우측 상단의 작은 % 는 본인의 정답률(낮을수록 우선 학습 영역).</p>
+    <div id="topic-trend-heatmap" style="overflow-x:auto"></div>
+  </div>
+
+
 
   <section class="section-title"><span class="tag">노트</span> 틀린 문제 · 북마크</section>
   <div class="tabs">
@@ -365,5 +409,278 @@ if (window._sampleStateInjected) {
 })();
 </script>
 <script>CPLA.renderFooter();</script>
+<script>
+// ===== Pro Analytics (4 widgets, data-only) =====
+(function(){
+  if (!window.Chart) { console.warn('[pro] Chart.js not loaded'); }
+  var NS = window.CPLA;
+  if (!NS) { console.warn('[pro] namespace CPLA not found'); return; }
+  var state = NS.loadState();
+  var ps = NS.getProblems();
+  if (!ps || !ps.length) { console.warn('[pro] no problems'); return; }
+
+  // ---- 1. Activity Heatmap (학습 잔디밭) ----
+  function renderHeatmap(){
+    var today = new Date(); today.setHours(0,0,0,0);
+    var counts = {};
+    var totalAtt = 0;
+    var atts = state.attempts || {};
+    for (var k in atts) {
+      var a = atts[k];
+      if (!a || !a.ts) continue;
+      var d = new Date(a.ts); d.setHours(0,0,0,0);
+      var key = d.toISOString().slice(0,10);
+      counts[key] = (counts[key]||0) + 1;
+      totalAtt++;
+    }
+    var totalDays = Object.keys(counts).length;
+
+    // Calculate streak (current + max)
+    var curStreak = 0;
+    for (var i = 0; i < 366; i++) {
+      var d2 = new Date(today.getTime() - i*86400000).toISOString().slice(0,10);
+      if (counts[d2]) curStreak++; else break;
+    }
+    // Max streak: scan last 365 days
+    var maxStreak = 0, run = 0;
+    for (var j = 365; j >= 0; j--) {
+      var d3 = new Date(today.getTime() - j*86400000).toISOString().slice(0,10);
+      if (counts[d3]) { run++; if (run > maxStreak) maxStreak = run; }
+      else run = 0;
+    }
+
+    // Build 53-week × 7-day grid ending today (today on bottom-right area)
+    var weeks = 53;
+    var dow = today.getDay(); // 0=Sun
+    var totalCells = weeks*7 - (6 - dow);
+    var startDate = new Date(today.getTime() - (totalCells - 1) * 86400000);
+
+    var cs = 12, gap = 3;
+    var topPad = 18;
+    var W = weeks * (cs+gap);
+    var H = topPad + 7 * (cs+gap);
+
+    function colorFor(c){
+      if (!c) return '#ebedf0';
+      if (c < 2) return '#9be9a8';
+      if (c < 5) return '#40c463';
+      if (c < 10) return '#30a14e';
+      return '#216e39';
+    }
+
+    var svg = '<svg width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" style="display:block">';
+    var lastMonth = -1;
+    for (var w = 0; w < weeks; w++) {
+      var d4 = new Date(startDate.getTime() + w*7*86400000);
+      var m = d4.getMonth();
+      if (m !== lastMonth) {
+        svg += '<text x="'+(w*(cs+gap))+'" y="10" font-size="10" fill="#888">'+(m+1)+'월</text>';
+        lastMonth = m;
+      }
+    }
+    for (var ww = 0; ww < weeks; ww++) {
+      for (var dd = 0; dd < 7; dd++) {
+        var idx = ww*7 + dd;
+        if (idx >= totalCells) continue;
+        var dat = new Date(startDate.getTime() + idx*86400000);
+        if (dat > today) continue;
+        var dk = dat.toISOString().slice(0,10);
+        var c = counts[dk] || 0;
+        var x = ww*(cs+gap), y = topPad + dd*(cs+gap);
+        var tip = dk + ': ' + c + '문제';
+        svg += '<rect x="'+x+'" y="'+y+'" width="'+cs+'" height="'+cs+'" rx="2" fill="'+colorFor(c)+'"><title>'+tip+'</title></rect>';
+      }
+    }
+    svg += '</svg>';
+    document.getElementById('activity-heatmap').innerHTML = svg;
+    document.getElementById('heatmap-stats').innerHTML =
+      '🔥 <b>'+curStreak+'일</b> 연속 · 최장 <b>'+maxStreak+'일</b> · 학습일 <b>'+totalDays+'일</b> · 누적 <b>'+totalAtt+'</b>문제';
+  }
+
+  // ---- 2. Radar Chart (약점 레이더) ----
+  function renderRadar(){
+    var subj = {}; // subject -> {t,c}
+    for (var i=0;i<ps.length;i++){
+      var p = ps[i];
+      var a = state.attempts[p.key];
+      if (!a) continue;
+      var s = p.subject || '기타';
+      if (!subj[s]) subj[s] = {t:0,c:0};
+      subj[s].t++;
+      if (a.correct) subj[s].c++;
+    }
+    var labels = Object.keys(subj).sort();
+    if (!labels.length) {
+      document.getElementById('radar-note').textContent = '아직 풀이 기록이 없어 레이더가 비어있습니다.';
+      return;
+    }
+    var data = labels.map(function(s){ var v = subj[s]; return v.t ? Math.round(v.c/v.t*100) : 0; });
+    var ctx = document.getElementById('chart-radar');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '정답률 (%)',
+          data: data,
+          backgroundColor: 'rgba(124,58,237,0.18)',
+          borderColor: 'rgba(124,58,237,0.85)',
+          pointBackgroundColor: 'rgba(124,58,237,1)',
+          pointRadius: 4,
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            suggestedMin: 0, suggestedMax: 100,
+            ticks: { stepSize: 25, color: '#888', backdropColor: 'transparent', font:{size:10} },
+            grid: { color: 'rgba(0,0,0,0.08)' },
+            angleLines: { color: 'rgba(0,0,0,0.08)' },
+            pointLabels: { font:{size:12,weight:'600'}, color:'#444' }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+    var weakest = labels.reduce(function(acc, lb, idx){
+      return data[idx] < acc.v ? {l:lb, v:data[idx]} : acc;
+    }, {l:'', v:101});
+    if (weakest.l) {
+      document.getElementById('radar-note').innerHTML =
+        '⚠️ 가장 약한 영역: <b style="color:#dc2626">'+weakest.l+'</b> ('+weakest.v+'%)';
+    }
+  }
+
+  // ---- 3. Pass Probability Gauge (합격 가능성) ----
+  function renderGauge(){
+    var atts = [];
+    for (var k in state.attempts) {
+      var a = state.attempts[k];
+      if (a && a.ts) atts.push(a);
+    }
+    atts.sort(function(a,b){ return b.ts - a.ts; });
+    atts = atts.slice(0, 100);
+    var correct = 0;
+    for (var i=0;i<atts.length;i++) if (atts[i].correct) correct++;
+    var pct = atts.length ? Math.round(correct/atts.length*100) : 0;
+    var color = pct >= 60 ? '#16a34a' : (pct >= 50 ? '#f59e0b' : '#ef4444');
+    var ctx = document.getElementById('chart-gauge');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [pct, 100-pct],
+          backgroundColor: [color, '#e5e7eb'],
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        cutout: '78%',
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+    var verdict = pct >= 60 ? '✅ 합격권' : pct >= 50 ? '⚠️ 경계 (보강 필요)' : '🚧 추가 학습 필요';
+    document.getElementById('gauge-text').innerHTML =
+      '<div style="font-size:44px;font-weight:800;color:'+color+';line-height:1">'+pct+'%</div>'+
+      '<div style="font-size:13px;color:var(--muted);margin-top:6px">최근 '+atts.length+'문제 정답률</div>'+
+      '<div style="font-size:12px;color:'+color+';margin-top:4px;font-weight:600">'+verdict+'</div>'+
+      '<div style="font-size:11px;color:var(--muted);margin-top:2px">합격선 평균 60%</div>';
+  }
+
+  // ---- 4. Topic Trend Heatmap (출제 트렌드) ----
+  function renderTrend(){
+    var yearSet = {};
+    var kwTotal = {};
+    var kwYear = {};
+    for (var i=0;i<ps.length;i++){
+      var p = ps[i];
+      var y = p.year || '';
+      if (!y) continue;
+      yearSet[y] = 1;
+      var kws = p.keywords || [];
+      for (var j=0;j<kws.length;j++){
+        var kw = kws[j];
+        if (!kw) continue;
+        kwTotal[kw] = (kwTotal[kw]||0) + 1;
+        var key = kw + '|' + y;
+        kwYear[key] = (kwYear[key]||0) + 1;
+      }
+    }
+    var years = Object.keys(yearSet).sort();
+    var topKws = Object.keys(kwTotal).sort(function(a,b){ return kwTotal[b]-kwTotal[a]; }).slice(0,20);
+    if (!topKws.length) return;
+    var maxCount = 1;
+    for (var k1=0;k1<topKws.length;k1++) {
+      for (var y1=0;y1<years.length;y1++) {
+        var c = kwYear[topKws[k1]+'|'+years[y1]] || 0;
+        if (c > maxCount) maxCount = c;
+      }
+    }
+
+    function userAcc(kw, year){
+      var att = 0, cor = 0;
+      for (var i=0;i<ps.length;i++){
+        var p = ps[i];
+        if (p.year !== year) continue;
+        var has = false;
+        var kws = p.keywords || [];
+        for (var j=0;j<kws.length;j++) if (kws[j] === kw) { has = true; break; }
+        if (!has) continue;
+        var a = state.attempts[p.key];
+        if (a) { att++; if (a.correct) cor++; }
+      }
+      return att ? Math.round(cor/att*100) : null;
+    }
+
+    function colorFor(c){
+      if (!c) return '#fafafa';
+      var t = c / maxCount;
+      // light pink → deep red
+      var r = 254;
+      var g = Math.round(254 - (254-50)*t);
+      var b = Math.round(254 - (254-50)*t);
+      return 'rgb('+r+','+g+','+b+')';
+    }
+
+    var cellW = 56, cellH = 30, labelW = 130;
+    var min = labelW + cellW * years.length;
+    var html = '<div style="font-family:inherit;font-size:12px;min-width:'+min+'px">';
+    html += '<div style="display:flex"><div style="width:'+labelW+'px"></div>';
+    for (var yi=0;yi<years.length;yi++) {
+      html += '<div style="width:'+cellW+'px;text-align:center;font-weight:600;color:#888;font-size:11px;padding:4px 0">'+years[yi]+'</div>';
+    }
+    html += '</div>';
+    for (var ki=0;ki<topKws.length;ki++) {
+      var kw2 = topKws[ki];
+      html += '<div style="display:flex;align-items:center;border-bottom:1px solid #f1f5f9">';
+      html += '<div style="width:'+labelW+'px;padding:6px 8px;font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+kw2+' (총 '+kwTotal[kw2]+'회)">'+kw2+' <span style="color:#aaa">('+kwTotal[kw2]+')</span></div>';
+      for (var yj=0;yj<years.length;yj++) {
+        var y2 = years[yj];
+        var cc = kwYear[kw2+'|'+y2] || 0;
+        var acc = userAcc(kw2, y2);
+        var bg = colorFor(cc);
+        var tip = kw2+' · '+y2+': 출제 '+cc+'회'+(acc!==null?' · 내 정답률 '+acc+'%':'');
+        var accBadge = (acc !== null && cc) ?
+          '<span style="position:absolute;top:1px;right:3px;font-size:9px;color:'+(acc<50?'#dc2626':acc<70?'#d97706':'#16a34a')+';background:rgba(255,255,255,0.85);padding:0 2px;border-radius:2px;line-height:1.2">'+acc+'</span>' : '';
+        var txtCol = cc > maxCount*0.55 ? '#fff' : '#444';
+        html += '<div style="width:'+cellW+'px;height:'+cellH+'px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:11px;color:'+txtCol+';border-right:1px solid #fff;position:relative" title="'+tip+'">'+(cc||'')+accBadge+'</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    document.getElementById('topic-trend-heatmap').innerHTML = html;
+  }
+
+  try { renderHeatmap(); } catch(e){ console.warn('[pro] heatmap', e); }
+  try { renderRadar(); }   catch(e){ console.warn('[pro] radar', e); }
+  try { renderGauge(); }   catch(e){ console.warn('[pro] gauge', e); }
+  try { renderTrend(); }   catch(e){ console.warn('[pro] trend', e); }
+})();
+</script>
 </body>
 </html>
