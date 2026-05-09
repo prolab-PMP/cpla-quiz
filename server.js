@@ -15,12 +15,31 @@ const session = require('express-session');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
+const crypto = require('crypto');
+// #6/#11: security middleware. helmet sets common headers; rate-limit caps quiz API.
+let helmet = null, rateLimit = null;
+try { helmet = require('helmet'); } catch (e) { console.warn('[SEC] helmet not installed; skipping'); }
+try { rateLimit = require('express-rate-limit'); } catch (e) { console.warn('[SEC] express-rate-limit not installed; skipping'); }
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_ENVIRONMENT;
+
+// #7: SESSION_SECRET fail-fast in production
+if (IS_PRODUCTION && !process.env.SESSION_SECRET) {
+  throw new Error('SECURITY: SESSION_SECRET environment variable is required in production. ' +
+    'Set it in Railway env vars (use a 32+ char random string).');
+}
+const SESSION_SECRET_VALUE = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SITE_NAME = process.env.SITE_NAME || '공인노무사 문제풀이';
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'songdoinfo@naver.com';
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'songdoinfo@naver.com').toLowerCase();
+
+// #6: helmet for default secure headers (CSP disabled to avoid breaking AdSense / inline JS).
+if (helmet) {
+  app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+}
 
 // ─── 커스텀 도메인: *.up.railway.app → cpla.wayexam.com 301 redirect ───
 const PRIMARY_HOST = process.env.PRIMARY_HOST || 'cpla.wayexam.com';
@@ -278,10 +297,15 @@ if (usePg) {
 
 // ─── 세션 ─────────────────────────────────────────────────────
 const sessionOpts = {
-  secret: process.env.SESSION_SECRET || 'change-this-in-production',
+  secret: SESSION_SECRET_VALUE,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' },
+  cookie: {
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: IS_PRODUCTION, // #6: HTTPS-only in production
+  },
 };
 if (usePg) {
   try {
@@ -470,6 +494,18 @@ app.get('/api/health', async (req, res) => {
 });
 
 // ─── 학습 기록 동기화 API (로그인 사용자) ─────────────────────
+// #11: rate-limit /api/state/* to throttle macro/scraper attempts.
+if (rateLimit) {
+  const stateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 120, // 120 req/min per IP — generous for normal quiz use
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' },
+  });
+  app.use('/api/state', stateLimiter);
+}
+
 app.get('/api/state', requireAuth, async (req, res) => {
   try {
     const state = await db.getUserState(req.user.id);
@@ -628,11 +664,35 @@ app.get('/data/problems.js', (req, res) => {
   res.send('window.PROBLEMS = ' + JSON.stringify(problems) + ';');
 });
 
-// ─── Static (기존) ───────────────────────────────────────────
-app.use(express.static(__dirname, {
-  extensions: ['html'],
-  index: 'index.html'
-}));
+// ─── Static (#3: whitelist — block server.js, package.json, .bat, .md, scripts/, data/) ───
+// Only serve from explicit asset directories + a fixed list of root HTML files.
+const STATIC_DIRS = ['css', 'js', 'images'];
+for (const dir of STATIC_DIRS) {
+  app.use('/' + dir, express.static(path.join(__dirname, dir), {
+    dotfiles: 'deny',
+    index: false,
+  }));
+}
+const ALLOWED_ROOT_FILES = new Set([
+  'index.html', 'login.html', 'signup.html', 'dashboard.html', 'exam.html',
+  'admin.html', 'subjects.html', 'years.html',
+  'manifest.json', 'service-worker.js', 'robots.txt', 'sitemap.xml',
+  'llms.txt', 'favicon.ico', 'ads.txt',
+]);
+app.get(/^\/([^\/]+\.[a-z0-9]+)$/i, (req, res, next) => {
+  const fname = req.params[0];
+  if (!ALLOWED_ROOT_FILES.has(fname)) {
+    return res.status(404).send('Not found');
+  }
+  res.sendFile(path.join(__dirname, fname));
+});
+// Serve extensionless routes via .html lookup if whitelisted
+app.get(/^\/([a-z0-9_\-]+)\/?$/i, (req, res, next) => {
+  const name = req.params[0];
+  const candidate = name + '.html';
+  if (!ALLOWED_ROOT_FILES.has(candidate)) return next();
+  res.sendFile(path.join(__dirname, candidate));
+});
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
