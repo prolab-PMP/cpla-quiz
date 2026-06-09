@@ -417,6 +417,7 @@
     const f = `<footer class="footer">
       공인노무사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
       <small>본 자료는 학습 목적으로 제공되며, 공식 정답은 한국산업인력공단 발표를 따릅니다.</small>
+      <small>사업자명: 더송도 | 사업자등록번호: 877-04-02518</small>
     </footer>`;
     document.body.insertAdjacentHTML("beforeend", f);
   }
