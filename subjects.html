@@ -19,21 +19,21 @@
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "과목·키워드별 풀이",
-  "url": "https://cpla.wayexam.com/subjects.html",
-  "description": "산업안전보건, 산업안전일반, 기업진단지도 과목 및 핵심 키워드별 학습"
+ "@context": "https://schema.org",
+ "@type": "CollectionPage",
+ "name": "과목·키워드별 풀이",
+ "url": "https://cpla.wayexam.com/subjects.html",
+ "description": "산업안전보건, 산업안전일반, 기업진단지도 과목 및 핵심 키워드별 학습"
 }
 </script>
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "공인노무사 기출문제 풀이",
-  "url": "https://cpla.wayexam.com/",
-  "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
-  "inLanguage": "ko"
+ "@context": "https://schema.org",
+ "@type": "Organization",
+ "name": "공인노무사 기출문제 풀이",
+ "url": "https://cpla.wayexam.com/",
+ "description": "공인노무사 1차 자격시험 기출문제 풀이 및 학습 플랫폼",
+ "inLanguage": "ko"
 }
 </script>
 <link rel="manifest" href="manifest.json">
@@ -48,41 +48,41 @@
 <script>CPLA.renderHeader('subjects');</script>
 
 <main class="container">
-  <div class="hero" style="padding:30px 32px">
-    <h1 style="font-size:26px">📚 과목 · 키워드별 풀이</h1>
-    <p>공인노무사 1차 6개 과목과 핵심 키워드로 집중 학습하세요. 아래 검색창에서 원하는 키워드를 찾을 수 있습니다.</p>
-  </div>
+ <div class="hero" style="padding:30px 32px">
+ <h1 style="font-size:26px">과목 · 키워드별 풀이</h1>
+ <p>공인노무사 1차 6개 과목과 핵심 키워드로 집중 학습하세요. 아래 검색창에서 원하는 키워드를 찾을 수 있습니다.</p>
+ </div>
 
-  <section class="section-title"><span class="tag">과목별</span> 과목을 선택하여 풀이 시작</section>
-  <div class="grid cols-3" id="subject-grid"></div>
+ <section class="section-title"><span class="tag">과목별</span>과목을 선택하여 풀이 시작</section>
+ <div class="grid cols-3" id="subject-grid"></div>
 
-  <section class="section-title"><span class="tag green">고빈도 키워드 풀이</span> 과목별 상위 20 · 키워드 클릭 시 관련 문제 바로 풀기</section>
-  <div id="subject-keywords"></div>
+ <section class="section-title"><span class="tag green">고빈도 키워드 풀이</span>과목별 상위 20 · 키워드 클릭 시 관련 문제 바로 풀기</section>
+ <div id="subject-keywords"></div>
 
-  <section class="section-title"><span class="tag">전체 키워드</span> 검색 · 출제빈도 순</section>
+ <section class="section-title"><span class="tag">전체 키워드</span>검색 · 출제빈도 순</section>
 
-  <div class="filter-bar">
-    <label>검색:</label>
-    <input type="text" class="search" id="kw-search" list="kw-suggest" autocomplete="off"
-      placeholder="예: 안전보건관리책임자, 위험성평가, 하인리히... (자동완성 지원)" style="max-width:380px">
-    <datalist id="kw-suggest"></datalist>
-    <label>정렬:</label>
-    <select class="select" id="kw-sort">
-      <option value="freq">출제빈도 높은 순</option>
-      <option value="name">가나다 순</option>
-    </select>
-    <label>최소 출제:</label>
-    <select class="select" id="kw-min">
-      <option value="1">1회 이상</option>
-      <option value="3" selected>3회 이상</option>
-      <option value="5">5회 이상</option>
-      <option value="10">10회 이상</option>
-    </select>
-  </div>
+ <div class="filter-bar">
+ <label>검색:</label>
+ <input type="text" class="search" id="kw-search" list="kw-suggest" autocomplete="off"
+ placeholder="예: 안전보건관리책임자, 위험성평가, 하인리히... (자동완성 지원)" style="max-width:380px">
+ <datalist id="kw-suggest"></datalist>
+ <label>정렬:</label>
+ <select class="select" id="kw-sort">
+ <option value="freq">출제빈도 높은 순</option>
+ <option value="name">가나다 순</option>
+ </select>
+ <label>최소 출제:</label>
+ <select class="select" id="kw-min">
+ <option value="1">1회 이상</option>
+ <option value="3" selected>3회 이상</option>
+ <option value="5">5회 이상</option>
+ <option value="10">10회 이상</option>
+ </select>
+ </div>
 
-  <div class="card">
-    <div class="kw-cloud" id="kw-cloud"></div>
-  </div>
+ <div class="card">
+ <div class="kw-cloud" id="kw-cloud"></div>
+ </div>
 </main>
 
 <script>
@@ -95,26 +95,26 @@ const __access = window.__ACCESS__;
 const bySub = {};
 ps.forEach(p => { (bySub[p.subject] = bySub[p.subject] || []).push(p); });
 const subjectMeta = {
-  "산업안전보건":{icon:"⚠️", cls:"ib-danger", desc:"산업안전보건법령, 안전보건관리 체계, 유해·위험방지 등"},
-  "산업안전일반":{icon:"🦺", cls:"ib-blue", desc:"안전공학, 인간공학, 시스템 안전, 재해 분석"},
-  "기업진단지도":{icon:"🏢", cls:"ib-green", desc:"경영진단, 조직·인사관리, 재무·생산 전략"},
+ "산업안전보건":{icon:"", cls:"ib-danger", desc:"산업안전보건법령, 안전보건관리 체계, 유해·위험방지 등"},
+ "산업안전일반":{icon:"", cls:"ib-blue", desc:"안전공학, 인간공학, 시스템 안전, 재해 분석"},
+ "기업진단지도":{icon:"", cls:"ib-green", desc:"경영진단, 조직·인사관리, 재무·생산 전략"},
 };
 const sg = document.getElementById('subject-grid');
 sg.innerHTML = Object.keys(bySub).map(s => {
-  const list = bySub[s];
-  const stats = CPLA.calcStats(list);
-  const meta = subjectMeta[s] || {icon:"📘", cls:"ib-blue", desc:""};
-  return `
-    <a class="card link" href="exam.html?mode=subject&subject=${encodeURIComponent(s)}">
-      <div class="icon-badge ${meta.cls}">${meta.icon}</div>
-      <h3>${s}</h3>
-      <p class="desc">${meta.desc}</p>
-      <div class="stat">
-        <span class="stat-small">${list.length}문항 · 진도 ${stats.solved}/${stats.total}</span>
-        <span class="stat-big">${stats.accuracy||0}%</span>
-      </div>
-      <div class="progress"><i style="width:${stats.progress}%"></i></div>
-    </a>`;
+ const list = bySub[s];
+ const stats = CPLA.calcStats(list);
+ const meta = subjectMeta[s] || {icon:"", cls:"ib-blue", desc:""};
+ return `
+ <a class="card link" href="exam.html?mode=subject&subject=${encodeURIComponent(s)}">
+ <div class="icon-badge ${meta.cls}">${meta.icon}</div>
+ <h3>${s}</h3>
+ <p class="desc">${meta.desc}</p>
+ <div class="stat">
+ <span class="stat-small">${list.length}문항 · 진도 ${stats.solved}/${stats.total}</span>
+ <span class="stat-big">${stats.accuracy||0}%</span>
+ </div>
+ <div class="progress"><i style="width:${stats.progress}%"></i></div>
+ </a>`;
 }).join('');
 
 // 키워드 카운트
@@ -123,92 +123,92 @@ ps.forEach(p => (p.keywords||[]).forEach(k => { kwCount[k] = (kwCount[k]||0)+1; 
 
 // 과목별 키워드 카운트 & 상위 20 렌더링
 (function renderSubjectKeywords(){
-  const host = document.getElementById('subject-keywords');
-  if (!host) return;
-  const host2 = {};
-  // 전체 데이터 기반 키워드 빈도(서버에서 받음). 무료/유료 동일.
-  const fullKw = (window.__ACCESS__ && window.__ACCESS__.fullSubjectKeywords) || null;
-  Object.keys(bySub).forEach(s => {
-    if (fullKw && Array.isArray(fullKw[s])) {
-      host2[s] = fullKw[s];
-    } else {
-      const subKw = {};
-      bySub[s].forEach(p => (p.keywords||[]).forEach(k => {
-        subKw[k] = (subKw[k]||0) + 1;
-      }));
-      host2[s] = Object.entries(subKw).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
-    }
-  });
-  const cards = Object.keys(host2).map(s => {
-    const entries = host2[s];
-    const maxV = entries.length ? entries[0][1] : 1;
-    const meta = subjectMeta[s] || {icon:"📘", cls:"ib-blue"};
-    const top20 = entries.slice(0, 20);
-    const rest = entries.slice(20);
-    const rowHtml = (kv, idx) => {
-      const [k, v] = kv;
-      const widthPct = Math.round((v/maxV)*100);
-      return `
-        <a class="sk-row" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
-          <span class="sk-rank">${idx+1}</span>
-          <span class="sk-name">${k}</span>
-          <span class="sk-bar"><i style="width:${widthPct}%"></i></span>
-          <span class="sk-count">${v}회</span>
-        </a>`;
-    };
-    const topHtml = top20.map(rowHtml).join('');
-    const restHtml = rest.map((kv, i) => rowHtml(kv, i+20)).join('');
-    const expandable = rest.length > 0 ? `
-      <details class="sk-more">
-        <summary>+ ${rest.length}개 더 보기</summary>
-        <div class="sk-list">${restHtml}</div>
-      </details>` : '';
-    return `
-      <div class="card sk-card">
-        <div class="sk-head">
-          <div class="icon-badge ${meta.cls}">${meta.icon}</div>
-          <div>
-            <h3>${s}</h3>
-            <p class="desc">총 ${entries.length}개 키워드 · 상위 20개</p>
-          </div>
-        </div>
-        <div class="sk-list">${topHtml}</div>
-        ${expandable}
-      </div>`;
-  }).join('');
-  host.innerHTML = `<div class="grid cols-3">${cards}</div>`;
+ const host = document.getElementById('subject-keywords');
+ if (!host) return;
+ const host2 = {};
+ // 전체 데이터 기반 키워드 빈도(서버에서 받음). 무료/유료 동일.
+ const fullKw = (window.__ACCESS__ && window.__ACCESS__.fullSubjectKeywords) || null;
+ Object.keys(bySub).forEach(s => {
+ if (fullKw && Array.isArray(fullKw[s])) {
+ host2[s] = fullKw[s];
+ } else {
+ const subKw = {};
+ bySub[s].forEach(p => (p.keywords||[]).forEach(k => {
+ subKw[k] = (subKw[k]||0) + 1;
+ }));
+ host2[s] = Object.entries(subKw).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+ }
+ });
+ const cards = Object.keys(host2).map(s => {
+ const entries = host2[s];
+ const maxV = entries.length ? entries[0][1] : 1;
+ const meta = subjectMeta[s] || {icon:"", cls:"ib-blue"};
+ const top20 = entries.slice(0, 20);
+ const rest = entries.slice(20);
+ const rowHtml = (kv, idx) => {
+ const [k, v] = kv;
+ const widthPct = Math.round((v/maxV)*100);
+ return `
+ <a class="sk-row" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
+ <span class="sk-rank">${idx+1}</span>
+ <span class="sk-name">${k}</span>
+ <span class="sk-bar"><i style="width:${widthPct}%"></i></span>
+ <span class="sk-count">${v}회</span>
+ </a>`;
+ };
+ const topHtml = top20.map(rowHtml).join('');
+ const restHtml = rest.map((kv, i) =>rowHtml(kv, i+20)).join('');
+ const expandable = rest.length > 0 ? `
+ <details class="sk-more">
+ <summary>+ ${rest.length}개 더 보기</summary>
+ <div class="sk-list">${restHtml}</div>
+ </details>` : '';
+ return `
+ <div class="card sk-card">
+ <div class="sk-head">
+ <div class="icon-badge ${meta.cls}">${meta.icon}</div>
+ <div>
+ <h3>${s}</h3>
+ <p class="desc">총 ${entries.length}개 키워드 · 상위 20개</p>
+ </div>
+ </div>
+ <div class="sk-list">${topHtml}</div>
+ ${expandable}
+ </div>`;
+ }).join('');
+ host.innerHTML = `<div class="grid cols-3">${cards}</div>`;
 })();
 
 // 자동완성 데이터리스트 (키워드 출제빈도 상위 200 + 연도 13 + 과목 3)
 (function buildSuggest(){
-  const dl = document.getElementById('kw-suggest');
-  const topKw = Object.entries(kwCount).sort((a,b)=>b[1]-a[1]).slice(0,300);
-  const suggest = [
-    ...topKw.map(([k,v]) => ({value:k, label:`${k} (${v}회 출제)`})),
-    ...[...new Set(ps.map(p=>p.year))].sort().map(y=>({value:y+'년', label:`${y}년 기출`})),
-    ...[...new Set(ps.map(p=>p.subject))].map(s=>({value:s, label:`과목: ${s}`}))
-  ];
-  dl.innerHTML = suggest.map(o =>
-    `<option value="${o.value.replace(/"/g,'&quot;')}">${o.label.replace(/</g,'&lt;')}</option>`
-  ).join('');
+ const dl = document.getElementById('kw-suggest');
+ const topKw = Object.entries(kwCount).sort((a,b)=>b[1]-a[1]).slice(0,300);
+ const suggest = [
+ ...topKw.map(([k,v]) => ({value:k, label:`${k} (${v}회 출제)`})),
+ ...[...new Set(ps.map(p=>p.year))].sort().map(y=>({value:y+'년', label:`${y}년 기출`})),
+ ...[...new Set(ps.map(p=>p.subject))].map(s=>({value:s, label:`과목: ${s}`}))
+ ];
+ dl.innerHTML = suggest.map(o =>
+ `<option value="${o.value.replace(/"/g,'&quot;')}">${o.label.replace(/</g,'&lt;')}</option>`
+ ).join('');
 })();
 
 function renderCloud(){
-  const min = parseInt(document.getElementById('kw-min').value);
-  const sort = document.getElementById('kw-sort').value;
-  const q = document.getElementById('kw-search').value.trim();
-  let entries = Object.entries(kwCount).filter(([k,v]) => v >= min);
-  if(q) entries = entries.filter(([k]) => k.includes(q));
-  if(sort==='freq') entries.sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
-  else entries.sort((a,b)=> a[0].localeCompare(b[0]));
-  const cloud = document.getElementById('kw-cloud');
-  if(!entries.length){ cloud.innerHTML = '<span class="desc">조건에 맞는 키워드가 없습니다.</span>'; return; }
-  cloud.innerHTML = entries.map(([k,v])=>{
-    const sz = v >= 15 ? 'purple' : v >= 8 ? 'blue' : v >= 4 ? 'green' : '';
-    return `<a class="chip ${sz}" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
-      #${k} <b style="margin-left:3px;opacity:.65">${v}</b>
-    </a>`;
-  }).join('');
+ const min = parseInt(document.getElementById('kw-min').value);
+ const sort = document.getElementById('kw-sort').value;
+ const q = document.getElementById('kw-search').value.trim();
+ let entries = Object.entries(kwCount).filter(([k,v]) =>v >= min);
+ if(q) entries = entries.filter(([k]) =>k.includes(q));
+ if(sort==='freq') entries.sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+ else entries.sort((a,b)=>a[0].localeCompare(b[0]));
+ const cloud = document.getElementById('kw-cloud');
+ if(!entries.length){ cloud.innerHTML = '<span class="desc">조건에 맞는 키워드가 없습니다.</span>'; return; }
+ cloud.innerHTML = entries.map(([k,v])=>{
+ const sz = v >= 15 ? 'purple' : v >= 8 ? 'blue' : v >= 4 ? 'green' : '';
+ return `<a class="chip ${sz}" href="exam.html?mode=keyword&keyword=${encodeURIComponent(k)}">
+ #${k} <b style="margin-left:3px;opacity:.65">${v}</b>
+ </a>`;
+ }).join('');
 }
 document.getElementById('kw-search').addEventListener('input', renderCloud);
 document.getElementById('kw-sort').addEventListener('change', renderCloud);
@@ -217,30 +217,30 @@ renderCloud();
 
 // 무료 사용자: 허용되지 않은 키워드 chip 에 잠금 표시
 if (__access && __access.allowedKeywords && !__access.user?.is_admin) {
-  const allowed = new Set(__access.allowedKeywords);
-  // 전체 키워드 cloud 에서 disabled 처리 (막대는 정보용이라 유지)
-  setTimeout(() => {
-    document.querySelectorAll('.chip[href*="mode=keyword"]').forEach(a => {
-      const m = a.href.match(/keyword=([^&]+)/);
-      if (!m) return;
-      const kw = decodeURIComponent(m[1]);
-      if (!allowed.has(kw)) {
-        a.style.opacity = 0.4;
-        a.style.pointerEvents = 'none';
-        a.title = '무료 사용자는 이 키워드는 이용할 수 없습니다 (Premium 필요)';
-      }
-    });
-    document.querySelectorAll('.sk-row[href*="mode=keyword"]').forEach(a => {
-      const m = a.href.match(/keyword=([^&]+)/);
-      if (!m) return;
-      const kw = decodeURIComponent(m[1]);
-      if (!allowed.has(kw)) {
-        a.style.opacity = 0.4;
-        a.style.pointerEvents = 'none';
-        a.title = '🔒 Premium 필요';
-      }
-    });
-  }, 50);
+ const allowed = new Set(__access.allowedKeywords);
+ // 전체 키워드 cloud 에서 disabled 처리 (막대는 정보용이라 유지)
+ setTimeout(() => {
+ document.querySelectorAll('.chip[href*="mode=keyword"]').forEach(a => {
+ const m = a.href.match(/keyword=([^&]+)/);
+ if (!m) return;
+ const kw = decodeURIComponent(m[1]);
+ if (!allowed.has(kw)) {
+ a.style.opacity = 0.4;
+ a.style.pointerEvents = 'none';
+ a.title = '무료 사용자는 이 키워드는 이용할 수 없습니다 (Premium 필요)';
+ }
+ });
+ document.querySelectorAll('.sk-row[href*="mode=keyword"]').forEach(a => {
+ const m = a.href.match(/keyword=([^&]+)/);
+ if (!m) return;
+ const kw = decodeURIComponent(m[1]);
+ if (!allowed.has(kw)) {
+ a.style.opacity = 0.4;
+ a.style.pointerEvents = 'none';
+ a.title = ' Premium 필요';
+ }
+ });
+ }, 50);
 }
 })();
 </script>

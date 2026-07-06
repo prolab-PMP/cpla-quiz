@@ -12,68 +12,66 @@
 <script src="js/common.js"></script>
 <script>CPLA.renderHeader('');</script>
 <main class="container" style="max-width:440px">
-  <div class="card" style="margin-top:40px;padding:32px 28px">
-    <h1 style="font-size:22px;margin:0 0 8px">✨ 회원가입</h1>
-    <p class="desc" style="margin:0 0 24px">무료로 가입하고 기출문제 풀이를 시작하세요. 과목별 최근 50문제 · 일부 키워드 무료 제공.</p>
-    <form id="signup-form">
-      <div style="margin-bottom:14px">
-        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">이메일 (아이디)</label>
-        <input type="email" name="email" required class="search" style="width:100%" placeholder="you@example.com">
-      </div>
-      <div style="margin-bottom:12px">
-        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호 (4자 이상)</label>
-        <input type="password" name="password" required minlength="4" class="search" style="width:100%" placeholder="4자 이상">
-      </div>
-      <div style="margin-bottom:18px">
-        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호 확인</label>
-        <input type="password" name="password2" required minlength="4" class="search" style="width:100%" placeholder="위에 입력한 비밀번호 한 번 더">
-      </div>
-            <div style="margin-bottom:18px">
-        <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">추천인 이메일 <small style="color:var(--muted);font-weight:400">(선택)</small></label>
-        <input type="email" name="referrer_email" class="search" style="width:100%" placeholder="추천한 분 이메일">
-        <small style="display:block;color:var(--muted);font-size:11px;margin-top:4px">💡 친구가 추천했다면 이메일 입력. 나중 유료 결제 시 <b>두 사람 모두 +1개월 연장</b></small>
-      </div>
-      <div id="err" style="display:none;color:var(--danger);font-size:13px;margin-bottom:12px;padding:10px;background:var(--danger-soft);border-radius:8px"></div>
-      <button type="submit" class="btn primary" style="width:100%">가입하기</button>
-    </form>
-    <p style="margin:18px 0 0;text-align:center;font-size:13px;color:var(--muted)">
-      이미 가입하셨나요? <a href="login.html" style="color:var(--primary);font-weight:600">로그인</a>
-    </p>
-  </div>
+ <div class="card" style="margin-top:40px;padding:32px 28px">
+ <h1 style="font-size:22px;margin:0 0 8px">회원가입</h1>
+ <p class="desc" style="margin:0 0 24px">무료로 가입하고 기출문제 풀이를 시작하세요. 과목별 최근 50문제 · 일부 키워드 무료 제공.</p>
+ <form id="signup-form">
+ <div style="margin-bottom:14px">
+ <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">이메일 (아이디)</label>
+ <input type="email" name="email" required class="search" style="width:100%" placeholder="you@example.com">
+ </div>
+ <div style="margin-bottom:12px">
+ <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호 (4자 이상)</label>
+ <input type="password" name="password" required minlength="4" class="search" style="width:100%" placeholder="4자 이상">
+ </div>
+ <div style="margin-bottom:18px">
+ <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">비밀번호 확인</label>
+ <input type="password" name="password2" required minlength="4" class="search" style="width:100%" placeholder="위에 입력한 비밀번호 한 번 더">
+ </div>
+ <div style="margin-bottom:18px">
+ <label style="font-weight:600;font-size:13px;display:block;margin-bottom:4px">추천인 이메일 <small style="color:var(--muted);font-weight:400">(선택)</small></label>
+ <input type="email" name="referrer_email" class="search" style="width:100%" placeholder="추천한 분 이메일">
+ <small style="display:block;color:var(--muted);font-size:11px;margin-top:4px">친구가 추천했다면 이메일 입력. 나중 유료 결제 시 <b>두 사람 모두 +1개월 연장</b></small>
+ </div>
+ <div id="err" style="display:none;color:var(--danger);font-size:13px;margin-bottom:12px;padding:10px;background:var(--danger-soft);border-radius:8px"></div>
+ <button type="submit" class="btn primary" style="width:100%">가입하기</button>
+ </form>
+ <p style="margin:18px 0 0;text-align:center;font-size:13px;color:var(--muted)">이미 가입하셨나요? <a href="login.html" style="color:var(--primary);font-weight:600">로그인</a>
+ </p>
+ </div>
 </main>
-<script>
-document.getElementById('signup-form').onsubmit = async (e) => {
-  e.preventDefault();
-  const f = e.target;
-  const err = document.getElementById('err');
-  err.style.display = 'none';
-  // 비밀번호 일치 확인
-  if (f.password.value !== f.password2.value) {
-    err.textContent = '비밀번호가 일치하지 않습니다. 다시 확인해주세요.';
-    err.style.display = 'block';
-    f.password2.focus();
-    return;
-  }
-  if (f.password.value.length < 4) {
-    err.textContent = '비밀번호는 최소 4자 이상이어야 합니다.';
-    err.style.display = 'block';
-    return;
-  }
-  try {
-    const r = await fetch('/api/signup', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      credentials: 'same-origin',
-      body: JSON.stringify({ email: f.email.value, password: f.password.value, referrer_email: (f.referrer_email && f.referrer_email.value) || '' })
-    });
-    const j = await r.json();
-    if (!r.ok) { err.textContent = j.error || '가입 실패'; err.style.display = 'block'; return; }
-    // 서버가 세션 쿠키를 설정했는지 확인 (자동 로그인)
-    const check = await fetch('/api/me', { credentials:'same-origin' }).then(r => r.json()).catch(()=>({user:null}));
-    if (check.user) {
-      alert('✅ 가입 완료! 바로 로그인되었습니다.');
-    }
-    location.href = 'index.html';
-  } catch (ex) { err.textContent = '네트워크 오류'; err.style.display = 'block'; }
+<script>document.getElementById('signup-form').onsubmit = async (e) => {
+ e.preventDefault();
+ const f = e.target;
+ const err = document.getElementById('err');
+ err.style.display = 'none';
+ // 비밀번호 일치 확인
+ if (f.password.value !== f.password2.value) {
+ err.textContent = '비밀번호가 일치하지 않습니다. 다시 확인해주세요.';
+ err.style.display = 'block';
+ f.password2.focus();
+ return;
+ }
+ if (f.password.value.length < 4) {
+ err.textContent = '비밀번호는 최소 4자 이상이어야 합니다.';
+ err.style.display = 'block';
+ return;
+ }
+ try {
+ const r = await fetch('/api/signup', {
+ method:'POST', headers:{'Content-Type':'application/json'},
+ credentials: 'same-origin',
+ body: JSON.stringify({ email: f.email.value, password: f.password.value, referrer_email: (f.referrer_email && f.referrer_email.value) || '' })
+ });
+ const j = await r.json();
+ if (!r.ok) { err.textContent = j.error || '가입 실패'; err.style.display = 'block'; return; }
+ // 서버가 세션 쿠키를 설정했는지 확인 (자동 로그인)
+ const check = await fetch('/api/me', { credentials:'same-origin' }).then(r =>r.json()).catch(()=>({user:null}));
+ if (check.user) {
+ alert(' 가입 완료! 바로 로그인되었습니다.');
+ }
+ location.href = 'index.html';
+ } catch (ex) { err.textContent = '네트워크 오류'; err.style.display = 'block'; }
 };
 </script>
 <script>CPLA.renderFooter();</script>
