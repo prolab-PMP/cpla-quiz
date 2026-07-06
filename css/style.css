@@ -697,3 +697,41 @@ body, .hero p, .desc, .card p, .card .desc { word-break: keep-all; overflow-wrap
     font-size: 13px;
   }
 }
+
+
+/* ── Dashboard/index compact overrides (2026 히어로 축소) ─────── */
+.hero {
+    padding: 22px 26px 22px !important;
+    border-radius: 14px !important;
+    margin-bottom: 18px !important;
+}
+.hero h1 {
+    font-size: 22px !important;
+    margin: 0 0 6px !important;
+}
+.hero p {
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+    margin: 0 !important;
+}
+.hero .badges {
+    margin-top: 10px !important;
+    gap: 6px !important;
+}
+.hero .badges .badge, .hero .badges span {
+    padding: 3px 10px !important;
+    font-size: 11.5px !important;
+}
+.section-title {
+    margin-top: 20px !important;
+    margin-bottom: 10px !important;
+}
+#summary-cards .card,
+.grid .card {
+    padding: 12px 14px !important;
+}
+@media (max-width: 640px) {
+    .hero { padding: 16px 16px 16px !important; border-radius: 12px !important; }
+    .hero h1 { font-size: 18px !important; }
+    .hero p { font-size: 12.5px !important; }
+}
