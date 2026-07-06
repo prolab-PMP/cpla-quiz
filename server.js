@@ -104,6 +104,7 @@ if (usePg) {
         CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks (user_id);
         ALTER TABLE users ADD COLUMN IF NOT EXISTS referrer_email TEXT;
         ALTER TABLE users ADD COLUMN IF NOT EXISTS validity_start TIMESTAMP NULL;
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_note TEXT DEFAULT '';
         CREATE TABLE IF NOT EXISTS resumes (
           user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
           snapshot JSONB,
@@ -132,7 +133,7 @@ if (usePg) {
       return r.rows[0];
     },
     async listUsers() {
-      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, validity_start, referrer_email, created_at FROM users ORDER BY created_at DESC');
+      const r = await pool.query('SELECT id, email, is_admin, is_premium, premium_until, validity_start, referrer_email, admin_note, created_at FROM users ORDER BY created_at DESC');
       return r.rows;
     },
     async updateUserAccess(id, { is_premium, premium_until, validity_start }) {
@@ -148,6 +149,9 @@ if (usePg) {
           [!!is_premium, premium_until, id]
         );
       }
+    },
+    async updateUserAdminNote(id, note) {
+      await pool.query('UPDATE users SET admin_note=$1 WHERE id=$2', [String(note || '').slice(0, 1000), id]);
     },
     async updateUserAdmin(id, is_admin) {
       await pool.query('UPDATE users SET is_admin=$1 WHERE id=$2', [!!is_admin, id]);
@@ -238,6 +242,7 @@ if (usePg) {
         premium_until: trialEnd.toISOString(),
         validity_start: now.toISOString(),
         referrer_email: referrer_email || null,
+        admin_note: '',
         created_at: now.toISOString(),
       };
       store.users.push(u); save();
@@ -252,6 +257,10 @@ if (usePg) {
         if (validity_start !== undefined) u.validity_start = validity_start;
         save();
       }
+    },
+    async updateUserAdminNote(id, note) {
+      const u = store.users.find(u => u.id === id);
+      if (u) { u.admin_note = String(note || '').slice(0, 1000); save(); }
     },
     async deleteUser(id) {
       store.users = store.users.filter(u => u.id !== id);
@@ -562,6 +571,12 @@ app.post('/api/admin/users/:id/access', requireAuth, requireAdmin, async (req, r
   const id = parseInt(req.params.id, 10);
   const { is_premium, premium_until } = req.body;
   await db.updateUserAccess(id, { is_premium: !!is_premium, premium_until: premium_until || null });
+  res.json({ ok: true });
+});
+app.post('/api/admin/users/:id/admin-note', requireAuth, requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const note = (req.body && typeof req.body.admin_note === 'string') ? req.body.admin_note : '';
+  await db.updateUserAdminNote(id, note);
   res.json({ ok: true });
 });
 app.delete('/api/admin/users/:id', requireAuth, requireAdmin, async (req, res) => {

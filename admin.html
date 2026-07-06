@@ -109,6 +109,7 @@
  ${sortHeader('premium_until', '유효기간')}
  ${sortHeader('created_at', '가입일')}
  <th>추천인</th>
+ <th style="min-width:220px">비고<br><small style="font-weight:400;color:var(--muted);font-size:10px">(관리자 전용 메모)</small></th>
  <th style="width:380px">작업</th>
  </tr></thead>
  <tbody>
@@ -126,6 +127,12 @@
  <td>${validity}</td>
  <td>${fmtDate(u.created_at)}</td>
  <td style="font-size:12px">${u.referrer_email ? `<span title="${u.referrer_email}">${u.referrer_email}</span>` : '<span style="color:var(--muted)">-</span>'}</td>
+ <td>
+ <div class="admin-note-cell" style="display:flex;flex-direction:column;gap:4px;">
+ <textarea class="admin-note-textarea" data-id="${u.id}" rows="2" maxlength="1000" placeholder="권한 부여 사유·메모" style="width:210px;font-size:12px;line-height:1.4;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--panel);color:var(--text);resize:vertical;">${(u.admin_note || '').replace(/</g,'&lt;')}</textarea>
+ <button class="btn sm" data-act="save-note" data-id="${u.id}" style="align-self:flex-start;font-size:11px;padding:3px 8px;">비고 저장</button>
+ </div>
+ </td>
  <td>
  <div class="admin-actions-cell">
  <div class="inline">
@@ -182,6 +189,15 @@
  body = { is_premium: true, premium_until: toISO(until) };
  } else if (act === 'toggle') {
  body = isActive(u) ? { is_premium: false, premium_until: null } : { is_premium: true, premium_until: null };
+ } else if (act === 'save-note') {
+ const ta = document.querySelector(`.admin-note-textarea[data-id="${id}"]`);
+ const noteBody = { admin_note: ta ? ta.value : '' };
+ const res = await fetch('/api/admin/users/'+id+'/admin-note', {
+ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(noteBody)
+ });
+ if (res.ok) { btn.textContent = '저장됨 ✓'; setTimeout(() => { btn.textContent = '비고 저장'; }, 1500); u.admin_note = noteBody.admin_note; }
+ else { alert('비고 저장 실패'); }
+ return;
  }
  await fetch('/api/admin/users/'+id+'/access', {
  method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
