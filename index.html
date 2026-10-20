@@ -209,16 +209,17 @@ html[data-theme="dark"] .tile{filter:saturate(.9) brightness(.92)}
  // Hero badges
  const years = [...new Set(ps.map(p=>p.year))].sort();
  const subjects = [...new Set(ps.map(p=>p.subject))];
+ const __TOT = (access && access.totalCount) || ps.length || 2370;
  document.getElementById('hero-badges').innerHTML = `
- <span>총 ${ps.length}문제</span>
- <span> ${years[0]}~${years[years.length-1]}</span>
- <span> ${subjects.length}개 과목</span>
+ <span>총 ${__TOT.toLocaleString()}문제</span>
+ <span>2013~2026</span>
+ <span>6개 과목</span>
  `;
  // Summary cards — 무료 사용자는 이용가능 / 전체 모두 표시
  const totalAll = (access && access.totalCount) || ps.length;
  const showTotal = (access && access.user && !access.user.isPremiumActive && !access.user.is_admin)
  ? `<h3>${stats.total}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${totalAll.toLocaleString()}</span></h3><p class="desc">이용 가능 / 전체</p>`
- : `<h3>${stats.total.toLocaleString()}</h3><p class="desc">전체 문제</p>`;
+ : `<h3>${(stats.total || totalAll).toLocaleString()}</h3><p class="desc">전체 문제</p>`;
  const sc = document.getElementById('summary-cards');
  sc.innerHTML = `
  <div class="card"><div class="icon-badge ib-blue"></div>
@@ -273,6 +274,7 @@ html[data-theme="dark"] .tile{filter:saturate(.9) brightness(.92)}
  const cov = CPLA.computeCoverage(ps);
  const host = document.getElementById('learning-progress');
  if (!host) return;
+ if (!ps.length) { host.innerHTML = '<p class="desc" style="margin:14px 0 0">로그인하면 과목별 진도와 정답률, 취약 키워드가 여기에 표시됩니다.</p>'; return; }
  const ringSize = 128, ringStroke = 10;
  const r = (ringSize/2) - ringStroke;
  const circ = 2 * Math.PI * r;
