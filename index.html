@@ -250,46 +250,59 @@ a.bk:hover,.bk:hover{transform:translateY(-8px)}
 @media(max-width:640px){.hx-r.hx-book{min-height:300px}.hx-r.hx-book .bk{--w:180px!important;--h:252px!important;--d:48px!important}.hx-r.hx-book .bk h5{font-size:38px!important;margin-top:22px!important}}
 
 /* ===== 홈 대시보드·키워드 홍보·학습현황 ===== */
-.hx-r.hx-dash{display:flex;align-items:center;justify-content:center;min-height:0!important}
-.dash{width:100%;max-width:540px;background:#fff;color:#16213e;border-radius:22px;padding:18px 20px 14px;box-shadow:0 28px 60px -24px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.5);font-family:inherit}
-.dash .dh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
-.dash .dt{font-size:15px;font-weight:900;letter-spacing:-.3px;color:#16213e}
-.dash .dt i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ffb300;margin-right:7px;vertical-align:1px}
-.dash .dlive{font-size:10.5px;font-weight:800;color:#e8590c;background:#fff1e6;border-radius:999px;padding:3px 9px;animation:dpulse 2s infinite}
-@keyframes dpulse{50%{opacity:.55}}
-.dash .sl{display:flex;align-items:flex-start;gap:8px;margin:7px 0}
-.dash .sl em{flex:0 0 38px;font-style:normal;font-size:11px;font-weight:800;color:#7a86a8;padding-top:6px}
-.dash .chips{display:flex;flex-wrap:wrap;gap:5px}
-.dash .chip{border:1px solid #d9e1f2;background:#f4f7fd;color:#3d4a73;padding:5px 11px;border-radius:999px;font:700 12px/1.1 inherit;cursor:pointer;transition:all .15s}
-.dash .chip:hover{border-color:#8da2e0;background:#eaf0ff}
-.dash .chip.on{background:#23408f;border-color:#23408f;color:#fff;box-shadow:0 3px 8px -2px rgba(35,64,143,.5)}
-.dash .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 10px}
-.dash .kp div{background:linear-gradient(180deg,#f6f8fe,#eef2fb);border-radius:12px;padding:9px 10px;min-width:0}
-.dash .kp b{display:block;font-size:19px;font-weight:900;color:#23408f;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash .kp b small{font-size:11px;font-weight:700;color:#7a86a8;margin-left:2px}
-.dash .kp span{font-size:10.5px;font-weight:700;color:#7a86a8}
-.dash .brow{display:grid;grid-template-columns:104px 1fr 40px;gap:8px;align-items:center;padding:3px 4px;margin:0 -4px;border-radius:8px;font-size:12px;cursor:pointer;transition:background .15s}
-.dash .brow:hover{background:#f3f6fd}
-.dash .brow .n{font-weight:700;color:#2a3558;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash .brow .bar{height:10px;background:#eaeff9;border-radius:6px;overflow:hidden}
-.dash .brow .bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#60a5fa,#23408f);transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.dash .brow .v{font-weight:800;color:#23408f;text-align:right}
-.dash .brow.sel{background:#fff4e8}
-.dash .brow.sel .bar i{background:linear-gradient(90deg,#ffb300,#e8590c)}
-.dash .brow.sel .v,.dash .brow.sel .n{color:#c2410c}
-.dash .tr{margin-top:12px;border-top:1px dashed #dde4f3;padding-top:10px}
-.dash .tr h6{margin:0 0 6px;font-size:11px;font-weight:800;color:#7a86a8;display:flex;justify-content:space-between}
-.dash .tr h6 b{color:#e8590c}
-.dash .cols{display:flex;align-items:flex-end;gap:4px;height:56px}
-.dash .cols div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
-.dash .cols i{display:block;width:100%;min-height:2px;border-radius:4px 4px 0 0;background:#c9d6f3;transition:height .5s cubic-bezier(.2,.8,.2,1)}
-.dash .cols div.hi i{background:linear-gradient(180deg,#ffb300,#e8590c)}
-.dash .cols small{font-size:8.5px;color:#9aa5c4;margin-top:3px;font-weight:700}
-.dash .dmore{display:block;margin-top:10px;text-align:center;font-size:12.5px;font-weight:800;color:#23408f;text-decoration:none;padding:8px;border-radius:10px;background:#eef2fb}
-.dash .dmore:hover{background:#e1e9fa}
-.dash .empty{font-size:12px;color:#7a86a8;padding:14px 0;text-align:center}
+.hx-r.hx-dash{display:flex;align-items:center;justify-content:center;min-height:0!important;container:dashc/inline-size}
+.dash{position:relative;width:100%;max-width:600px;background:#0f1014;color:#fff;border-radius:18px;padding:0 0 12px;box-shadow:0 30px 60px -24px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08);overflow:hidden;font-family:inherit;user-select:none}
+.dash .dh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#000;border-bottom:2px solid #ffc000}
+.dash .dt{font-size:14px;font-weight:900;letter-spacing:-.3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash .dt b{color:#ffc000;margin-right:6px}
+.dash .dlive{flex:0 0 auto;font-size:10px;font-weight:800;color:#111;background:#ffc000;border-radius:999px;padding:3px 9px}
+.dash .dlive::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#e11d48;margin-right:5px;animation:dpulse 1.2s infinite}
+@keyframes dpulse{50%{opacity:.25}}
+.dash .dg{display:grid;grid-template-columns:96px 1fr;gap:8px;padding:8px 8px 0}
+.dash .pn{background:#1a1c23;border:1px solid #2a2d38;border-radius:9px;padding:6px 8px}
+.dash .pn h6{margin:0 0 4px;font-size:10.5px;font-weight:800;color:#ffc000;display:flex;align-items:center;gap:5px}
+.dash .pn h6::before{content:"";width:8px;height:8px;border-radius:2px;background:#ffc000;opacity:.9}
+.dash .sls .pn{margin-bottom:8px}.dash .sls .pn:last-child{margin-bottom:0}
+.dash .chips{display:flex;flex-wrap:wrap;gap:4px}
+.dash .chip{flex:1 1 100%;border:0;background:#363945;color:#c7cad6;padding:4px 4px;border-radius:5px;font:800 10.5px/1.1 inherit;cursor:pointer;transition:background .18s,color .18s,transform .12s;text-align:center;word-break:keep-all}
+.dash .chip:hover{background:#4a4e5e}
+.dash .chips.many .chip{flex:1 1 calc(50% - 2px);font-size:9.5px;padding:4px 1px;letter-spacing:-.3px}
+.dash.wide .dg{grid-template-columns:128px 1fr!important}
+.dash .chip.on{background:#ffc000;color:#161616}
+.dash .chip.press{transform:scale(.9)}
+.dash .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.dash .kp div{background:#1a1c23;border:1px solid #2a2d38;border-radius:9px;padding:5px 8px;min-width:0}
+.dash .kp span{display:block;font-size:10px;font-weight:700;color:#aeb3c4}
+.dash .kp b{display:block;text-align:right;font-size:18px;font-weight:900;letter-spacing:-.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.dash .kp b small{font-size:10px;color:#aeb3c4;margin-left:2px}
+.dash .kp b.t{font-size:13px;padding-top:3px}
+.dash .cols{display:flex;align-items:flex-end;gap:3px;height:58px;padding-top:2px}
+.dash .cols div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
+.dash .cols i{display:block;width:100%;min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#ffe08a,#e8a200);transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.dash .cols div.hi i{background:linear-gradient(180deg,#ff4d4d,#ffd6d6)}
+.dash .cols small{font-size:8px;color:#8d93a8;margin-top:3px;font-weight:700}
+.dash .row2{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+.dash .dn{display:flex;align-items:center;gap:12px}
+.dash .donut{flex:0 0 74px;width:74px;height:74px;border-radius:50%;position:relative;transition:background .4s}
+.dash .donut::after{content:"";position:absolute;inset:17px;border-radius:50%;background:#1a1c23}
+.dash .lg{font-size:10.5px;font-weight:700;color:#c7cad6;line-height:1.8;min-width:0}
+.dash .lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:0}
+.dash .kwl{display:flex;flex-direction:column;gap:2px}
+.dash .brow{display:grid;grid-template-columns:78px 1fr 22px;align-items:center;gap:6px;cursor:pointer;padding:1px 3px;border-radius:5px;transition:background .15s}
+.dash .brow:hover{background:#262935}
+.dash .brow .n{font-size:10.5px;font-weight:700;color:#e6e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash .brow .v{font-size:10.5px;font-weight:900;color:#ffc000;text-align:right}
+.dash .brow .bar{height:8px;background:#2b2e3a;border-radius:4px;overflow:hidden}
+.dash .brow .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,#ffc000,#ff9f1a);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.dash .brow.sel{background:#3a1f22}.dash .brow.sel .bar i{background:linear-gradient(90deg,#ff4d4d,#ff8a8a)}.dash .brow.sel .v,.dash .brow.sel .n{color:#ff8a8a}
+.dash .dmore{flex:0 0 auto;font-size:10.5px;font-weight:800;color:#ffc000;text-decoration:none;white-space:nowrap}
+.dash .dmore:hover{text-decoration:underline}
+.dash .empty{font-size:11.5px;color:#8d93a8;padding:10px 0;text-align:center}
+.dash .cur{position:absolute;left:0;top:0;width:22px;height:22px;z-index:9;pointer-events:none;transition:transform .75s cubic-bezier(.45,0,.2,1),opacity .3s;opacity:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+.dash .cur.on{opacity:1}
+.dash .ptag{position:absolute;right:12px;bottom:-1px;font-size:9px;color:#6b7186;font-weight:700}
 @media(max-width:960px){.hx-r.hx-dash{margin-top:20px}.dash{max-width:none}}
-@media(max-width:480px){.dash{padding:14px 14px 12px}.dash .brow{grid-template-columns:86px 1fr 34px}.dash .kp b{font-size:16px}}
+@container dashc (max-width:460px){.dash .dg{grid-template-columns:84px 1fr;gap:6px}.dash .chip{font-size:10px;padding:5px 3px}.dash .kp b{font-size:15px}.dash .kp b.t{font-size:11.5px}.dash .brow{grid-template-columns:62px 1fr 20px}.dash .dt{font-size:12.5px}}
 /* 키워드 홍보 */
 .kwp{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:26px 0 8px}
 .kwp .pc{position:relative;border-radius:22px;padding:24px 24px 22px;overflow:hidden;box-shadow:0 14px 34px -18px rgba(30,50,110,.4)}
@@ -366,7 +379,7 @@ a.bk:hover,.bk:hover{transform:translateY(-8px)}
  </div>
  <div class="hx-points"><i></i>과목·연도·키워드별 풀이 · 풀이 기록 자동 저장 · 실전 모의고사</div>
  </div>
- <div class="hx-r hx-dash"><div class="dash" id="dash"><div class="dh"><span class="dt"><i></i>2차 출제 분석</span><span class="dlive">LIVE · 눌러보세요</span></div><div class="sl"><em>과목</em><div id="dsl1"></div></div><div class="sl"><em>유형</em><div id="dsl2"></div></div><div class="kp" id="dkp"></div><div id="dbars"></div><div class="tr" id="dtr"></div><a class="dmore" href="dashboard2.html">2차 전체 분석 대시보드 열기 →</a></div></div>
+ <div class="hx-r hx-dash"><div class="dash" id="dash"><div class="dh"><span class="dt"><b>WAYEXAM</b>대시보드 · 2차 키워드·출제 분석</span><a class="dmore" href="dashboard2.html">전체 보기 →</a></div><div class="dg"><div class="sls"><div class="pn"><h6>과목</h6><div id="dsl1"></div></div><div class="pn"><h6>유형</h6><div id="dsl2"></div></div></div><div class="ctr"><div class="kp" id="dkp"></div><div class="pn" id="dc1"></div><div class="pn" style="margin-top:6px"><h6>주요 키워드</h6><div class="kwl" id="dkw"></div></div></div></div><svg class="cur" id="dcur" viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.6L20 11z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
  </section>
 
  <section class="kwp" id="kwp">
@@ -556,54 +569,99 @@ a.bk:hover,.bk:hover{transform:translateY(-8px)}
 <script>(function(){let n=0;(function fill(){const a=window.__ACCESS__;const fk=a&&a.fullSubjectKeywords;if(!fk){if(++n<40)setTimeout(fill,250);return;}
 document.querySelectorAll('[data-kw]').forEach(el=>{const l=fk[el.dataset.kw]||[];el.textContent=l.slice(0,3).map(x=>x[0].length>9?x[0].slice(0,9)+'…':x[0]).join(' · ')||'-';});})();})();</script>
 <script>(function(){
-const C={"mode": "exam2", "api": "/api/exam2/stats", "g1": "subject", "store": "cpla_study_state_v1", "title": "2차 출제 분석", "l1": "과목", "l2": "유형", "more": "dashboard2.html", "moret": "2차 전체 분석 대시보드 열기 →"};const $=id=>document.getElementById(id);
+const C={"mode": "exam2", "api": "/api/exam2/stats", "g1": "subject", "store": "cpla_study_state_v1", "title": "대시보드 · 2차 키워드·출제 분석", "l1": "과목", "l2": "유형", "more": "dashboard2.html", "moret": "2차 전체 분석 대시보드 열기 →"};const $=id=>document.getElementById(id);
 const NS=window.SAS||window.CPLA;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kwUrl=k=>'exam.html?mode=keyword&keyword='+encodeURIComponent(k);
 async function ready(){await (window.__ACCESS_READY__||Promise.resolve());return window.__ACCESS__||{};}
-/* ---------- 1) 히어로 대시보드 ---------- */
+/* ---------- 1) 히어로 대시보드 (자동 재생 + 직접 클릭) ---------- */
 async function dash(){
  const root=$('dash');if(!root)return;
  let rows=[],groups=[],g2s=[];const S={g1:'전체',g2:'전체',kw:null,top:8};
- if(C.mode==='exam2'){
-  try{const j=await (await fetch(C.api)).json();
-   rows=j.items.map(x=>({y:x.year,g:x[C.g1],t:x.type,k:x.keywords||[]}));}catch(e){}
+ const E=C.mode==='exam2';
+ if(E){
+  try{const j=await (await fetch(C.api)).json();rows=j.items.map(x=>({y:x.year,g:x[C.g1],t:x.type,k:x.keywords||[]}));}catch(e){}
   groups=[...new Set(rows.map(r=>r.g))];g2s=[...new Set(rows.map(r=>r.t))];
  }else{
   const a=await ready();const fk=a.fullSubjectKeywords||{};
-  groups=Object.keys(fk);rows=groups.map(g=>({g,list:fk[g]}));g2s=[5,8,12];S.top=8;S.g2=8;
+  groups=Object.keys(fk);rows=groups.map(g=>({g,list:fk[g]}));g2s=[5,8,12];S.g2=8;
  }
+ if(!rows.length){root.querySelector('.dg').innerHTML='<div class="empty" style="grid-column:1/-1">데이터를 불러오지 못했습니다</div>';return;}
  const years=[...new Set(rows.map(r=>r.y).filter(Boolean))].sort();
- const mk=(host,arr,key,fmt)=>{host.innerHTML='<div class="chips">'+arr.map(v=>`<button type="button" class="chip${S[key]===v?' on':''}" data-v="${esc(v)}">${esc(fmt?fmt(v):v)}</button>`).join('')+'</div>';
-  host.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const raw=b.dataset.v;S[key]=(key==='g2'&&C.mode!=='exam2')?+raw:raw;S.kw=null;draw();});};
+ const fmt2=C.mode==='exam2'?null:v=>'TOP '+v;
+ const mk=(host,arr,key,fm)=>{host.innerHTML='<div class="chips'+(arr.length>5?' many':'')+'">'+arr.map(v=>`<button type="button" class="chip${S[key]===v?' on':''}" data-key="${key}" data-v="${esc(v)}">${esc(fm?fm(v):v)}</button>`).join('')+'</div>';
+  host.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{human();pick(key,b.dataset.v);});};
+ function pick(key,raw){S[key]=(key==='g2'&&!E)?+raw:raw;S.kw=null;draw();}
  function counts(){
-  const f=rows.filter(r=>(S.g1==='전체'||r.g===S.g1)&&(C.mode!=='exam2'||S.g2==='전체'||r.t===S.g2));
+  const f=rows.filter(r=>(S.g1==='전체'||r.g===S.g1)&&(!E||S.g2==='전체'||r.t===S.g2));
   const m={};let n=0;
-  if(C.mode==='exam2'){f.forEach(r=>{n++;r.k.forEach(k=>m[k]=(m[k]||0)+1);});}
-  else{f.forEach(r=>r.list.forEach(([k,c])=>{m[k]=(m[k]||0)+c;}));}
+  if(E){f.forEach(r=>{n++;r.k.forEach(k=>m[k]=(m[k]||0)+1);});}
+  else f.forEach(r=>r.list.forEach(([k,c])=>{m[k]=(m[k]||0)+c;}));
   return{f,m,n};
  }
+ const PAL=['#ffc000','#ff7a45','#5b8def','#34d399','#c084fc'];
  function draw(){
   mk($('dsl1'),['전체',...groups],'g1');
-  mk($('dsl2'),C.mode==='exam2'?['전체',...g2s]:g2s,'g2',C.mode==='exam2'?null:v=>'TOP '+v);
+  mk($('dsl2'),E?['전체',...g2s]:g2s,'g2',fmt2);
   const {f,m,n}=counts();
   const all=Object.entries(m).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
-  const topN=C.mode==='exam2'?6:S.top;const top=all.slice(0,topN);const max=top.length?top[0][1]:1;
-  const total=all.reduce((s,x)=>s+x[1],0);const share=total?Math.round(top.reduce((s,x)=>s+x[1],0)/total*100):0;
-  $('dkp').innerHTML=C.mode==='exam2'
-   ?`<div><b>${n}<small>문항</small></b><span>선택 조건 출제</span></div><div><b>${all.length}<small>개</small></b><span>키워드 종류</span></div><div><b>${top[0]?esc(top[0][0]):'-'}</b><span>최다 출제${top[0]?' · '+top[0][1]+'회':''}</span></div>`
-   :`<div><b>${all.length}<small>개</small></b><span>키워드 종류</span></div><div><b>${share}<small>%</small></b><span>TOP ${S.top} 출제 비중</span></div><div><b>${top[0]?esc(top[0][0]):'-'}</b><span>최다 출제${top[0]?' · '+top[0][1]+'회':''}</span></div>`;
-  $('dbars').innerHTML=top.length?top.map(([k,c])=>`<div class="brow${S.kw===k?' sel':''}" data-k="${esc(k)}" title="${C.mode==='exam2'?'클릭하면 연도별 출제를 볼 수 있어요':'클릭하면 이 키워드 문제로 이동'}"><span class="n">${esc(k)}</span><span class="bar"><i data-w="${Math.max(4,c/max*100)}"></i></span><span class="v">${c}회</span></div>`).join(''):'<div class="empty">조건에 맞는 데이터가 없습니다</div>';
-  $('dbars').querySelectorAll('.brow').forEach(el=>el.onclick=()=>{const k=el.dataset.k;
-   if(C.mode==='exam2'){S.kw=(S.kw===k)?null:k;draw();}else location.href=kwUrl(k);});
-  requestAnimationFrame(()=>requestAnimationFrame(()=>$('dbars').querySelectorAll('i').forEach(i=>i.style.width=i.dataset.w+'%')));
-  const tr=$('dtr');
-  if(tr&&C.mode==='exam2'){
-   const per=years.map(y=>f.filter(r=>r.y===y&&(!S.kw||r.k.includes(S.kw))).length);const pm=Math.max(1,...per);
-   tr.innerHTML=`<h6><span>연도별 출제 추이</span><b>${S.kw?'#'+esc(S.kw)+' 출제':'선택 조건 문항 수'}</b></h6><div class="cols">${years.map((y,i)=>`<div class="${per[i]===pm&&pm>0&&S.kw?'hi':''}${!S.kw&&i===years.length-1?'hi':''}" title="${y}년 ${per[i]}건"><i style="height:${per[i]/pm*100}%"></i><small>'${String(y).slice(2)}</small></div>`).join('')}</div>`;
+  const topN=6;const top=all.slice(0,topN);const max=top.length?top[0][1]:1;
+  const total=all.reduce((s,x)=>s+x[1],0);
+  const nTop=E?0:S.g2;const share=total?Math.round(all.slice(0,nTop).reduce((s,x)=>s+x[1],0)/total*100):0;
+  $('dkp').innerHTML=E
+   ?`<div><span>전체 문항</span><b>${n}</b></div><div><span>키워드 수</span><b>${all.length}<small>개</small></b></div><div><span>최다 출제</span><b class="t">${top[0]?esc(top[0][0]):'-'}</b></div>`
+   :`<div><span>키워드 수</span><b>${all.length}<small>개</small></b></div><div><span>TOP ${S.g2} 비중</span><b>${share}<small>%</small></b></div><div><span>최다 출제</span><b class="t">${top[0]?esc(top[0][0]):'-'}</b></div>`;
+  $('dkw').innerHTML=top.length?top.map(([k,c])=>`<div class="brow${S.kw===k?' sel':''}" data-k="${esc(k)}"><span class="n">${esc(k)}</span><span class="bar"><i data-w="${Math.max(5,c/max*100)}"></i></span><span class="v">${c}</span></div>`).join(''):'<div class="empty">데이터 없음</div>';
+  $('dkw').querySelectorAll('.brow').forEach(el=>el.onclick=()=>{human();const k=el.dataset.k;if(E){S.kw=(S.kw===k)?null:k;draw();}else location.href=kwUrl(k);});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>$('dkw').querySelectorAll('i').forEach(i=>i.style.width=i.dataset.w+'%')));
+  /* 차트 1 */
+  let h1,t1,per;
+  if(E){
+   per=years.map(y=>f.filter(r=>r.y===y&&(!S.kw||r.k.includes(S.kw))).length);const pm=Math.max(1,...per);const pk=per.indexOf(pm);
+   t1=S.kw?`연도별 출제 · #${esc(S.kw)}`:'연도별 출제 추이';
+   h1=years.map((y,i)=>`<div class="${i===pk&&pm>0?'hi':''}" title="${y}년 ${per[i]}건"><i style="height:${per[i]/pm*100}%"></i><small>'${String(y).slice(2)}</small></div>`).join('');
+  }else{
+   const bk=[['1회',1,1],['2회',2,2],['3~5회',3,5],['6~10회',6,10],['11회+',11,1e9]];
+   per=bk.map(([l,lo,hi])=>all.filter(x=>x[1]>=lo&&x[1]<=hi).length);const pm=Math.max(1,...per);const pk=per.indexOf(pm);
+   t1='키워드 출제 빈도 분포';
+   h1=bk.map((b,i)=>`<div class="${i===4?'hi':''}" title="${b[0]} ${per[i]}개"><i style="height:${per[i]/pm*100}%"></i><small>${b[0]}</small></div>`).join('');
   }
+  $('dc1').innerHTML=`<h6>${t1}</h6><div class="cols">${h1}</div>`;
+  /* 차트 2 */
+  let seg=[];
+  if(E){const tm={};f.forEach(r=>tm[r.t]=(tm[r.t]||0)+1);seg=Object.entries(tm).sort((a,b)=>b[1]-a[1]);}
+  else{const tt=all.slice(0,nTop).reduce((s,x)=>s+x[1],0);seg=[['TOP '+nTop,tt],['그 외',total-tt]];}
+  const sm=seg.reduce((s,x)=>s+x[1],0)||1;let acc=0;
+  const grad=seg.map((x,i)=>{const a0=acc/sm*360;acc+=x[1];return `${PAL[i%5]} ${a0.toFixed(1)}deg ${(acc/sm*360).toFixed(1)}deg`;}).join(',');
+  const d2=$('dc2');if(d2)d2.innerHTML=`<h6>${E?'문제 유형 비율':'TOP 키워드 비중'}</h6><div class="dn"><div class="donut" style="background:conic-gradient(${grad||'#333 0 360deg'})"></div><div class="lg">${seg.map((x,i)=>`<div><i style="background:${PAL[i%5]}"></i>${esc(x[0])} ${Math.round(x[1]/sm*100)}%</div>`).join('')}</div></div>`;
  }
+ if(groups.length>5)root.classList.add('wide');
  draw();
+ /* ---- 자동 재생 (GIF처럼) ---- */
+ const cur=$('dcur');let paused=false,idle=null,step=0,timer=null;
+ const seq=[];
+ const gs=groups.slice(0,3);
+ gs.forEach(g=>seq.push(['g1',g]));
+ if(E){seq.push(['g2',g2s[0]]);seq.push(['kw',1]);seq.push(['g2',g2s[1]||'전체']);seq.push(['kw',2]);seq.push(['g1','전체']);seq.push(['g2','전체']);}
+ else{seq.push(['g2',5]);seq.push(['g2',12]);seq.push(['g1','전체']);seq.push(['g2',8]);}
+ function human(){paused=true;cur.classList.remove('on');clearTimeout(idle);idle=setTimeout(()=>{paused=false;},9000);}
+ function moveTo(el){const r=el.getBoundingClientRect(),d=root.getBoundingClientRect();cur.classList.add('on');cur.style.transform=`translate(${r.left-d.left+r.width*0.55}px,${r.top-d.top+r.height*0.55}px)`;}
+ function run(){
+  if(document.hidden||paused){timer=setTimeout(run,1200);return;}
+  const [t,v]=seq[step%seq.length];step++;
+  let el=null;
+  if(t==='kw')el=$('dkw').querySelectorAll('.brow')[v];
+  else el=[...root.querySelectorAll(`.chip[data-key="${t}"]`)].find(b=>b.dataset.v==String(v));
+  if(!el){timer=setTimeout(run,300);return;}
+  moveTo(el);
+  setTimeout(()=>{if(paused)return;el.classList.add('press');
+   setTimeout(()=>{if(paused)return;if(t==='kw'){const k=el.dataset.k;S.kw=(S.kw===k)?null:k;draw();}else pick(t,String(v));moveTo(root.querySelector('.dh'));},160);},800);
+  timer=setTimeout(run,2300);
+ }
+ const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!timer){timer=setTimeout(run,900);}});},{threshold:.3}):null;
+ if(io)io.observe(root);else timer=setTimeout(run,900);
+ root.addEventListener('pointerdown',human);root.addEventListener('mouseenter',()=>{if(!paused){paused=true;cur.classList.remove('on');}});
+ root.addEventListener('mouseleave',()=>{clearTimeout(idle);idle=setTimeout(()=>{paused=false;},2500);});
 }
 /* ---------- 2) 키워드 홍보 ---------- */
 async function promo(){
