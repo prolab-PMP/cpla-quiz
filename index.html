@@ -276,10 +276,12 @@ a.bk:hover,.bk:hover{transform:translateY(-8px)}
 .dash .kp b{display:block;text-align:right;font-size:18px;font-weight:900;letter-spacing:-.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .dash .kp b small{font-size:10px;color:#aeb3c4;margin-left:2px}
 .dash .kp b.t{font-size:13px;padding-top:3px}
-.dash .cols{display:flex;align-items:flex-end;gap:3px;height:58px;padding-top:2px}
+.dash .cols{display:flex;align-items:flex-end;gap:3px;height:66px;padding-top:2px}.dash .cols div i{flex:0 0 auto}.dash .cols div{justify-content:flex-end}
 .dash .cols div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
 .dash .cols i{display:block;width:100%;min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#ffe08a,#e8a200);transition:height .6s cubic-bezier(.2,.8,.2,1)}
 .dash .cols div.hi i{background:linear-gradient(180deg,#ff4d4d,#ffd6d6)}
+.dash .cols em{font-style:normal;font-size:7.5px;font-weight:800;color:#d5d9e6;margin-bottom:2px}
+.dash .cols div{position:relative}
 .dash .cols small{font-size:8px;color:#8d93a8;margin-top:3px;font-weight:700}
 .dash .row2{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
 .dash .dn{display:flex;align-items:center;gap:12px}
@@ -577,10 +579,10 @@ async function ready(){await (window.__ACCESS_READY__||Promise.resolve());return
 /* ---------- 1) 히어로 대시보드 (자동 재생 + 직접 클릭) ---------- */
 async function dash(){
  const root=$('dash');if(!root)return;
- let rows=[],groups=[],g2s=[];const S={g1:'전체',g2:'전체',kw:null,top:8};
+ let rows=[],groups=[],g2s=[],PASS=null;const S={g1:'전체',g2:'전체',kw:null,top:8};
  const E=C.mode==='exam2';
  if(E){
-  try{const j=await (await fetch(C.api)).json();rows=j.items.map(x=>({y:x.year,g:x[C.g1],t:x.type,k:x.keywords||[]}));}catch(e){}
+  try{const j=await (await fetch(C.api)).json();PASS=j.pass||null;rows=j.items.map(x=>({y:x.year,g:x[C.g1],t:x.type,k:x.keywords||[]}));}catch(e){}
   groups=[...new Set(rows.map(r=>r.g))];g2s=[...new Set(rows.map(r=>r.t))];
  }else{
   const a=await ready();const fk=a.fullSubjectKeywords||{};
@@ -615,11 +617,13 @@ async function dash(){
   $('dkw').querySelectorAll('.brow').forEach(el=>el.onclick=()=>{human();const k=el.dataset.k;if(E){S.kw=(S.kw===k)?null:k;draw();}else location.href=kwUrl(k);});
   requestAnimationFrame(()=>requestAnimationFrame(()=>$('dkw').querySelectorAll('i').forEach(i=>i.style.width=i.dataset.w+'%')));
   /* 차트 1 */
-  let h1,t1,per;
+  let h1,t1='',per;
   if(E){
-   per=years.map(y=>f.filter(r=>r.y===y&&(!S.kw||r.k.includes(S.kw))).length);const pm=Math.max(1,...per);const pk=per.indexOf(pm);
-   t1=S.kw?`연도별 출제 · #${esc(S.kw)}`:'연도별 출제 추이';
-   h1=years.map((y,i)=>`<div class="${i===pk&&pm>0?'hi':''}" title="${y}년 ${per[i]}건"><i style="height:${per[i]/pm*100}%"></i><small>'${String(y).slice(2)}</small></div>`).join('');
+   let pr=[];
+   if(PASS&&PASS.secondByField){const m={};PASS.secondByField.forEach(([y,f,a,p])=>{if(S.g1==='전체'||f===S.g1){m[y]=m[y]||[0,0];m[y][0]+=a;m[y][1]+=p;}});pr=Object.keys(m).sort().map(y=>[+y,m[y][1]/m[y][0]*100]);t1=`2차 합격률 추이 (%)${S.g1==='전체'?' · 4개 분야 합계':' · '+esc(S.g1)}`;}
+   else if(PASS&&PASS.second){pr=PASS.second.map(([y,a,p])=>[y,p/a*100]);t1='2차 합격률 추이 (%)';}
+   const pm=Math.max(1,...pr.map(x=>x[1]));
+   h1=pr.map(([y,v],i)=>`<div class="${i===pr.length-1?'hi':''}" title="${y}년 ${v.toFixed(1)}%"><em>${v.toFixed(1)}</em><i style="height:calc((100% - 26px)*${(v/pm).toFixed(3)})"></i><small>'${String(y).slice(2)}</small></div>`).join('');
   }else{
    const bk=[['1회',1,1],['2회',2,2],['3~5회',3,5],['6~10회',6,10],['11회+',11,1e9]];
    per=bk.map(([l,lo,hi])=>all.filter(x=>x[1]>=lo&&x[1]<=hi).length);const pm=Math.max(1,...per);const pk=per.indexOf(pm);

@@ -93,8 +93,7 @@
    <div class="d2-kpi"><div class="l">최근 2차 합격률</div><div class="v" id="k-pass">-</div><div class="s" id="k-pass-s">-</div></div>
   </div>
   <div class="d2-card"><h3>과목별 최다 출제기준 Top 3</h3><p class="hint">14개년 누적 · 숫자는 해당 출제기준의 물음 수</p><div class="d2-hm" id="ov-top"></div></div>
-  <div class="d2-grid">
-   <div class="d2-card"><h3>연도별 문제유형</h3><p class="hint">사례형 / 논술형 / 약술형</p><div class="d2-cw"><canvas id="c-year-type"></canvas></div></div>
+  <div class="d2-grid" style="grid-template-columns:1fr">
    <div class="d2-card"><h3>2차 응시인원 · 합격률</h3><p class="hint">2013~2025</p><div class="d2-cw"><canvas id="c-pass-ov"></canvas></div></div>
   </div>
  </section>
@@ -175,8 +174,6 @@ function overview(){
   $('#ov-top').innerHTML = '<table><tr><th>과목</th><th>1위</th><th>2위</th><th>3위</th></tr>' + SUBJ.map(sj=>{
     const t = Object.entries(count(its.filter(x=>x.subject===sj), x=>x.category)).sort((a,b)=>b[1]-a[1]).slice(0,3);
     return `<tr><td class="k"><b>${sj}</b></td>${t.map(([c,n])=>`<td style="text-align:left">${esc(c)} <span class="d2-pill y">${n}</span></td>`).join('')}</tr>`; }).join('') + '</table>';
-  mk('c-year-type', { type:'bar', data:{ labels:Y, datasets: TYPES.map((t,i)=>({ label:t, data:Y.map(y=>its.filter(x=>x.year===y&&x.type===t).length), backgroundColor:TCOL[i] })) },
-    options:{ maintainAspectRatio:false, scales:{ x:{stacked:true}, y:{stacked:true} }, plugins:{ legend:{position:'bottom'} } } });
   passCombo('c-pass-ov');
 }
 function passCombo(id){
