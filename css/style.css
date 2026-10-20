@@ -750,3 +750,13 @@ html[data-theme="dark"] .site-header{background:linear-gradient(90deg,#071433 0%
 .site-header .btn{color:var(--text)}
 .site-header .btn.primary{color:#fff}
 .site-header .desc{color:#c7d2fe!important}
+
+/* ===== 메뉴 한 줄 ===== */
+.nav a .s{display:none}
+@media(max-width:700px){
+ .nav{flex-wrap:nowrap!important;gap:0!important;overflow-x:auto;scrollbar-width:none}
+ .nav::-webkit-scrollbar{display:none}
+ .nav a{white-space:nowrap;flex:0 0 auto;padding:8px 8px!important;font-size:13px!important}
+ .nav a .l{display:none}.nav a .s{display:inline}
+}
+@media(min-width:701px){.nav{flex-wrap:nowrap}.nav a{white-space:nowrap}}
