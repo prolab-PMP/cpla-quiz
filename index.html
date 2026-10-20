@@ -145,8 +145,8 @@ html[data-theme="dark"] .tile{filter:saturate(.9) brightness(.92)}
 .bk-scene{perspective:1400px;display:inline-block}
 .bk{--w:200px;--h:282px;--d:34px;--c1:#1e3a8a;--c2:#0f1f4d;--ink:#16213e;--acc:#ffc000;
   position:relative;width:var(--w);height:var(--h);transform-style:preserve-3d;
-  transform:rotateY(18deg) rotateX(3deg);transition:transform .45s cubic-bezier(.2,.7,.2,1);display:block;text-decoration:none;color:var(--ink)}
-a.bk:hover,.bk:hover{transform:rotateY(10deg) rotateX(2deg) translateY(-10px)}
+  transform:rotateY(-20deg) rotateX(3deg);transition:transform .45s cubic-bezier(.2,.7,.2,1);display:block;text-decoration:none;color:var(--ink)}
+a.bk:hover,.bk:hover{transform:rotateY(-10deg) rotateX(2deg) translateY(-10px)}
 .bk>i{position:absolute;display:block}
 /* 앞표지 (아이보리 바탕 + 포인트색 띠) */
 .bk .f{inset:0;transform:translateZ(calc(var(--d)/2));border-radius:2px 5px 5px 2px;overflow:hidden;
@@ -185,8 +185,8 @@ a.bk:hover,.bk:hover{transform:rotateY(10deg) rotateX(2deg) translateY(-10px)}
 .bk .b{inset:0;transform:translateZ(calc(var(--d)/-2)) ;background:var(--c2);border-radius:2px 5px 5px 2px}
 /* 바닥 그림자 */
 .bk-scene{position:relative}
-.bk-scene::after{content:"";position:absolute;left:-6%;right:6%;bottom:-14px;height:28px;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(15,23,42,.42),rgba(15,23,42,0));filter:blur(5px);z-index:-1;transform:skewX(18deg)}
+.bk-scene::after{content:"";position:absolute;left:6%;right:-8%;bottom:-14px;height:28px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.6),rgba(0,0,0,0));filter:blur(5px);z-index:-1;transform:skewX(-18deg)}
 /* 표지 레이아웃 */
 .bk .cv{position:absolute;inset:0;padding:20px 18px 16px 24px;display:flex;flex-direction:column;z-index:2}
 .bk .cv .k{font-size:9.5px;letter-spacing:2.5px;font-weight:800;color:var(--c1)}
@@ -200,9 +200,9 @@ a.bk:hover,.bk:hover{transform:rotateY(10deg) rotateX(2deg) translateY(-10px)}
 .bk .rb{position:absolute;right:-30px;top:16px;transform:rotate(38deg);background:var(--acc);color:#111;font-size:9px;font-weight:900;padding:4px 34px;letter-spacing:.5px;z-index:3;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 /* 선반 */
 .bk-shelf{position:relative;display:flex;justify-content:center;gap:58px;flex-wrap:wrap;padding:30px 20px 46px;margin:4px 0 26px;border-radius:20px;
-  background:radial-gradient(90% 120% at 50% 0%,#ffffff 0%,#eef2f8 70%)}
+  background:radial-gradient(60% 90% at 50% 8%,rgba(255,214,120,.28) 0%,rgba(255,214,120,0) 60%),linear-gradient(180deg,#1b2a55 0%,#0f1838 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .bk-shelf::after{content:"";position:absolute;left:3%;right:3%;bottom:20px;height:16px;border-radius:4px;
-  background:linear-gradient(180deg,#d7dde8,#b7c0cf);box-shadow:0 8px 18px rgba(15,23,42,.18),inset 0 1px 0 rgba(255,255,255,.8)}
+  background:linear-gradient(180deg,#8a6a43,#5b4227);box-shadow:0 10px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
 .bk-shelf .bk-scene{z-index:1}
 /* 색상 테마 */
 .bk.c-navy{--c1:#23408f;--c2:#101f4f;--c3:#e6ebf6;--c4:#cfd8ec}
@@ -218,7 +218,7 @@ a.bk:hover,.bk:hover{transform:rotateY(10deg) rotateX(2deg) translateY(-10px)}
 
 .hx-r.hx-book{display:flex;align-items:center;justify-content:center;min-height:360px}
 .hx-r.hx-book .bk-scene::after{background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0))}
-.hx-r.hx-book .seal{position:absolute;right:6%;bottom:18px;top:auto}
+.hx-r.hx-book .seal{position:absolute;left:10%;right:auto;bottom:22px;top:auto}
 .bk-sec{margin:26px 0 6px}
 .bk-sec .st{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 10px}
 .bk-sec .st h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.4px;color:var(--text)}
@@ -235,8 +235,20 @@ a.bk:hover,.bk:hover{transform:rotateY(10deg) rotateX(2deg) translateY(-10px)}
 .bk .cv h5{color:#16213e}
 .bk .cv .kw span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:640px){.hx-r.hx-book{min-height:300px}.hx-r.hx-book .bk{--w:180px!important;--h:252px!important;--d:48px!important}.hx-r.hx-book .bk h5{font-size:38px!important;margin-top:22px!important}}
-html[data-theme="dark"] .bk-shelf{background:radial-gradient(90% 120% at 50% 0%,#1f2a44 0%,#111827 70%)}
-html[data-theme="dark"] .bk-shelf::after{background:linear-gradient(180deg,#3b4660,#232c40)}
+/* ===== 2D 플랫 책 (3D 오버라이드) ===== */
+.bk,.bk:hover,a.bk:hover{transform-style:flat}
+.bk{transform:none;isolation:isolate;transition:transform .3s ease,filter .3s ease}
+a.bk:hover,.bk:hover{transform:translateY(-8px)}
+.bk .s,.bk .p,.bk .t,.bk .b{display:none}
+.bk .f{transform:none;border-radius:6px 10px 10px 6px;box-shadow:0 16px 26px -8px rgba(0,0,0,.5),0 4px 8px rgba(0,0,0,.25)}
+.bk .f::after{background:linear-gradient(90deg,rgba(0,0,0,.16) 0,rgba(0,0,0,0) 7px),linear-gradient(118deg,rgba(255,255,255,0) 32%,rgba(255,255,255,.28) 47%,rgba(255,255,255,0) 60%)}
+.bk::before{content:"";position:absolute;z-index:-1;top:5px;bottom:5px;left:10px;right:calc(var(--d)*-.32);border-radius:0 8px 8px 0;
+  background:repeating-linear-gradient(180deg,#fdfbf6 0 1.6px,#ddd5c3 1.6px 2.6px);box-shadow:0 10px 18px -8px rgba(0,0,0,.45)}
+.bk-scene::after{left:8%;right:0;bottom:-16px;height:22px;transform:none;background:radial-gradient(closest-side,rgba(0,0,0,.5),rgba(0,0,0,0));filter:blur(6px)}
+.bk-shelf{padding:34px 20px 44px;background:radial-gradient(70% 100% at 50% 0%,rgba(255,200,90,.22) 0%,rgba(255,200,90,0) 62%),linear-gradient(180deg,#22336a 0%,#121c40 100%)}
+.bk-shelf::after{left:6%;right:6%;bottom:22px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28),rgba(255,255,255,0));box-shadow:none}
+.hx-r.hx-book .bk{--d:62px}
+
 </style>
 </head>
 <body>
