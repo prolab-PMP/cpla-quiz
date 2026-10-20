@@ -282,12 +282,12 @@
  </a>
  <nav class="nav" aria-label="주 메뉴">
  <a href="index.html" ${active==='home'?'class="active" aria-current="page"':''}>홈</a>
- <a href="subjects.html" ${active==='subjects'?'class="active" aria-current="page"':''}>과목·키워드</a>
+ <a href="subjects.html" ${active==='subjects'?'class="active" aria-current="page"':''}><span class="l">과목·키워드</span><span class="s">과목</span></a>
  <a href="years.html" ${active==='years'?'class="active" aria-current="page"':''}>연도별</a>
- <a href="exam2.html" ${active==='exam2'?'class="active" aria-current="page"':''}>2차 논술</a>
- <a href="dashboard2.html" ${active==='dashboard2'?'class="active" aria-current="page"':''}>2차 분석</a>
- <a href="interview.html" ${active==='interview'?'class="active" aria-current="page"':''}>3차 면접</a>
- <a href="dashboard.html" ${active==='dashboard'?'class="active" aria-current="page"':''}>학습통계</a>
+ <a href="exam2.html" ${active==='exam2'?'class="active" aria-current="page"':''}><span class="l">2차 논술</span><span class="s">2차논술</span></a>
+ <a href="dashboard2.html" ${active==='dashboard2'?'class="active" aria-current="page"':''}><span class="l">2차 분석</span><span class="s">2차분석</span></a>
+ <a href="interview.html" ${active==='interview'?'class="active" aria-current="page"':''}><span class="l">3차 면접</span><span class="s">3차면접</span></a>
+ <a href="dashboard.html" ${active==='dashboard'?'class="active" aria-current="page"':''}><span class="l">학습통계</span><span class="s">통계</span></a>
  </nav>
  <div class="header-actions">
  <div id="auth-slot" style="display:flex;gap:6px;align-items:center"></div>
