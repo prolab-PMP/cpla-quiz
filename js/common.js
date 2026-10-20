@@ -414,7 +414,7 @@
  fr.readAsText(file);
  }
  function renderFooter(){
- const f = `<footer class="footer">공인노무사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2025년 · 총 ${getProblems().length}문제<br>
+ const f = `<footer class="footer">공인노무사 1차 기출문제 풀이 사이트 · 데이터 기준 2013~2026년 · 총 ${getProblems().length}문제<br>
  <small>본 자료는 학습 목적으로 제공되며, 공식 정답은 한국산업인력공단 발표를 따릅니다.</small>
  <small>사업자명: 더송도 | 사업자등록번호: 877-04-02518</small>
  </footer>`;
@@ -484,3 +484,8 @@
  circleNum(i){ return ["①","②","③","④","⑤"][i] || String(i+1); }
  };
 })();
+
+// 정답 판정 (단일·복수정답·전항정답 공통)
+window.__ansOk = function(p, sel){ if(!sel) return false; var a=p.answer; if(a===12345) return true; if(Array.isArray(a)) return a.indexOf(sel)>=0; return sel===a; };
+window.__ansHas = function(p, n){ var a=p.answer; if(a===12345) return true; if(Array.isArray(a)) return a.indexOf(n)>=0; return n===a; };
+window.__ansText = function(p, circ){ var a=p.answer; if(a===12345 || (Array.isArray(a) && a.length===5)) return '전항정답'; var L=Array.isArray(a)?a:[a]; return L.map(function(x){ return circ ? (["①","②","③","④","⑤"][x-1]+' ('+x+'번)') : (x+'번'); }).join(', '); };
