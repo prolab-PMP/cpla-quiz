@@ -662,6 +662,50 @@ app.get('/api/problems', (req, res) => {
   res.json({ problems: filtered, allowedKeywords, user: { email: req.user.email, is_admin: false, isPremiumActive: false }, totalCount , fullSubjectKeywords });
 });
 
+// ─── 2차(논술)·3차(면접) 기출 API ───
+// 유료/관리자: 전체 공개 · 무료/비로그인: 최근 1개년만 원문 공개, 나머지는 메타(연도·과목·배점·출제기준)만
+function loadJson(name) {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'data', name), 'utf8')); } catch (e) { return []; }
+}
+const EXAM2 = loadJson('exam2.json');
+const EXAM3 = loadJson('exam3.json');
+function isFullAccess(req) { return !!(req.user && (req.user.isPremiumActive || req.user.is_admin)); }
+function accessInfo(req) {
+  return req.user ? { email: req.user.email, isPremiumActive: !!req.user.isPremiumActive, is_admin: !!req.user.is_admin } : null;
+}
+app.get('/api/exam2', (req, res) => {
+  const full = isFullAccess(req);
+  const latestYear = EXAM2.reduce((m, x) => Math.max(m, x.year), 0);
+  const items = EXAM2.map(x => (full || x.year === latestYear) ? x : {
+    year: x.year, round: x.round, subject: x.subject, session: x.session, qno: x.qno, sub: x.sub,
+    points: x.points, qpoints: x.qpoints, type: x.type, category: x.category, locked: true,
+  });
+  res.set('Cache-Control', 'no-store, private');
+  res.json({ items, latestYear, full, user: accessInfo(req), totalCount: EXAM2.length });
+});
+// 2차 통계 대시보드용: 원문 없이 메타·키워드만 (전체 공개)
+const PASS_STATS = {
+  // 큐넷 「공인노무사 자격시험 차수별 통계자료(2020~2025)」, 2013~2019 2차는 법률저널 보도 기준
+  second: [[2013,2001,250],[2014,2135,250],[2015,2237,250],[2016,3022,250],[2017,3131,253],[2018,3018,300],[2019,3231,303],
+           [2020,3871,343],[2021,4514,322],[2022,5128,549],[2023,4724,395],[2024,3682,330],[2025,5473,418]],
+  first:  [[2020,6203,3438],[2021,6692,3413],[2022,7002,4221],[2023,8611,3019],[2024,9602,2149],[2025,10238,5054]],
+  third:  [[2020,343,343],[2021,322,320],[2022,551,551],[2023,395,395],[2024,329,329],[2025,418,418]],
+};
+app.get('/api/exam2/stats', (req, res) => {
+  const items = EXAM2.map(x => ({ year: x.year, subject: x.subject, session: x.session, qno: x.qno, sub: x.sub,
+    points: x.points, type: x.type, category: x.category, keywords: x.keywords }));
+  const iv = EXAM3.map(x => ({ year: x.year, type: x.type }));
+  res.set('Cache-Control', 'public, max-age=600');
+  res.json({ items, interview: iv, pass: PASS_STATS });
+});
+app.get('/api/exam3', (req, res) => {
+  const full = isFullAccess(req);
+  const latestYear = EXAM3.reduce((m, x) => Math.max(m, x.year || 0), 0);
+  const items = EXAM3.map(x => (full || x.year === latestYear) ? x : { year: x.year, yearLabel: x.yearLabel, type: x.type, locked: true });
+  res.set('Cache-Control', 'no-store, private');
+  res.json({ items, latestYear, full, user: accessInfo(req), totalCount: EXAM3.length });
+});
+
 // ─── /data/problems.js 동적 라우트 (정적 미들웨어보다 위에 위치) ───
 // 무료/비로그인이 정적 파일로 전체 ALL_PROBLEMS을 받는 우회 차단
 app.get('/data/problems.js', (req, res) => {
@@ -695,7 +739,7 @@ for (const dir of STATIC_DIRS) {
 }
 const ALLOWED_ROOT_FILES = new Set([
   'index.html', 'login.html', 'signup.html', 'dashboard.html', 'exam.html',
-  'admin.html', 'subjects.html', 'years.html',
+  'admin.html', 'subjects.html', 'years.html', 'exam2.html', 'interview.html', 'dashboard2.html',
   'manifest.json', 'service-worker.js', 'robots.txt', 'sitemap.xml',
   'llms.txt', 'favicon.ico', 'ads.txt',
 ]);

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2차 논술 기출문제 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="공인노무사 2차 기출문제 2013~2026(제22회~제35회). 노동법·인사노무관리론·행정쟁송법·경영조직론·노동경제학·민사소송법 문제 원문과 출제기준·핵심 키워드 분석.">
+<meta name="keywords" content="공인노무사 2차, 2차 기출문제, 노동법 기출, 인사노무관리론 기출, 행정쟁송법 기출, 경영조직론, 노동경제학, 민사소송법, 출제경향">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://cpla.wayexam.com/exam2.html">
+<meta property="og:title" content="2차 논술 기출문제 · 공인노무사">
+<meta property="og:description" content="공인노무사 2차 14개년 기출 원문 + 출제기준·키워드 분석">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cpla.wayexam.com/exam2.html">
+<meta property="og:locale" content="ko_KR">
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<style>
+.e2-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.e2-bar select{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px}
+.e2-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.e2-tab{padding:7px 14px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
+.e2-tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.e2-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 18px}
+.e2-sum .card{padding:14px 16px}
+.e2-sum b{display:block;font-size:22px;margin-top:4px}
+.e2-q{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:0 0 14px;box-shadow:var(--shadow);position:relative}
+.e2-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.e2-head h3{margin:0 8px 0 0;font-size:17px}
+.e2-case{white-space:pre-line;line-height:1.75;font-size:14.5px;background:var(--passage-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:8px 0}
+.e2-sub{border-top:1px dashed var(--border);padding:10px 0 4px;margin-top:6px}
+.e2-sub .ask{white-space:pre-line;line-height:1.7;font-size:14.5px;font-weight:600}
+.e2-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.e2-meta .chip{font-size:11.5px}
+.e2-lock .e2-blur{filter:blur(5px);user-select:none;pointer-events:none;color:var(--muted);line-height:1.8;font-size:14px}
+.e2-lock{padding-bottom:104px}
+.e2-cta{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:rgba(15,23,42,.88);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;font-size:13.5px;max-width:88%;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.e2-cta a{display:inline-block;margin-top:8px;background:#03C75A;color:#fff;padding:7px 14px;border-radius:8px;font-weight:700;text-decoration:none}
+.e2-cta a.ghost{background:transparent;border:1px solid rgba(255,255,255,.5);margin-left:6px}
+.e2-free{background:var(--success-soft);color:var(--success);border:0}
+.e2-note{font-size:13px;color:var(--muted);margin:-6px 0 14px}
+.e2-more{display:block;margin:6px auto 30px}
+</style>
+</head>
+<body>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('exam2');</script>
+
+<main class="container">
+ <div class="hero" style="padding:30px 32px">
+  <h1 style="font-size:26px">2차 논술 기출문제 (2013~2026)</h1>
+  <p>제22회~제35회 공인노무사 2차 문제 원문을 과목·연도별로 보고, 출제기준과 핵심 키워드로 출제 경향을 확인하세요.</p>
+  <div class="badges"><span>필수 3과목 + 선택 3과목</span><span id="b-count">물음 단위 정리</span><span id="b-free">최근 1개년 무료 공개</span></div>
+ </div>
+
+ <div class="e2-sum" id="e2-sum"></div>
+ <div class="e2-tabs" id="e2-tabs"></div>
+ <div class="e2-bar">
+  <select id="f-year"><option value="">전체 연도</option></select>
+  <select id="f-cat"><option value="">전체 출제기준</option></select>
+  <select id="f-type"><option value="">전체 유형</option><option>사례형</option><option>논술형</option><option>약술형</option></select>
+ </div>
+ <p class="e2-note" id="e2-note"></p>
+ <div id="e2-list"></div>
+ <button class="btn e2-more" id="e2-more" style="display:none">더 보기</button>
+</main>
+
+<script>
+(function(){
+const SUBJ = ['노동법','인사노무관리론','행정쟁송법','경영조직론','노동경제학','민사소송법'];
+const STORE = 'https://smartstore.naver.com/sub-note/products/13500101192';
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const FILL = '근로자 甲은 A회사에 입사하여 근무하던 중 사용자 乙로부터 일방적인 통보를 받았다. 이에 대하여 관련 법리와 판례에 근거하여 논하시오. 사실관계와 쟁점을 검토하고 그 정당성 여부를 설명하시오.';
+let DATA = null, groups = [], cur = { subj: '노동법', year: '', cat: '', type: '' }, shown = 20;
+
+function groupItems(items){
+  const m = new Map();
+  for (const it of items){
+    const k = [it.year, it.subject, it.session, it.qno].join('|');
+    if (!m.has(k)) m.set(k, { key:k, year:it.year, round:it.round, subject:it.subject, session:it.session, qno:it.qno, qpoints:it.qpoints, case:it.case, locked:!!it.locked, subs:[] });
+    m.get(k).subs.push(it);
+  }
+  return Array.from(m.values()).sort((a,b)=> b.year-a.year || SUBJ.indexOf(a.subject)-SUBJ.indexOf(b.subject) || a.session.localeCompare(b.session) || a.qno-b.qno);
+}
+function filtered(){
+  return groups.filter(g => g.subject===cur.subj && (!cur.year || g.year==cur.year)
+    && (!cur.cat || g.subs.some(s=>s.category===cur.cat)) && (!cur.type || g.subs.some(s=>s.type===cur.type)));
+}
+function renderSummary(){
+  const its = DATA.items.filter(x=>x.subject===cur.subj);
+  const cats = {}; its.forEach(x=>cats[x.category]=(cats[x.category]||0)+1);
+  const top = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const caseN = its.filter(x=>x.type==='사례형').length;
+  const kc = {}; its.forEach(x=>(x.keywords||[]).forEach(k=>kc[k]=(kc[k]||0)+1));
+  const kwTop = Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  document.getElementById('e2-sum').innerHTML = `
+   <div class="card" style="grid-column:span 2"><span class="desc">${esc(cur.subj)} 최다 키워드 Top 3${DATA.full?'':' (무료 공개분 기준)'}</span><b style="font-size:15px;line-height:1.6">${kwTop.map(([k,n])=>'#'+esc(k)+' <span class="chip">'+n+'</span>').join(' ')||'-'}</b></div>
+   <div class="card"><span class="desc">사례형 비율</span><b>${its.length?Math.round(caseN*100/its.length):0}%</b></div>
+   <div class="card" style="grid-column:span 2"><span class="desc">최다 출제기준 Top 3</span><b style="font-size:15px;line-height:1.6">${top.map(([c,n])=>esc(c)+' <span class="chip">'+n+'</span>').join(' ')}</b></div>`;
+  const catSel = document.getElementById('f-cat');
+  catSel.innerHTML = '<option value="">전체 출제기준</option>' + Object.keys(cats).sort().map(c=>`<option ${c===cur.cat?'selected':''}>${esc(c)}</option>`).join('');
+}
+function cardHtml(g){
+  const free = !g.locked && !DATA.full;
+  const head = `<div class="e2-head"><h3>${g.year}년 제${g.round}회 · ${esc(g.subject)} ${esc(g.session)} 【문제 ${g.qno}】</h3>
+    <span class="chip blue">${g.qpoints}점</span>${free?'<span class="chip e2-free">무료 공개</span>':''}</div>`;
+  if (g.locked){
+    const meta = g.subs.map(s=>`<span class="chip">${esc(s.sub||'문제')} · ${s.points}점</span><span class="chip purple">${esc(s.category)}</span><span class="chip">${esc(s.type)}</span>`).join('');
+    return `<div class="e2-q e2-lock">${head}<div class="e2-meta">${meta}</div>
+      <div class="e2-blur" aria-hidden="true">${FILL} ${FILL}</div>
+      <div class="e2-cta">${g.year}년 문제 원문·키워드는 <b>Premium 회원</b> 전용입니다.<br>
+       ${DATA.user?'':'<a class="ghost" href="login.html">로그인</a>'}<a href="${STORE}" target="_blank" rel="noopener">Premium 회원권 보기</a></div></div>`;
+  }
+  const subs = g.subs.map(s=>`<div class="e2-sub"><div class="ask">${s.sub?'<b>'+esc(s.sub)+')</b> ':''}${esc(s.ask)} <span class="chip blue">${s.points}점</span></div>
+     <div class="e2-meta"><span class="chip purple">${esc(s.category)}</span><span class="chip">${esc(s.type)}</span>${(s.keywords||[]).map(k=>'<span class="chip green">#'+esc(k)+'</span>').join('')}</div></div>`).join('');
+  return `<div class="e2-q">${head}${g.case?`<div class="e2-case">${esc(g.case)}</div>`:''}${subs}</div>`;
+}
+function render(){
+  document.querySelectorAll('.e2-tab').forEach(b=>b.classList.toggle('on', b.dataset.s===cur.subj));
+  renderSummary();
+  const list = filtered();
+  document.getElementById('e2-list').innerHTML = list.slice(0, shown).map(cardHtml).join('') || '<div class="empty">조건에 맞는 문제가 없습니다.</div>';
+  const more = document.getElementById('e2-more');
+  more.style.display = list.length > shown ? 'block' : 'none';
+  more.textContent = `더 보기 (${shown}/${list.length})`;
+  document.getElementById('e2-note').textContent = DATA.full ? 'Premium 회원: 전 연도 원문이 공개됩니다.'
+    : `무료 이용 중: ${DATA.latestYear}년(최근 1개년) 문제는 원문 전체 공개, 그 외 연도는 배점·출제기준만 표시됩니다.`;
+}
+async function init(){
+  try { DATA = await (await fetch('/api/exam2')).json(); } catch(e){ DATA = { items:[], full:false, latestYear:0 }; }
+  groups = groupItems(DATA.items);
+  document.getElementById('b-count').textContent = `물음 ${DATA.items.length}개 · 문제 ${groups.length}개`;
+  if (DATA.full) document.getElementById('b-free').textContent = 'Premium 전체 공개';
+  document.getElementById('e2-tabs').innerHTML = SUBJ.map(s=>`<button class="e2-tab" data-s="${s}">${s}</button>`).join('');
+  document.querySelectorAll('.e2-tab').forEach(b=>b.onclick=()=>{ cur.subj=b.dataset.s; cur.cat=''; shown=20; render(); });
+  const years = [...new Set(DATA.items.map(x=>x.year))].sort((a,b)=>b-a);
+  document.getElementById('f-year').innerHTML += years.map(y=>`<option value="${y}">${y}년 (제${y-1991}회)${(!DATA.full && y===DATA.latestYear)?' · 무료':''}</option>`).join('');
+  document.getElementById('f-year').onchange = e=>{ cur.year=e.target.value; shown=20; render(); };
+  document.getElementById('f-cat').onchange = e=>{ cur.cat=e.target.value; shown=20; render(); };
+  document.getElementById('f-type').onchange = e=>{ cur.type=e.target.value; shown=20; render(); };
+  document.getElementById('e2-more').onclick = ()=>{ shown += 20; render(); };
+  const q = new URLSearchParams(location.search);
+  if (q.get('subject') && SUBJ.includes(q.get('subject'))) cur.subj = q.get('subject');
+  if (q.get('year')) { cur.year = q.get('year'); document.getElementById('f-year').value = cur.year; }
+  if (q.get('category')) cur.cat = q.get('category');
+  render();
+}
+init();
+})();
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>

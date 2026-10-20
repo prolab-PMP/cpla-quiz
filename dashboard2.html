@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>2차 기출 통계분석 대시보드 · 공인노무사</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="공인노무사 2차 기출문제 통계분석 대시보드. 2013~2026년 14개년 노동법·인사노무관리론·행정쟁송법·선택과목 출제기준, 핵심 키워드, 문제유형, 합격률 추이 시각화.">
+<meta name="keywords" content="공인노무사 2차, 2차 출제경향, 노동법 출제경향, 키워드 분석, 출제기준, 합격률, 기출 분석, 대시보드">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://cpla.wayexam.com/dashboard2.html">
+<meta property="og:title" content="공인노무사 2차 기출 통계분석 대시보드">
+<meta property="og:description" content="14개년 2차 출제기준·키워드·합격률 추이를 한눈에">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cpla.wayexam.com/dashboard2.html">
+<meta property="og:locale" content="ko_KR">
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"공인노무사 2차 기출 통계분석 대시보드","url":"https://cpla.wayexam.com/dashboard2.html","inLanguage":"ko-KR","applicationCategory":"EducationalApplication"}
+</script>
+<style>
+.d2{--d-bg:#0f141c;--d-surface:#1a2030;--d-surface2:#222a3d;--d-border:#2c3549;--d-text:#e8ecf4;--d-muted:#97a1b6;--d-accent:#ffc000;--d-accent2:#4dabf7;
+  background:var(--d-bg);color:var(--d-text);border-radius:20px;padding:22px;margin-bottom:28px}
+.d2 h2{margin:0 0 4px;font-size:24px}
+.d2 .sub{color:var(--d-muted);font-size:13.5px;margin:0 0 16px}
+.d2-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;border-bottom:1px solid var(--d-border);padding-bottom:12px}
+.d2-tab{background:transparent;border:1px solid var(--d-border);color:var(--d-muted);padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer}
+.d2-tab[aria-selected="true"]{background:var(--d-accent);color:#111;border-color:var(--d-accent)}
+.d2-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:900px){.d2-kpis{grid-template-columns:repeat(2,1fr)}}
+.d2-kpi{background:var(--d-surface);border:1px solid var(--d-border);border-radius:14px;padding:14px 16px}
+.d2-kpi .l{color:var(--d-muted);font-size:12.5px}
+.d2-kpi .v{font-size:27px;font-weight:800;margin-top:4px;color:var(--d-accent);font-variant-numeric:tabular-nums}
+.d2-kpi .s{font-size:12px;color:var(--d-accent2);margin-top:3px}
+.d2-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:900px){.d2-grid{grid-template-columns:1fr}}
+.d2-card{background:var(--d-surface);border:1px solid var(--d-border);border-radius:14px;padding:14px 16px;margin-bottom:14px;min-width:0}
+.d2-grid .d2-card{margin-bottom:0}
+.d2-card h3{margin:0 0 2px;font-size:15.5px}
+.d2-card .hint{color:var(--d-muted);font-size:12px;margin:0 0 10px}
+.d2-cw{position:relative;height:300px}
+.d2-cw.tall{height:470px}
+.d2-sel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.d2-sel button{background:var(--d-surface2);border:1px solid var(--d-border);color:var(--d-text);padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer}
+.d2-sel button.on{background:var(--d-accent2);border-color:var(--d-accent2);color:#08111f;font-weight:700}
+.d2-hm{overflow:auto}
+.d2-hm table{border-collapse:collapse;font-size:12px;min-width:640px;width:100%}
+.d2-hm th,.d2-hm td{border:1px solid var(--d-border);padding:5px 6px;text-align:center;white-space:nowrap}
+.d2-hm th{background:var(--d-surface2);color:var(--d-muted);font-weight:600}
+.d2-hm td.k{text-align:left;color:var(--d-text);position:sticky;left:0;background:var(--d-surface)}
+.d2-search{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.d2-search input,.d2-search select{background:var(--d-surface2);border:1px solid var(--d-border);color:var(--d-text);border-radius:8px;padding:8px 10px;font-size:14px}
+.d2-search input{flex:1;min-width:200px}
+.d2-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--d-border);font-size:13.5px}
+.d2-row b{margin-right:4px}
+.d2-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;background:var(--d-surface2);border:1px solid var(--d-border);color:var(--d-muted)}
+.d2-pill.y{color:#111;background:var(--d-accent);border-color:var(--d-accent)}
+.d2-pill.b{color:var(--d-accent2)}
+.d2-row a{margin-left:auto;color:var(--d-accent2);font-weight:700;text-decoration:none;font-size:13px}
+.d2 table.pt{width:100%;border-collapse:collapse;font-size:13px}
+.d2 table.pt th,.d2 table.pt td{border-bottom:1px solid var(--d-border);padding:7px 6px;text-align:right}
+.d2 table.pt th:first-child,.d2 table.pt td:first-child{text-align:left}
+.d2 table.pt th{color:var(--d-muted);font-weight:600}
+.d2-foot{color:var(--d-muted);font-size:12px;margin-top:6px}
+.d2-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--d-surface2);border:1px solid var(--d-border);border-radius:12px;padding:12px 14px;margin-top:6px;font-size:13.5px}
+.d2-cta a{background:var(--d-accent);color:#111;font-weight:800;padding:7px 14px;border-radius:8px;text-decoration:none}
+</style>
+</head>
+<body>
+<script src="js/common.js"></script>
+<script>CPLA.renderHeader('dashboard2');</script>
+
+<main class="container">
+<div class="d2">
+ <h2>공인노무사 2차 기출 통계분석 대시보드</h2>
+ <p class="sub">2013~2026년 (제22회~제35회) · 필수(노동법·인사노무관리론·행정쟁송법) + 선택(경영조직론·노동경제학·민사소송법) · 물음 단위 집계</p>
+ <div class="d2-tabs" role="tablist">
+  <button class="d2-tab" data-tab="overview" aria-selected="true">개요</button>
+  <button class="d2-tab" data-tab="keywords" aria-selected="false">키워드 분석</button>
+  <button class="d2-tab" data-tab="category" aria-selected="false">출제기준 분석</button>
+  <button class="d2-tab" data-tab="pass" aria-selected="false">합격률 추이</button>
+  <button class="d2-tab" data-tab="search" aria-selected="false">문제 검색</button>
+ </div>
+
+ <section id="p-overview">
+  <div class="d2-kpis">
+   <div class="d2-kpi"><div class="l">최다 출제기준</div><div class="v" id="k-total" style="font-size:19px;line-height:1.35">-</div><div class="s" id="k-total-s">-</div></div>
+   <div class="d2-kpi"><div class="l">핵심 키워드</div><div class="v" id="k-kw">-</div><div class="s" id="k-kw-s">-</div></div>
+   <div class="d2-kpi"><div class="l">사례형 비중</div><div class="v" id="k-case">-</div><div class="s" id="k-case-s">-</div></div>
+   <div class="d2-kpi"><div class="l">최근 2차 합격률</div><div class="v" id="k-pass">-</div><div class="s" id="k-pass-s">-</div></div>
+  </div>
+  <div class="d2-card"><h3>과목별 최다 출제기준 Top 3</h3><p class="hint">14개년 누적 · 숫자는 해당 출제기준의 물음 수</p><div class="d2-hm" id="ov-top"></div></div>
+  <div class="d2-grid">
+   <div class="d2-card"><h3>연도별 문제유형</h3><p class="hint">사례형 / 논술형 / 약술형</p><div class="d2-cw"><canvas id="c-year-type"></canvas></div></div>
+   <div class="d2-card"><h3>2차 응시인원 · 합격률</h3><p class="hint">2013~2025</p><div class="d2-cw"><canvas id="c-pass-ov"></canvas></div></div>
+  </div>
+ </section>
+
+ <section id="p-keywords" hidden>
+  <div class="d2-sel" id="kw-sel"></div>
+  <div class="d2-grid">
+   <div class="d2-card"><h3>최다 출제 키워드 Top 20</h3><p class="hint" id="kw-hint">-</p><div class="d2-cw tall"><canvas id="c-kw"></canvas></div></div>
+   <div class="d2-card"><h3>키워드 누적 분포 (Pareto)</h3><p class="hint">상위 키워드가 전체 출제에서 차지하는 비율</p><div class="d2-cw tall"><canvas id="c-kw-pareto"></canvas></div></div>
+  </div>
+  <div class="d2-card"><h3>키워드 × 연도 히트맵 (Top 20)</h3><p class="hint">진할수록 해당 연도 출제 빈도가 높음</p><div class="d2-hm" id="kw-hm"></div></div>
+ </section>
+
+ <section id="p-category" hidden>
+  <div class="d2-sel" id="cat-sel"></div>
+  <div class="d2-grid">
+   <div class="d2-card"><h3>출제기준별 출제 물음 수</h3><p class="hint" id="cat-hint">-</p><div class="d2-cw tall"><canvas id="c-cat"></canvas></div></div>
+   <div class="d2-card"><h3>배점 기준 출제 비중</h3><p class="hint">출제기준별 배점 합계 비율</p><div class="d2-cw tall"><canvas id="c-cat-pts"></canvas></div></div>
+  </div>
+  <div class="d2-card"><h3>출제기준 × 연도 매트릭스</h3><p class="hint">셀 숫자 = 물음 수 · 클릭하면 해당 연도 문제로 이동</p><div class="d2-hm" id="cat-hm"></div></div>
+ </section>
+
+ <section id="p-pass" hidden>
+  <div class="d2-kpis" id="pass-kpis"></div>
+  <div class="d2-grid">
+   <div class="d2-card"><h3>차수별 합격률 추이</h3><p class="hint">1차·2차·3차 (2020~2025, 큐넷 통계)</p><div class="d2-cw"><canvas id="c-pass-rate"></canvas></div></div>
+   <div class="d2-card"><h3>2차 응시·합격 인원</h3><p class="hint">2013~2025</p><div class="d2-cw"><canvas id="c-pass-2"></canvas></div></div>
+  </div>
+  <div class="d2-grid">
+   <div class="d2-card"><h3>2025년 단계별 인원</h3><p class="hint">1차 응시 → 1차 합격 → 2차 응시 → 2차 합격 → 최종</p><div class="d2-cw"><canvas id="c-funnel"></canvas></div></div>
+   <div class="d2-card"><h3>합격률 상세표</h3><p class="hint">2차 기준</p><div id="pass-table"></div></div>
+  </div>
+  <p class="d2-foot">출처: 큐넷 「공인노무사 자격시험 차수별 통계자료(2020~2025)」, 2013~2019년 2차는 법률저널 보도(응시자·합격률) 기준. 2026년 결과는 발표 후 반영.</p>
+ </section>
+
+ <section id="p-search" hidden>
+  <div class="d2-search">
+   <input id="s-q" placeholder="키워드·출제기준 검색 (예: 부당노동행위, 원고적격, 노동공급)">
+   <select id="s-subj"><option value="">전체 과목</option></select>
+   <select id="s-year"><option value="">전체 연도</option></select>
+   <select id="s-type"><option value="">전체 유형</option><option>사례형</option><option>논술형</option><option>약술형</option></select>
+  </div>
+  <p class="hint" id="s-count" style="color:var(--d-muted);font-size:12.5px"></p>
+  <div id="s-list"></div>
+  <div class="d2-cta">문제 원문은 <b>2차 논술</b> 페이지에서 볼 수 있습니다 (최근 1개년 무료 · 전체는 Premium). <a href="exam2.html">2차 논술 기출 보기</a></div>
+ </section>
+</div>
+</main>
+
+<script>
+(function(){
+const SUBJ = ['노동법','인사노무관리론','행정쟁송법','경영조직론','노동경제학','민사소송법'];
+const COL = ['#ffc000','#4dabf7','#69db7c','#f783ac','#b197fc','#ffa94d'];
+const TYPES = ['사례형','논술형','약술형'], TCOL = ['#ffc000','#f4b183','#9dc3e6'];
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+let D = null, charts = {}, kwSubj = '전체', catSubj = '노동법';
+const built = {};
+Chart.defaults.color = '#aab3c5'; Chart.defaults.borderColor = '#2c3549';
+Chart.defaults.font.family = "'Pretendard','Noto Sans KR','맑은 고딕',sans-serif";
+function mk(id, cfg){ if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), cfg); }
+const count = (arr, f) => arr.reduce((m,x)=>{ const k=f(x); m[k]=(m[k]||0)+1; return m; }, {});
+const years = () => [...new Set(D.items.map(x=>x.year))].sort((a,b)=>a-b);
+const heat = (v, max) => { if (!v) return ''; const a = 0.15 + 0.85*v/max; return `background:rgba(255,192,0,${a.toFixed(2)});color:${a>0.55?'#111':'#e8ecf4'};font-weight:700`; };
+
+function overview(){
+  const its = D.items, Y = years();
+  const kw = count(its.flatMap(x=>x.keywords||[]), k=>k);
+  const kwTop = Object.entries(kw).sort((a,b)=>b[1]-a[1])[0];
+  const caseN = its.filter(x=>x.type==='사례형').length;
+  const sec = D.pass.second, last = sec[sec.length-1], prev = sec[sec.length-2];
+  const r = last[2]/last[1]*100, pr = prev[2]/prev[1]*100;
+  const ct = Object.entries(count(its, x=>x.subject+'|'+x.category)).sort((a,b)=>b[1]-a[1])[0];
+  $('#k-total').textContent = ct ? ct[0].split('|')[1] : '-'; $('#k-total-s').textContent = ct ? `${ct[0].split('|')[0]} · ${ct[1]}회 출제` : '';
+  $('#k-kw').textContent = Object.keys(kw).length.toLocaleString(); $('#k-kw-s').textContent = kwTop ? `최다: ${kwTop[0]} (${kwTop[1]})` : '-';
+  $('#k-case').textContent = (caseN*100/its.length).toFixed(1)+'%'; $('#k-case-s').textContent = `노동법 ${Math.round(its.filter(x=>x.subject==='노동법'&&x.type==='사례형').length*100/its.filter(x=>x.subject==='노동법').length)}% 사례형`;
+  $('#k-pass').textContent = r.toFixed(1)+'%'; $('#k-pass-s').textContent = `${last[0]}년 · ${r>=pr?'▲':'▼'} ${Math.abs(r-pr).toFixed(1)}%p`;
+  $('#ov-top').innerHTML = '<table><tr><th>과목</th><th>1위</th><th>2위</th><th>3위</th></tr>' + SUBJ.map(sj=>{
+    const t = Object.entries(count(its.filter(x=>x.subject===sj), x=>x.category)).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    return `<tr><td class="k"><b>${sj}</b></td>${t.map(([c,n])=>`<td style="text-align:left">${esc(c)} <span class="d2-pill y">${n}</span></td>`).join('')}</tr>`; }).join('') + '</table>';
+  mk('c-year-type', { type:'bar', data:{ labels:Y, datasets: TYPES.map((t,i)=>({ label:t, data:Y.map(y=>its.filter(x=>x.year===y&&x.type===t).length), backgroundColor:TCOL[i] })) },
+    options:{ maintainAspectRatio:false, scales:{ x:{stacked:true}, y:{stacked:true} }, plugins:{ legend:{position:'bottom'} } } });
+  passCombo('c-pass-ov');
+}
+function passCombo(id){
+  const s = D.pass.second;
+  mk(id, { data:{ labels:s.map(x=>x[0]), datasets:[
+      { type:'bar', label:'응시', data:s.map(x=>x[1]), backgroundColor:'rgba(255,230,153,.85)', yAxisID:'y' },
+      { type:'line', label:'합격률(%)', data:s.map(x=>+(x[2]/x[1]*100).toFixed(2)), borderColor:'#ed7d31', backgroundColor:'#ed7d31', yAxisID:'y1', tension:.25 } ] },
+    options:{ maintainAspectRatio:false, scales:{ y:{ position:'left' }, y1:{ position:'right', grid:{drawOnChartArea:false}, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{position:'bottom'} } } });
+}
+function selBar(el, list, cur, on){
+  el.innerHTML = list.map(s=>`<button class="${s===cur?'on':''}" data-s="${s}">${s}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>on(b.dataset.s));
+}
+function keywords(){
+  selBar($('#kw-sel'), ['전체',...SUBJ], kwSubj, s=>{ kwSubj=s; keywords(); });
+  const its = D.items.filter(x=>kwSubj==='전체'||x.subject===kwSubj), Y = years();
+  const kw = Object.entries(count(its.flatMap(x=>x.keywords||[]), k=>k)).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  const total = kw.reduce((a,b)=>a+b[1],0), top = kw.slice(0,20);
+  $('#kw-hint').textContent = `${kwSubj} · 고유 키워드 ${kw.length}개 · 출현 ${total}회`;
+  mk('c-kw', { type:'bar', data:{ labels:top.map(x=>x[0]), datasets:[{ data:top.map(x=>x[1]), backgroundColor:'#ffc000' }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{precision:0} } } } });
+  let cum = 0; const p = kw.slice(0,40).map(x=>{ cum+=x[1]; return +(cum*100/total).toFixed(1); });
+  mk('c-kw-pareto', { data:{ labels:kw.slice(0,40).map(x=>x[0]), datasets:[
+     { type:'bar', label:'빈도', data:kw.slice(0,40).map(x=>x[1]), backgroundColor:'#4dabf7', yAxisID:'y' },
+     { type:'line', label:'누적(%)', data:p, borderColor:'#ffc000', pointRadius:0, yAxisID:'y1' } ] },
+    options:{ maintainAspectRatio:false, scales:{ x:{ ticks:{ display:false } }, y1:{ position:'right', max:100, grid:{drawOnChartArea:false}, ticks:{callback:v=>v+'%'} } }, plugins:{ legend:{position:'bottom'} } } });
+  const mx = Math.max(1, ...top.flatMap(([k])=>Y.map(y=>its.filter(x=>x.year===y&&(x.keywords||[]).includes(k)).length)));
+  $('#kw-hm').innerHTML = `<table><tr><th>키워드</th>${Y.map(y=>`<th>'${String(y).slice(2)}</th>`).join('')}<th>계</th></tr>` +
+    top.map(([k,n])=>`<tr><td class="k">${esc(k)}</td>${Y.map(y=>{ const v = its.filter(x=>x.year===y&&(x.keywords||[]).includes(k)).length; return `<td style="${heat(v,mx)}">${v||''}</td>`; }).join('')}<td><b>${n}</b></td></tr>`).join('') + '</table>';
+}
+function category(){
+  selBar($('#cat-sel'), SUBJ, catSubj, s=>{ catSubj=s; category(); });
+  const its = D.items.filter(x=>x.subject===catSubj), Y = years();
+  const c = Object.entries(count(its, x=>x.category)).sort((a,b)=>b[1]-a[1]);
+  const pts = {}; its.forEach(x=>pts[x.category]=(pts[x.category]||0)+(x.points||0));
+  $('#cat-hint').textContent = `${catSubj} · 물음 ${its.length}개 · 출제기준 ${c.length}개`;
+  mk('c-cat', { type:'bar', data:{ labels:c.map(x=>x[0]), datasets:[{ data:c.map(x=>x[1]), backgroundColor:'#ffc000' }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{precision:0} } } } });
+  const pe = Object.entries(pts).sort((a,b)=>b[1]-a[1]);
+  mk('c-cat-pts', { type:'doughnut', data:{ labels:pe.map(x=>x[0]), datasets:[{ data:pe.map(x=>x[1]), backgroundColor:pe.map((_,i)=>`hsl(${(i*37)%360} 70% 62%)`), borderColor:'#1a2030' }] },
+    options:{ maintainAspectRatio:false, plugins:{ legend:{position:'bottom', labels:{boxWidth:10, font:{size:11}}} } } });
+  const mx = Math.max(1, ...c.flatMap(([k])=>Y.map(y=>its.filter(x=>x.year===y&&x.category===k).length)));
+  $('#cat-hm').innerHTML = `<table><tr><th>출제기준</th>${Y.map(y=>`<th>'${String(y).slice(2)}</th>`).join('')}<th>계</th></tr>` +
+    c.map(([k,n])=>`<tr><td class="k">${esc(k)}</td>${Y.map(y=>{ const v = its.filter(x=>x.year===y&&x.category===k).length;
+      return `<td style="${heat(v,mx)};${v?'cursor:pointer':''}" ${v?`onclick="location.href='exam2.html?subject=${encodeURIComponent(catSubj)}&year=${y}&category=${encodeURIComponent(k)}'"`:''}>${v||''}</td>`; }).join('')}<td><b>${n}</b></td></tr>`).join('') + '</table>';
+}
+function pass(){
+  const P = D.pass, rate = a => a[2]/a[1]*100, avg = a => a.reduce((s,x)=>s+rate(x),0)/a.length;
+  const s2 = P.second, tA = s2.reduce((a,x)=>a+x[1],0), tP = s2.reduce((a,x)=>a+x[2],0);
+  $('#pass-kpis').innerHTML = `
+   <div class="d2-kpi"><div class="l">평균 1차 합격률</div><div class="v">${avg(P.first).toFixed(1)}%</div><div class="s">2020~2025</div></div>
+   <div class="d2-kpi"><div class="l">평균 2차 합격률</div><div class="v">${avg(s2).toFixed(1)}%</div><div class="s">2013~2025 (${s2.length}개년)</div></div>
+   <div class="d2-kpi"><div class="l">평균 3차 합격률</div><div class="v">${avg(P.third).toFixed(1)}%</div><div class="s">2020~2025</div></div>
+   <div class="d2-kpi"><div class="l">2차 누적 응시 → 합격</div><div class="v" style="font-size:21px">${tA.toLocaleString()} → ${tP.toLocaleString()}</div><div class="s">전체 ${(tP*100/tA).toFixed(1)}%</div></div>`;
+  const yy = P.first.map(x=>x[0]);
+  const f = y => (arr) => { const r = arr.find(x=>x[0]===y); return r ? +rate(r).toFixed(2) : null; };
+  mk('c-pass-rate', { type:'line', data:{ labels:yy, datasets:[
+     { label:'1차', data:yy.map(y=>f(y)(P.first)), borderColor:'#4dabf7' },
+     { label:'2차', data:yy.map(y=>f(y)(s2)), borderColor:'#ffc000' },
+     { label:'3차', data:yy.map(y=>f(y)(P.third)), borderColor:'#69db7c' } ] },
+    options:{ maintainAspectRatio:false, scales:{ y:{ ticks:{callback:v=>v+'%'} } }, plugins:{ legend:{position:'bottom'} } } });
+  mk('c-pass-2', { type:'bar', data:{ labels:s2.map(x=>x[0]), datasets:[
+     { label:'응시', data:s2.map(x=>x[1]), backgroundColor:'rgba(255,230,153,.85)' },
+     { label:'합격', data:s2.map(x=>x[2]), backgroundColor:'#ffc000' } ] }, options:{ maintainAspectRatio:false, plugins:{ legend:{position:'bottom'} } } });
+  const L = a => a[a.length-1];
+  mk('c-funnel', { type:'bar', data:{ labels:['1차 응시','1차 합격','2차 응시','2차 합격','최종 합격'],
+     datasets:[{ data:[L(P.first)[1], L(P.first)[2], L(s2)[1], L(s2)[2], L(P.third)[2]], backgroundColor:['#4dabf7','#74c0fc','#ffe699','#ffc000','#69db7c'] }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, plugins:{ legend:{display:false} } } });
+  $('#pass-table').innerHTML = `<table class="pt"><tr><th>연도</th><th>응시</th><th>합격</th><th>합격률</th></tr>` +
+    s2.slice().reverse().map(x=>`<tr><td>${x[0]}년 (제${x[0]-1991}회)</td><td>${x[1].toLocaleString()}</td><td>${x[2].toLocaleString()}</td><td>${rate(x).toFixed(2)}%</td></tr>`).join('') + '</table>';
+}
+function search(){
+  if (!built.searchInit){
+    built.searchInit = true;
+    $('#s-subj').innerHTML += SUBJ.map(s=>`<option>${s}</option>`).join('');
+    $('#s-year').innerHTML += years().reverse().map(y=>`<option value="${y}">${y}년</option>`).join('');
+    ['#s-q','#s-subj','#s-year','#s-type'].forEach(id=>$(id).addEventListener('input', search));
+  }
+  const q = $('#s-q').value.trim(), sj = $('#s-subj').value, yr = $('#s-year').value, tp = $('#s-type').value;
+  const res = D.items.filter(x=>(!sj||x.subject===sj)&&(!yr||x.year==yr)&&(!tp||x.type===tp)&&(!q||x.category.includes(q)||(x.keywords||[]).some(k=>k.includes(q))))
+    .sort((a,b)=>b.year-a.year||SUBJ.indexOf(a.subject)-SUBJ.indexOf(b.subject)||a.qno-b.qno);
+  $('#s-count').textContent = `검색 결과 ${res.length}건${res.length>200?' (상위 200건 표시)':''}`;
+  $('#s-list').innerHTML = res.slice(0,200).map(x=>`<div class="d2-row"><b>${x.year}년 ${esc(x.subject)}</b><span class="d2-pill">${esc(x.session)} 문제${x.qno}${x.sub?' '+esc(x.sub):''}</span>
+     <span class="d2-pill y">${x.points}점</span><span class="d2-pill b">${esc(x.category)}</span><span class="d2-pill">${esc(x.type)}</span>
+     ${(x.keywords||[]).map(k=>`<span class="d2-pill">#${esc(k)}</span>`).join('')}
+     <a href="exam2.html?subject=${encodeURIComponent(x.subject)}&year=${x.year}">원문 →</a></div>`).join('') || '<p class="hint">결과가 없습니다.</p>';
+}
+const PAGES = { overview, keywords, category, pass, search };
+function show(tab){
+  document.querySelectorAll('.d2-tab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.tab===tab)));
+  Object.keys(PAGES).forEach(k=>{ document.getElementById('p-'+k).hidden = (k!==tab); });
+  PAGES[tab]();
+  history.replaceState(null, '', '#'+tab);
+}
+async function init(){
+  try { D = await (await fetch('/api/exam2/stats')).json(); } catch(e){ return; }
+  document.querySelectorAll('.d2-tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+  const h = location.hash.slice(1);
+  show(PAGES[h] ? h : 'overview');
+  window.addEventListener('hashchange', ()=>{ const t = location.hash.slice(1); if (PAGES[t]) show(t); });
+}
+init();
+})();
+</script>
+<script>CPLA.renderFooter();</script>
+</body>
+</html>
