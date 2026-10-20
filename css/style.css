@@ -747,3 +747,6 @@ html[data-theme="dark"] .site-header{background:linear-gradient(90deg,#071433 0%
 .site-header .nav a.active{background:transparent;color:#fff;box-shadow:inset 0 -3px 0 #f59e0b;border-radius:0}
 .site-header .icon-btn{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff}
 .site-header #auth-slot a,.site-header #auth-slot button{border-color:rgba(255,255,255,.3)}
+.site-header .btn{color:var(--text)}
+.site-header .btn.primary{color:#fff}
+.site-header .desc{color:#c7d2fe!important}
