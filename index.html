@@ -69,6 +69,77 @@
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="공인노무사">
+<style>
+/* ===== 2026-10 홈 디자인 (PMP 문제은행 스타일) ===== */
+.container{max-width:1180px}
+.intro{background:linear-gradient(120deg,#1d3fa6 0%,#2f5bd3 60%,#3b6fe0 100%);color:#fff;border-radius:16px;padding:22px 26px;margin-bottom:18px;position:relative;overflow:hidden}
+.intro:after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.18);box-shadow:0 0 0 22px rgba(255,255,255,.04),0 0 0 44px rgba(255,255,255,.03)}
+.intro h1{font-size:22px;margin:0 0 6px;padding-left:12px;border-left:4px solid #f59e0b;letter-spacing:-.3px}
+.intro p{margin:0;font-size:14px;opacity:.92;max-width:720px}
+.intro .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.intro .badges span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700}
+.intro .badges span:first-child{background:#f59e0b;border-color:#f59e0b;color:#0b1f4d}
+.hero{background:radial-gradient(900px 420px at 85% 10%,rgba(59,130,246,.35),transparent 60%),linear-gradient(135deg,#0a1a42 0%,#0f2560 55%,#0a1a42 100%);border-radius:18px;padding:38px 40px 34px;display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;border-bottom:5px solid transparent;border-image:linear-gradient(90deg,#f59e0b,#22d3ee) 1;margin-bottom:22px}
+.hero::after{display:none}
+.hero > .hx-l{grid-column:1}.hero > .hx-r{grid-column:2;grid-row:1}
+.hero > :not(.hx-l):not(.hx-r){grid-column:1/-1}
+.hx-chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#fde68a;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.45);padding:6px 14px;border-radius:999px}
+.hx-chip:before{content:"";width:8px;height:8px;border-radius:50%;background:#f59e0b}
+.hx-title{font-size:52px;line-height:1.12;font-weight:900;letter-spacing:-1.5px;margin:18px 0 10px;color:#fff}
+.hx-title em{font-style:normal;color:#5eead4}
+.hx-sub{font-size:18px;color:#dbe4ff;margin:0}
+.hx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;max-width:560px}
+.hx-stats div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px}
+.hx-stats div:first-child{border-color:rgba(94,234,212,.6);background:rgba(94,234,212,.08)}
+.hx-stats b{display:block;font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px}
+.hx-stats small{font-size:12px;color:#a5b4fc}
+.hx-points{margin-top:16px;font-size:13px;color:#c7d2fe}
+.hx-points i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:6px;vertical-align:1px}
+.hx-r{position:relative;min-height:360px}
+.qcard{position:absolute;right:10px;top:0;width:300px;background:#fff;color:#0f172a;border-radius:14px;padding:16px 16px 14px;box-shadow:0 24px 50px -18px rgba(0,0,0,.6);transform:rotate(2deg)}
+.qcard .h{font-size:11px;font-weight:800;color:#64748b;letter-spacing:.5px}
+.qcard .q{font-size:13px;font-weight:700;line-height:1.45;margin:6px 0 8px}
+.qcard .o{font-size:12px;padding:6px 10px;border-radius:8px;background:#f1f5f9;margin-top:5px;color:#334155}
+.qcard .o.ok{background:#dcfce7;color:#166534;font-weight:800;border:1px solid #86efac}
+.kcard{position:absolute;left:-14px;bottom:-34px;width:230px;background:#fff;color:#0f172a;border-radius:12px;padding:12px 14px;box-shadow:0 20px 40px -16px rgba(0,0,0,.6);transform:rotate(-3deg)}
+.kcard .h{font-size:11px;font-weight:800;color:#64748b}
+.kcard .r{display:grid;grid-template-columns:76px 1fr 34px;align-items:center;gap:6px;font-size:11px;margin-top:6px}
+.kcard .r span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.kcard .bar{height:7px;border-radius:4px;background:#e2e8f0;overflow:hidden}.kcard .bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#22d3ee)}
+.kcard .r em{font-style:normal;color:#475569;text-align:right}
+.seal{position:absolute;right:-22px;top:236px;width:86px;height:86px;border-radius:50%;background:#f59e0b;color:#0b1f4d;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:15px;line-height:1.15;box-shadow:0 0 0 5px rgba(245,158,11,.25),0 10px 24px -8px rgba(0,0,0,.5);transform:rotate(8deg)}
+.seal small{font-size:10px;font-weight:800}
+.cols{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:start}
+.pcard{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+.pcard + .pcard{margin-top:20px}
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.ph .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:20px;font-weight:900;flex:0 0 auto}
+.ph h2{margin:0;font-size:21px;letter-spacing:-.3px}.ph p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.ph .tag2{font-size:11px;font-weight:800;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:3px}
+.grp{margin-top:18px}.grp:first-of-type{margin-top:0}
+.grp h4{margin:0 0 10px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px}
+.grp h4:before{content:"";width:6px;height:6px;border-radius:2px;background:#f59e0b}
+.tiles{display:grid;grid-template-columns:repeat(var(--c,3),1fr);gap:10px}
+.tile{display:block;text-align:center;border-radius:12px;padding:14px 8px;text-decoration:none;border:1px solid;transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-2px);box-shadow:0 8px 18px -10px rgba(15,23,42,.35)}
+.tile b{display:block;font-size:16px;font-weight:900;letter-spacing:-.3px}.tile small{display:block;font-size:12px;margin-top:3px;opacity:.85}
+.t-purple{background:#f3e8ff;border-color:#e9d5ff;color:#6b21a8}.t-green{background:#dcfce7;border-color:#bbf7d0;color:#166534}.t-blue{background:#dbeafe;border-color:#bfdbfe;color:#1e40af}
+.t-cyan{background:#cffafe;border-color:#a5f3fc;color:#155e75}.t-amber{background:#fef3c7;border-color:#fde68a;color:#92400e}.t-rose{background:#ffe4e6;border-color:#fecdd3;color:#9f1239}
+html[data-theme="dark"] .tile{filter:saturate(.9) brightness(.92)}
+.mystats #summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mystats #summary-cards .card{padding:12px;border-radius:12px;box-shadow:none;background:var(--panel-2,#f8fafc)}
+.mystats #summary-cards .icon-badge{display:none}
+.mystats #summary-cards h3{font-size:22px;margin:0}.mystats #summary-cards .desc{font-size:12px;margin:2px 0 0}
+.mystats #learning-progress .section-title{display:none}
+.mystats #learning-progress .card{box-shadow:none;border:0;padding:16px 0 0;background:transparent}
+.morelink{display:inline-block;margin-top:14px;font-weight:800;color:var(--primary);text-decoration:none}
+.qlink{display:block;margin-top:6px;padding:12px 14px;border-radius:12px;background:var(--panel-2,#f8fafc);border:1px solid var(--border);text-decoration:none;color:var(--text);font-weight:700;font-size:14px}
+.qlink small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:2px}
+.cta{display:flex;align-items:center;gap:14px;margin-top:16px;padding:16px 18px;border-radius:14px;background:linear-gradient(120deg,#4f46e5,#7c3aed);color:#fff;text-decoration:none;box-shadow:0 14px 26px -14px rgba(79,70,229,.8)}
+.cta b{display:block;font-size:15px}.cta small{opacity:.85;font-size:12px}.cta:after{content:"→";margin-left:auto;font-size:20px;font-weight:900}
+@media(max-width:960px){.hero{grid-template-columns:1fr}.hero > .hx-r{grid-column:1;grid-row:auto;min-height:330px;margin-top:20px}.qcard{right:auto;left:40px}.cols{grid-template-columns:1fr}}
+@media(max-width:600px){.hero{padding:26px 20px}.hx-title{font-size:36px}.hx-stats b{font-size:21px}.qcard{left:10px;width:270px}.kcard{display:none}.seal{right:-6px;top:226px;width:72px;height:72px;font-size:13px}.tiles{--c:2!important}.mystats #summary-cards{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
 <script src="data/problems.js"></script>
@@ -76,81 +147,55 @@
 <script>CPLA.renderHeader('home');</script>
 
 <main class="container">
- <section class="hero">
+ <section class="intro">
  <h1>공인노무사 1차 기출문제 풀이</h1>
- <p>2013년부터 2026년까지 14개년 기출문제 2,370문항을 과목·연도·키워드별로 자유롭게 학습하세요. 풀이 기록은 브라우저에 자동 저장되며, 오답노트와 학습통계를 언제든 확인할 수 있습니다.</p>
+ <p>2013~2026년 14개년 기출 2,370문항을 과목·연도·키워드별로 풀고, 문항마다 정답과 해설을 바로 확인하세요.</p>
  <div class="badges" id="hero-badges"></div>
  </section>
 
- <!-- 이어하기 스냅샷 카드 (있을 때만) -->
+ <section class="hero">
+ <div class="hx-l">
+ <span class="hx-chip">2026 제35회 반영 · 2013~2026 기출</span>
+ <h2 class="hx-title">공인노무사 1차<br><em>기출 문제은행</em></h2>
+ <p class="hx-sub">출제빈도 분석으로 자주 나오는 것부터, 내 취약 키워드는 집중풀이로</p>
+ <div class="hx-stats">
+ <div><b>2,370</b><small>수록 문항</small></div>
+ <div><b>14개년</b><small>2013–2026</small></div>
+ <div><b>1,166</b><small>분류 키워드</small></div>
+ </div>
+ <div class="hx-points"><i></i>과목·연도·키워드별 풀이 · 풀이 기록 자동 저장 · 실전 모의고사</div>
+ </div>
+ <div class="hx-r" aria-hidden="true">
+ <div class="qcard"><div class="h">2026년 기출 · 민법 39번</div><div class="q">토지임차인에게 인정될 수 있는 권리가 아닌 것은?</div><div class="o ok">① 부속물매수청구권 ✓</div><div class="o">② 필요비상환청구권</div><div class="o">③ 유익비상환청구권</div><div class="o">④ 지상물매수청구권</div><div class="o">⑤ 임대차등기절차협력청구권</div></div>
+ <div class="kcard"><div class="h">이 문제 키워드 · 2013–2026 출제빈도</div><div class="r"><span>임대차</span><div class="bar"><i style="width:100%"></i></div><em>11회</em></div><div class="r"><span>부속물매수청구권</span><div class="bar"><i style="width:9%"></i></div><em>1회</em></div></div>
+ <div class="seal"><small>문항별</small>정답·해설</div>
+ </div>
+ </section>
+
  <div id="resume-card"></div>
 
- <section class="section-title"><span class="tag">빠른 시작</span>추천 풀이</section>
- <div class="grid cols-3">
- <a class="card link" href="exam.html?mode=year&year=2026">
- <div class="icon-badge ib-warn"></div>
- <h3>2026년 최신 기출</h3>
- <p class="desc">가장 최근 시행된 제15회 1차 시험 75문항을 풀어봅니다.</p>
- </a>
- <a class="card link" href="exam.html?wrong=1">
- <div class="icon-badge ib-danger"></div>
- <h3>오답노트 다시 풀기</h3>
- <p class="desc">지금까지 틀린 문제만 모아 집중 복습합니다.</p>
- </a>
- <a class="card link" href="exam.html?bookmark=1">
- <div class="icon-badge ib-purple"></div>
- <h3>북마크한 문제</h3>
- <p class="desc">표시해둔 문제만 골라서 풀이합니다.</p>
- </a>
- </div>
-
- 
-
- <section class="section-title"><span class="tag">내 학습 현황</span>빠른 진척도 요약</section>
- <div class="grid cols-4" id="summary-cards"></div>
-
- <!-- 진도율 커버리지 (SVG ring + 과목별 bars) -->
+ <div class="cols">
+ <section class="pcard">
+ <div class="ph"><div class="ic" style="background:#2563eb">✎</div><div><h2>문제 풀이</h2><p>2,370문항 · 원하는 방식을 고르면 바로 시작합니다</p></div></div>
+ <div class="grp"><h4>과목별 풀이</h4><div class="tiles" style="--c:3"><a class="tile t-purple" href="exam.html?mode=subject&subject=노동법1"><b>노동법Ⅰ</b><small>395문항</small></a><a class="tile t-green" href="exam.html?mode=subject&subject=노동법2"><b>노동법Ⅱ</b><small>395문항</small></a><a class="tile t-blue" href="exam.html?mode=subject&subject=민법"><b>민법</b><small>395문항</small></a><a class="tile t-cyan" href="exam.html?mode=subject&subject=사회보험법"><b>사회보험법</b><small>395문항</small></a><a class="tile t-amber" href="exam.html?mode=subject&subject=경영학"><b>경영학개론</b><small>395문항</small></a><a class="tile t-rose" href="exam.html?mode=subject&subject=경제학"><b>경제학원론</b><small>395문항</small></a></div></div>
+ <div class="grp"><h4>연도별 기출</h4><div class="tiles" style="--c:4"><a class="tile t-blue" href="exam.html?mode=year&year=2026"><b>2026</b><small>제35회 · 240문항</small></a><a class="tile t-blue" href="exam.html?mode=year&year=2025"><b>2025</b><small>제34회 · 240문항</small></a><a class="tile t-blue" href="exam.html?mode=year&year=2024"><b>2024</b><small>제33회 · 240문항</small></a><a class="tile t-cyan" href="years.html"><b>전체 연도</b><small>14개년 회차표</small></a></div></div>
+ <div class="grp"><h4>실전 모의고사 (최종 일괄 채점)</h4><div class="tiles" style="--c:3"><a class="tile t-green" href="exam.html?mode=year&year=2026&exam=1"><b>2026 모의고사</b><small>240문항 · 150분</small></a><a class="tile t-green" href="exam.html?mode=year&year=2025&exam=1"><b>2025 모의고사</b><small>240문항 · 150분</small></a><a class="tile t-green" href="exam.html?mode=year&year=2024&exam=1"><b>2024 모의고사</b><small>240문항 · 150분</small></a></div></div>
+ <div class="grp"><h4>복습</h4><div class="tiles" style="--c:3"><a class="tile t-rose" href="exam.html?wrong=1"><b>오답노트</b><small>틀린 문제 <span id="wrong-count">-</span>개</small></a><a class="tile t-amber" href="exam.html?bookmark=1"><b>북마크</b><small>표시한 문제만</small></a><a class="tile t-purple" href="subjects.html"><b>키워드별</b><small>핵심 키워드 <span id="kw-count">-</span>개</small></a></div></div>
+ </section>
+ <div>
+ <section class="pcard mystats">
+ <div class="ph"><div class="ic" style="background:#0d9488">↗</div><div><h2>내 학습 현황<span class="tag2">자동 저장</span></h2><p>과목별 진도와 정답률, 취약 키워드를 한눈에</p></div></div>
+ <div id="summary-cards"></div>
  <div id="learning-progress"></div>
-
- <section class="section-title"><span class="tag">메뉴</span>원하는 학습 방식을 선택하세요</section>
- <div class="grid cols-3">
- <a class="card link" href="subjects.html">
- <div class="icon-badge ib-green"></div>
- <h3>과목·키워드별 풀이</h3>
- <p class="desc">노동법1, 노동법2, 민법, 사회보험법, 경제학, 경영학 과목 및 핵심 키워드로 필터링하여 집중 학습합니다.</p>
- <div class="stat"><span class="stat-small">핵심 키워드</span><span class="stat-big" id="kw-count">-</span></div>
- </a>
- <a class="card link" href="years.html">
- <div class="icon-badge ib-blue"></div>
- <h3>연도별 기출문제</h3>
- <p class="desc">2013 ~ 2026년 회차별 문제를 순서대로 풀며 연도별 출제 경향을 파악합니다.</p>
- <div class="stat"><span class="stat-small">선택 가능 회차</span><span class="stat-big">14개년</span></div>
- </a>
- <a class="card link" href="dashboard.html">
- <div class="icon-badge ib-purple"></div>
- <h3>오답노트·학습통계</h3>
- <p class="desc">틀린 문제를 한눈에 모아보고 과목별 정답률·키워드 취약점을 시각화합니다.</p>
- <div class="stat"><span class="stat-small">오답 수</span><span class="stat-big" id="wrong-count">-</span></div>
- </a>
+ <a class="morelink" href="dashboard.html">취약 키워드·오답 분석 보기 →</a>
+ </section>
+ <section class="pcard">
+ <div class="ph"><div class="ic" style="background:#d97706">≡</div><div><h2>기출 해설 모아보기</h2><p>연도·키워드별 기출문제와 정답·해설</p></div></div>
+ <a class="qlink" href="/q/2026">2026년 제35회 기출 해설<small>240문항 · 정답과 해설, 출제 키워드</small></a>
+ <a class="qlink" href="/q">연도별 기출문제 해설 전체<small>2013~2026 · 2,370문항</small></a>
+ <a class="cta" href="signup.html" id="cta-signup"><span><b>무료 회원가입</b><small>풀이 기록 저장 · 과목별 최근 50문항 무료</small></span></a>
+ </section>
  </div>
-
-<section class="section-title"><span class="tag">실전</span>시험 모드 (150분 타이머 · 최종 일괄 채점)</section>
- <div class="grid cols-3">
- <a class="card link" href="exam.html?mode=year&year=2026&exam=1">
- <div class="icon-badge ib-warn">⏱</div>
- <h3>2026년 실전 모의고사</h3>
- <p class="desc">제15회 75문항을 150분 제한으로 풀이합니다. 제출 전까지 정답·해설이 공개되지 않습니다.</p>
- </a>
- <a class="card link" href="exam.html?mode=year&year=2024&exam=1">
- <div class="icon-badge ib-blue">⏱</div>
- <h3>2024년 실전 모의고사</h3>
- <p class="desc">제14회 73문항을 150분 제한으로 풀이합니다.</p>
- </a>
- <a class="card link" href="exam.html?mode=year&year=2023&exam=1">
- <div class="icon-badge ib-green">⏱</div>
- <h3>2023년 실전 모의고사</h3>
- <p class="desc">제13회 73문항을 150분 제한으로 풀이합니다.</p>
- </a>
  </div>
 </main>
 
@@ -257,6 +302,7 @@
  // 로그인 유도 배너 (비로그인 한정 — 로그인하면 즉시 숨김)
  const totalCount = (access && access.totalCount) || ps.length;
  const isLoggedIn = !!(access && access.user);
+ if (isLoggedIn) { const c=document.getElementById('cta-signup'); if(c) c.style.display='none'; }
  if (!isLoggedIn) {
  // 재방문 감지: localStorage에 'visited' 플래그가 있으면 "로그인" 먼저 강조
  let returningUser = false;
@@ -292,6 +338,5 @@
 })();
 </script>
 <script>CPLA.renderFooter();</script>
-<p style="text-align:center;margin:20px 0 8px"><a href="/q">공인노무사 1차 연도별 기출문제·정답·해설 전체 보기</a></p>
 </body>
 </html>
