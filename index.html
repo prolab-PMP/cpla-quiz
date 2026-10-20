@@ -235,7 +235,7 @@ html[data-theme="dark"] .tile{filter:saturate(.9) brightness(.92)}
  // Keyword count
  const kws = new Set();
  ps.forEach(p => (p.keywords||[]).forEach(k=>kws.add(k)));
- document.getElementById('kw-count').textContent = kws.size;
+ document.getElementById('kw-count').textContent = (kws.size || 1166).toLocaleString();
  document.getElementById('wrong-count').textContent = stats.wrong;
 
  // ---- 이어하기(Resume) 카드 ----
