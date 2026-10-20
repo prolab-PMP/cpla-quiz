@@ -278,12 +278,15 @@
  <div class="inner">
  <a href="index.html" class="brand" aria-label="홈으로 가기 - 공인노무사 기출문제 풀이">
  <span class="dot" aria-hidden="true">공</span>
- <span>공인노무사</span><small>1차 기출문제 풀이</small>
+ <span>공인노무사</span><small>1·2·3차 기출</small>
  </a>
  <nav class="nav" aria-label="주 메뉴">
  <a href="index.html" ${active==='home'?'class="active" aria-current="page"':''}>홈</a>
  <a href="subjects.html" ${active==='subjects'?'class="active" aria-current="page"':''}>과목·키워드</a>
  <a href="years.html" ${active==='years'?'class="active" aria-current="page"':''}>연도별</a>
+ <a href="exam2.html" ${active==='exam2'?'class="active" aria-current="page"':''}>2차 논술</a>
+ <a href="dashboard2.html" ${active==='dashboard2'?'class="active" aria-current="page"':''}>2차 분석</a>
+ <a href="interview.html" ${active==='interview'?'class="active" aria-current="page"':''}>3차 면접</a>
  <a href="dashboard.html" ${active==='dashboard'?'class="active" aria-current="page"':''}>학습통계</a>
  </nav>
  <div class="header-actions">
