@@ -67,6 +67,18 @@
 .d2-foot{color:var(--d-muted);font-size:12px;margin-top:6px}
 .d2-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--d-surface2);border:1px solid var(--d-border);border-radius:12px;padding:12px 14px;margin-top:6px;font-size:13.5px}
 .d2-cta a{background:var(--d-accent);color:#111;font-weight:800;padding:7px 14px;border-radius:8px;text-decoration:none}
+
+.d2{position:relative}
+.d2-kwl{color:inherit;text-decoration:none;border-bottom:1px dashed var(--d-accent)}
+.d2-kwl:hover{color:var(--d-accent)}
+.d2 .d2-pill.kwp{text-decoration:none;cursor:pointer}.d2 .d2-pill.kwp:hover{border-color:var(--d-accent);color:var(--d-accent)}
+.d2.locked > section{filter:blur(7px);pointer-events:none;user-select:none;max-height:900px;overflow:hidden}
+.d2-lockbox{display:none}
+.d2.locked .d2-lockbox{display:block;position:absolute;top:190px;left:50%;transform:translateX(-50%);width:min(470px,92%);z-index:20;background:#11151f;border:1px solid var(--d-accent);border-radius:16px;padding:24px 22px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.d2-lockbox h3{margin:0 0 8px;font-size:19px;color:#fff}
+.d2-lockbox p{margin:0 0 14px;color:var(--d-muted);font-size:13.5px;line-height:1.6}
+.d2-lockbox a{display:inline-block;margin:3px;padding:10px 18px;border-radius:10px;font-weight:800;text-decoration:none;font-size:14px}
+.d2-lockbox a.p{background:#03C75A;color:#fff}.d2-lockbox a.g{border:1px solid rgba(255,255,255,.4);color:#fff}
 </style>
 </head>
 <body>
@@ -77,31 +89,20 @@
 <div class="d2">
  <h2>공인노무사 2차 기출 통계분석 대시보드</h2>
  <p class="sub">2013~2026년 (제22회~제35회) · 필수(노동법·인사노무관리론·행정쟁송법) + 선택(경영조직론·노동경제학·민사소송법) · 물음 단위 집계</p>
+ <div class="d2-lockbox" id="d2-lockbox"><h3>2차 분석은 Premium 회원 전용입니다</h3>
+ <p>키워드 빈도·출제기준·합격률 분석 전체는 Premium 회원에게 공개됩니다.<br>아래는 흐리게 처리된 미리보기입니다.</p>
+ <a class="g" id="d2-login" href="login.html">로그인</a><a class="p" href="https://smartstore.naver.com/sub-note/products/13500101192" target="_blank" rel="noopener">Premium 회원권 보기</a></div>
  <div class="d2-tabs" role="tablist">
-  <button class="d2-tab" data-tab="overview" aria-selected="true">개요</button>
-  <button class="d2-tab" data-tab="keywords" aria-selected="false">키워드 분석</button>
+  <button class="d2-tab" data-tab="keywords" aria-selected="true">키워드 분석</button>
   <button class="d2-tab" data-tab="category" aria-selected="false">출제기준 분석</button>
   <button class="d2-tab" data-tab="pass" aria-selected="false">합격률 추이</button>
   <button class="d2-tab" data-tab="search" aria-selected="false">문제 검색</button>
  </div>
 
- <section id="p-overview">
-  <div class="d2-kpis">
-   <div class="d2-kpi"><div class="l">최다 출제기준</div><div class="v" id="k-total" style="font-size:19px;line-height:1.35">-</div><div class="s" id="k-total-s">-</div></div>
-   <div class="d2-kpi"><div class="l">핵심 키워드</div><div class="v" id="k-kw">-</div><div class="s" id="k-kw-s">-</div></div>
-   <div class="d2-kpi"><div class="l">사례형 비중</div><div class="v" id="k-case">-</div><div class="s" id="k-case-s">-</div></div>
-   <div class="d2-kpi"><div class="l">최근 2차 합격률</div><div class="v" id="k-pass">-</div><div class="s" id="k-pass-s">-</div></div>
-  </div>
-  <div class="d2-card"><h3>과목별 최다 출제기준 Top 3</h3><p class="hint">14개년 누적 · 숫자는 해당 출제기준의 물음 수</p><div class="d2-hm" id="ov-top"></div></div>
-  <div class="d2-grid" style="grid-template-columns:1fr">
-   <div class="d2-card"><h3>2차 응시인원 · 합격률</h3><p class="hint">2013~2025</p><div class="d2-cw"><canvas id="c-pass-ov"></canvas></div></div>
-  </div>
- </section>
-
- <section id="p-keywords" hidden>
+ <section id="p-keywords">
   <div class="d2-sel" id="kw-sel"></div>
   <div class="d2-grid">
-   <div class="d2-card"><h3>최다 출제 키워드 Top 20</h3><p class="hint" id="kw-hint">-</p><div class="d2-cw tall"><canvas id="c-kw"></canvas></div></div>
+   <div class="d2-card"><h3>최다 출제 키워드 Top 20</h3><p class="hint" id="kw-hint">-</p><div class="d2-cw tall"><canvas id="c-kw"></canvas></div><p class="hint" style="margin:8px 0 0">막대·키워드를 누르면 해당 키워드 문제만 모아서 볼 수 있어요</p></div>
    <div class="d2-card"><h3>키워드 누적 분포 (Pareto)</h3><p class="hint">상위 키워드가 전체 출제에서 차지하는 비율</p><div class="d2-cw tall"><canvas id="c-kw-pareto"></canvas></div></div>
   </div>
   <div class="d2-card"><h3>키워드 × 연도 히트맵 (Top 20)</h3><p class="hint">진할수록 해당 연도 출제 빈도가 높음</p><div class="d2-hm" id="kw-hm"></div></div>
@@ -159,23 +160,6 @@ const count = (arr, f) => arr.reduce((m,x)=>{ const k=f(x); m[k]=(m[k]||0)+1; re
 const years = () => [...new Set(D.items.map(x=>x.year))].sort((a,b)=>a-b);
 const heat = (v, max) => { if (!v) return ''; const a = 0.15 + 0.85*v/max; return `background:rgba(255,192,0,${a.toFixed(2)});color:${a>0.55?'#111':'#e8ecf4'};font-weight:700`; };
 
-function overview(){
-  const its = D.items, Y = years();
-  const kw = count(its.flatMap(x=>x.keywords||[]), k=>k);
-  const kwTop = Object.entries(kw).sort((a,b)=>b[1]-a[1])[0];
-  const caseN = its.filter(x=>x.type==='사례형').length;
-  const sec = D.pass.second, last = sec[sec.length-1], prev = sec[sec.length-2];
-  const r = last[2]/last[1]*100, pr = prev[2]/prev[1]*100;
-  const ct = Object.entries(count(its, x=>x.subject+'|'+x.category)).sort((a,b)=>b[1]-a[1])[0];
-  $('#k-total').textContent = ct ? ct[0].split('|')[1] : '-'; $('#k-total-s').textContent = ct ? `${ct[0].split('|')[0]} · ${ct[1]}회 출제` : '';
-  $('#k-kw').textContent = Object.keys(kw).length.toLocaleString(); $('#k-kw-s').textContent = kwTop ? `최다: ${kwTop[0]} (${kwTop[1]})` : '-';
-  $('#k-case').textContent = (caseN*100/its.length).toFixed(1)+'%'; $('#k-case-s').textContent = `노동법 ${Math.round(its.filter(x=>x.subject==='노동법'&&x.type==='사례형').length*100/its.filter(x=>x.subject==='노동법').length)}% 사례형`;
-  $('#k-pass').textContent = r.toFixed(1)+'%'; $('#k-pass-s').textContent = `${last[0]}년 · ${r>=pr?'▲':'▼'} ${Math.abs(r-pr).toFixed(1)}%p`;
-  $('#ov-top').innerHTML = '<table><tr><th>과목</th><th>1위</th><th>2위</th><th>3위</th></tr>' + SUBJ.map(sj=>{
-    const t = Object.entries(count(its.filter(x=>x.subject===sj), x=>x.category)).sort((a,b)=>b[1]-a[1]).slice(0,3);
-    return `<tr><td class="k"><b>${sj}</b></td>${t.map(([c,n])=>`<td style="text-align:left">${esc(c)} <span class="d2-pill y">${n}</span></td>`).join('')}</tr>`; }).join('') + '</table>';
-  passCombo('c-pass-ov');
-}
 function passCombo(id){
   const s = D.pass.second;
   mk(id, { data:{ labels:s.map(x=>x[0]), datasets:[
@@ -194,7 +178,9 @@ function keywords(){
   const total = kw.reduce((a,b)=>a+b[1],0), top = kw.slice(0,20);
   $('#kw-hint').textContent = `${kwSubj} · 고유 키워드 ${kw.length}개 · 출현 ${total}회`;
   mk('c-kw', { type:'bar', data:{ labels:top.map(x=>x[0]), datasets:[{ data:top.map(x=>x[1]), backgroundColor:'#ffc000' }] },
-    options:{ indexAxis:'y', maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{precision:0} } } } });
+    options:{ indexAxis:'y', maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{precision:0} } },
+      onClick:(e,els,ch)=>{ if(els.length) location.href='exam2.html?kw='+encodeURIComponent(ch.data.labels[els[0].index]); },
+      onHover:(e,els)=>{ e.native.target.style.cursor = els.length?'pointer':'default'; } } });
   let cum = 0; const p = kw.slice(0,40).map(x=>{ cum+=x[1]; return +(cum*100/total).toFixed(1); });
   mk('c-kw-pareto', { data:{ labels:kw.slice(0,40).map(x=>x[0]), datasets:[
      { type:'bar', label:'빈도', data:kw.slice(0,40).map(x=>x[1]), backgroundColor:'#4dabf7', yAxisID:'y' },
@@ -202,7 +188,7 @@ function keywords(){
     options:{ maintainAspectRatio:false, scales:{ x:{ ticks:{ display:false } }, y1:{ position:'right', max:100, grid:{drawOnChartArea:false}, ticks:{callback:v=>v+'%'} } }, plugins:{ legend:{position:'bottom'} } } });
   const mx = Math.max(1, ...top.flatMap(([k])=>Y.map(y=>its.filter(x=>x.year===y&&(x.keywords||[]).includes(k)).length)));
   $('#kw-hm').innerHTML = `<table><tr><th>키워드</th>${Y.map(y=>`<th>'${String(y).slice(2)}</th>`).join('')}<th>계</th></tr>` +
-    top.map(([k,n])=>`<tr><td class="k">${esc(k)}</td>${Y.map(y=>{ const v = its.filter(x=>x.year===y&&(x.keywords||[]).includes(k)).length; return `<td style="${heat(v,mx)}">${v||''}</td>`; }).join('')}<td><b>${n}</b></td></tr>`).join('') + '</table>';
+    top.map(([k,n])=>`<tr><td class="k"><a class="d2-kwl" href="exam2.html?kw=${encodeURIComponent(k)}">${esc(k)}</a></td>${Y.map(y=>{ const v = its.filter(x=>x.year===y&&(x.keywords||[]).includes(k)).length; return `<td style="${heat(v,mx)}">${v||''}</td>`; }).join('')}<td><b>${n}</b></td></tr>`).join('') + '</table>';
 }
 function category(){
   selBar($('#cat-sel'), SUBJ, catSubj, s=>{ catSubj=s; category(); });
@@ -258,10 +244,10 @@ function search(){
   $('#s-count').textContent = `검색 결과 ${res.length}건${res.length>200?' (상위 200건 표시)':''}`;
   $('#s-list').innerHTML = res.slice(0,200).map(x=>`<div class="d2-row"><b>${x.year}년 ${esc(x.subject)}</b><span class="d2-pill">${esc(x.session)} 문제${x.qno}${x.sub?' '+esc(x.sub):''}</span>
      <span class="d2-pill y">${x.points}점</span><span class="d2-pill b">${esc(x.category)}</span><span class="d2-pill">${esc(x.type)}</span>
-     ${(x.keywords||[]).map(k=>`<span class="d2-pill">#${esc(k)}</span>`).join('')}
+     ${(x.keywords||[]).map(k=>`<a class="d2-pill kwp" href="exam2.html?kw=${encodeURIComponent(k)}">#${esc(k)}</a>`).join('')}
      <a href="exam2.html?subject=${encodeURIComponent(x.subject)}&year=${x.year}">원문 →</a></div>`).join('') || '<p class="hint">결과가 없습니다.</p>';
 }
-const PAGES = { overview, keywords, category, pass, search };
+const PAGES = { keywords, category, pass, search };
 function show(tab){
   document.querySelectorAll('.d2-tab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.tab===tab)));
   Object.keys(PAGES).forEach(k=>{ document.getElementById('p-'+k).hidden = (k!==tab); });
@@ -269,10 +255,11 @@ function show(tab){
   history.replaceState(null, '', '#'+tab);
 }
 async function init(){
-  try { D = await (await fetch('/api/exam2/stats')).json(); } catch(e){ return; }
+  try { D = await (await fetch('/api/exam2/stats',{credentials:'same-origin'})).json(); } catch(e){ return; }
+  if (!D.full) { document.querySelector('.d2').classList.add('locked'); if (D.user) { const l=document.getElementById('d2-login'); if(l) l.style.display='none'; } }
   document.querySelectorAll('.d2-tab').forEach(b=>b.onclick=()=>show(b.dataset.tab));
   const h = location.hash.slice(1);
-  show(PAGES[h] ? h : 'overview');
+  show(PAGES[h] ? h : 'keywords');
   window.addEventListener('hashchange', ()=>{ const t = location.hash.slice(1); if (PAGES[t]) show(t); });
 }
 init();

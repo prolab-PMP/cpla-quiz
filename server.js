@@ -695,8 +695,11 @@ app.get('/api/exam2/stats', (req, res) => {
   const items = EXAM2.map(x => ({ year: x.year, subject: x.subject, session: x.session, qno: x.qno, sub: x.sub,
     points: x.points, type: x.type, category: x.category, keywords: x.keywords }));
   const iv = EXAM3.map(x => ({ year: x.year, type: x.type }));
-  res.set('Cache-Control', 'public, max-age=600');
-  res.json({ items, interview: iv, pass: PASS_STATS });
+  const full = isFullAccess(req);
+  // 2차 분석은 Premium 전용: 무료/비로그인에는 키워드 2개·출제기준 없이 티저만 제공
+  const out = full ? items : items.map(x => Object.assign({}, x, { keywords: (x.keywords || []).slice(0, 2), category: '' }));
+  res.set('Cache-Control', 'no-store, private');
+  res.json({ items: out, interview: iv, pass: PASS_STATS, full, user: accessInfo(req) });
 });
 app.get('/api/exam3', (req, res) => {
   const full = isFullAccess(req);

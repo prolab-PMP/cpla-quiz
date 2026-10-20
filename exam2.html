@@ -41,6 +41,10 @@
 .e2-cta a.ghost{background:transparent;border:1px solid rgba(255,255,255,.5);margin-left:6px}
 .e2-free{background:var(--success-soft);color:var(--success);border:0}
 .e2-note{font-size:13px;color:var(--muted);margin:-6px 0 14px}
+.e2-kw{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--primary);border-radius:12px;padding:12px 16px;margin:0 0 14px;font-size:14px}
+.e2-kw a{margin-left:auto;font-weight:700;text-decoration:none;color:var(--primary)}
+.chip.hit{background:#ffc000;color:#111;border-color:#ffc000}
+a.chip{text-decoration:none}
 .e2-more{display:block;margin:6px auto 30px}
 </style>
 </head>
@@ -73,7 +77,7 @@ const SUBJ = ['노동법','인사노무관리론','행정쟁송법','경영조�
 const STORE = 'https://smartstore.naver.com/sub-note/products/13500101192';
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const FILL = '근로자 甲은 A회사에 입사하여 근무하던 중 사용자 乙로부터 일방적인 통보를 받았다. 이에 대하여 관련 법리와 판례에 근거하여 논하시오. 사실관계와 쟁점을 검토하고 그 정당성 여부를 설명하시오.';
-let DATA = null, groups = [], cur = { subj: '노동법', year: '', cat: '', type: '' }, shown = 20;
+let DATA = null, groups = [], cur = { subj: '노동법', year: '', cat: '', type: '', kw: '' }, shown = 20;
 
 function groupItems(items){
   const m = new Map();
@@ -85,10 +89,13 @@ function groupItems(items){
   return Array.from(m.values()).sort((a,b)=> b.year-a.year || SUBJ.indexOf(a.subject)-SUBJ.indexOf(b.subject) || a.session.localeCompare(b.session) || a.qno-b.qno);
 }
 function filtered(){
+  if (cur.kw) return groups.filter(g => (!cur.year || g.year==cur.year) && g.subs.some(s=>(s.keywords||[]).includes(cur.kw)));
   return groups.filter(g => g.subject===cur.subj && (!cur.year || g.year==cur.year)
     && (!cur.cat || g.subs.some(s=>s.category===cur.cat)) && (!cur.type || g.subs.some(s=>s.type===cur.type)));
 }
 function renderSummary(){
+  if (cur.kw){ const n = groups.filter(g=>g.subs.some(s=>(s.keywords||[]).includes(cur.kw))).length;
+    document.getElementById('e2-sum').innerHTML = `<div class="e2-kw" style="grid-column:1/-1"><span class="chip green hit">#${esc(cur.kw)}</span><b>이 키워드가 출제된 문제 ${n}개 (최신 연도순)</b><a href="exam2.html">전체 보기 ✕</a></div>`; return; }
   const its = DATA.items.filter(x=>x.subject===cur.subj);
   const cats = {}; its.forEach(x=>cats[x.category]=(cats[x.category]||0)+1);
   const top = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -114,17 +121,18 @@ function cardHtml(g){
        ${DATA.user?'':'<a class="ghost" href="login.html">로그인</a>'}<a href="${STORE}" target="_blank" rel="noopener">Premium 회원권 보기</a></div></div>`;
   }
   const subs = g.subs.map(s=>`<div class="e2-sub"><div class="ask">${s.sub?'<b>'+esc(s.sub)+')</b> ':''}${esc(s.ask)} <span class="chip blue">${s.points}점</span></div>
-     <div class="e2-meta"><span class="chip purple">${esc(s.category)}</span><span class="chip">${esc(s.type)}</span>${(s.keywords||[]).map(k=>'<span class="chip green">#'+esc(k)+'</span>').join('')}</div></div>`).join('');
+     <div class="e2-meta"><span class="chip purple">${esc(s.category)}</span><span class="chip">${esc(s.type)}</span>${(s.keywords||[]).map(k=>'<a class="chip green'+(k===cur.kw?' hit':'')+'" href="exam2.html?kw='+encodeURIComponent(k)+'">#'+esc(k)+'</a>').join('')}</div></div>`).join('');
   return `<div class="e2-q">${head}${g.case?`<div class="e2-case">${esc(g.case)}</div>`:''}${subs}</div>`;
 }
 function render(){
-  document.querySelectorAll('.e2-tab').forEach(b=>b.classList.toggle('on', b.dataset.s===cur.subj));
+  document.querySelectorAll('.e2-tab').forEach(b=>b.classList.toggle('on', !cur.kw && b.dataset.s===cur.subj));
   renderSummary();
   const list = filtered();
   document.getElementById('e2-list').innerHTML = list.slice(0, shown).map(cardHtml).join('') || '<div class="empty">조건에 맞는 문제가 없습니다.</div>';
   const more = document.getElementById('e2-more');
   more.style.display = list.length > shown ? 'block' : 'none';
   more.textContent = `더 보기 (${shown}/${list.length})`;
+  if (cur.kw) { document.getElementById('e2-note').textContent = DATA.full ? '' : '무료 회원은 최근 1개년 문제에서만 키워드 검색이 됩니다. 전 연도 키워드 검색은 Premium 회원 전용입니다.'; return; }
   document.getElementById('e2-note').textContent = DATA.full ? 'Premium 회원: 전 연도 원문이 공개됩니다.'
     : `무료 이용 중: ${DATA.latestYear}년(최근 1개년) 문제는 원문 전체 공개, 그 외 연도는 배점·출제기준만 표시됩니다.`;
 }
@@ -145,6 +153,7 @@ async function init(){
   if (q.get('subject') && SUBJ.includes(q.get('subject'))) cur.subj = q.get('subject');
   if (q.get('year')) { cur.year = q.get('year'); document.getElementById('f-year').value = cur.year; }
   if (q.get('category')) cur.cat = q.get('category');
+  if (q.get('kw')) cur.kw = q.get('kw');
   render();
 }
 init();
