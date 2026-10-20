@@ -65,7 +65,7 @@
  <div style="display:flex;align-items:center;gap:10px">
  <span class="timer-chip" id="exam-timer">02:30:00</span>
  <button class="btn primary sm" id="btn-final-submit">최종 제출</button>
- <a class="btn sm" href="exam.html?mode=year&year=2025" title="시험 모드 종료" id="btn-exit-exam">시험 모드 종료</a>
+ <a class="btn sm" href="exam.html?mode=year&year=2026" title="시험 모드 종료" id="btn-exit-exam">시험 모드 종료</a>
  </div>
  </div>
  </div>
@@ -251,7 +251,7 @@
  if (a.correct) correct++; else wrong++;
  } else {
  const sel = state.pending[p.key] || 0;
- const ok = sel ? ((p.answer === 12345) ? true : (sel === p.answer)) : false;
+ const ok = __ansOk(p, sel);
  state.attempts[p.key] = { answer: sel, correct: ok, ts };
  delete state.pending[p.key];
  newAttempts.push({ key: p.key, answer: sel, correct: ok, ts });
@@ -318,7 +318,7 @@
  let correctCnt = 0;
  list.forEach(p => {
  const sel = exam.answers[p.key] || 0;
- const ok = p.answer === 12345 ? (sel > 0) : (sel === p.answer);
+ const ok = __ansOk(p, sel);
  if(ok) correctCnt++;
  if(sel){ CPLA.recordAttempt(p.key, sel, ok); }
  else { CPLA.recordAttempt(p.key, 0, false); } // 미응답=오답
@@ -341,7 +341,7 @@
  const wrongList = [];
  list.forEach((p, i) => {
  const sel = exam.answers[p.key] || 0;
- const ok = p.answer === 12345 ? (sel > 0) : (sel === p.answer);
+ const ok = __ansOk(p, sel);
  const s = p.subject;
  if(!bySubj[s]) bySubj[s] = {total:0, correct:0, wrong:0, unanswered:0, items:[]};
  bySubj[s].total++;
@@ -400,7 +400,7 @@
  : `<details class="wrong-details"><summary>오답·미응답 ${wrongList.length}개 (클릭하여 확장)</summary>
  <ul class="wrong-list">
  ${wrongList.map(({p,sel,i}) => {
- const ansLbl = p.answer === 12345 ? '전항정답' : (p.answer+'번');
+ const ansLbl = __ansText(p, false);
  const selLbl = sel ? sel+'번' : '미응답';
  const keepParams = new URLSearchParams(location.search);
  keepParams.delete('exam');
@@ -544,7 +544,7 @@
  }
  if(selected) row.classList.add('selected');
  if(graded){
- if(i+1 === p.answer || p.answer === 12345) row.classList.add('correct');
+ if(__ansHas(p, i+1)) row.classList.add('correct');
  else if(attempt.answer === i+1) row.classList.add('wrong');
  }
  const choiceImg = p.choice_images && p.choice_images[i+1]
@@ -593,7 +593,7 @@
  gb.onclick = () => {
  const sel = window.__currentSel;
  if(!sel){ alert('선택지를 골라주세요'); return; }
- const correct = (p.answer === 12345) ? true : (sel === p.answer);
+ const correct = (p.answer === 12345) ? true : __ansOk(p, sel);
  CPLA.recordAttempt(p.key, sel, correct);
  // pending 정리
  const psg = CPLA.loadState();
@@ -609,12 +609,12 @@
  exp.style.display = 'none';
  }else if(graded){
  const ok = attempt.correct;
- const ansLabel = p.answer === 12345 ? '전항정답' : CPLA.circleNum(p.answer-1)+' ('+p.answer+'번)';
+ const ansLabel = __ansText(p, true);
  exp.style.display = 'block';
  exp.className = 'explanation' + (ok? '' : ' wrong');
  exp.innerHTML = `
  <h5>${ok?' 정답':' 오답'} · 정답 ${ansLabel}</h5>
- <p>${escapeHtml(p.explanation || '해설이 준비되어 있지 않습니다.')}</p>
+ ${p.exp2 ? `<div class="exp2" style="white-space:pre-line;line-height:1.7">${escapeHtml(p.exp2)}</div>` : `<p>${escapeHtml(p.explanation || '해설이 준비되어 있지 않습니다.')}</p><p style="font-size:13px;color:#64748b;margin-top:6px">보기별 O/X 분석·근거 조문·암기 포인트가 담긴 상세 해설은 프리미엄 회원에게 제공됩니다.</p>`}
  ${p.keywords && p.keywords.length ? `<div class="kw">${p.keywords.map(k=>`<span class="chip blue">${escapeHtml(k)}</span>`).join('')}</div>` : ''}`;
  }else{
  exp.style.display = 'none';

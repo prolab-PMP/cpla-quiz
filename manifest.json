@@ -1,7 +1,7 @@
 {
   "name": "공인노무사 1차 기출문제 풀이",
   "short_name": "공인노무사",
-  "description": "공인노무사 1차 2013~2025년 기출문제를 과목·연도·키워드별로 풀이하고, 오프라인에서도 학습할 수 있는 기출문제 풀이 웹앱입니다.",
+  "description": "공인노무사 1차 2013~2026년 기출문제를 과목·연도·키워드별로 풀이하고, 오프라인에서도 학습할 수 있는 기출문제 풀이 웹앱입니다.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -35,9 +35,9 @@
       "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "2025년 실전 모의고사",
-      "short_name": "2025 모의",
-      "url": "./exam.html?mode=year&year=2025&exam=1",
+      "name": "2026년 실전 모의고사",
+      "short_name": "2026 모의",
+      "url": "./exam.html?mode=year&year=2026&exam=1",
       "icons": [{ "src": "images/icon-192.png", "sizes": "192x192" }]
     }
   ]

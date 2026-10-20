@@ -626,7 +626,7 @@ function filterForFree(problems) {
       if (a.year !== b.year) return b.year.localeCompare(a.year);
       return b.num - a.num;
     });
-    filtered.push(...sorted.slice(0, 50));
+    filtered.push(...sorted.slice(0, 50).map(({ exp2, ...rest }) => rest)); // 보강 해설(exp2)은 프리미엄 전용
   }
   return filtered;
 }
@@ -678,6 +678,11 @@ app.get('/data/problems.js', (req, res) => {
   res.set('Pragma', 'no-cache');
   res.send('window.PROBLEMS = ' + JSON.stringify(problems) + ';');
 });
+
+// ─── 검색 유입용 공개 기출문제·해설 페이지(/q) + 동적 sitemap ───
+try {
+  require('./seo')(app, ALL_PROBLEMS, { host: PRIMARY_HOST, exam: '공인노무사', level: '1차', roundOf: y => `제${Number(y)-1991}회` });
+} catch (e) { console.error('[SEO]', e.message); }
 
 // ─── Static (#3: whitelist — block server.js, package.json, .bat, .md, scripts/, data/) ───
 // Only serve from explicit asset directories + a fixed list of root HTML files.

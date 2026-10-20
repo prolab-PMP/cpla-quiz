@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <title>연도별 기출문제 · 공인노무사</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="공인노무사 1차 2013-2025년 연도별 기출문제. 제3회부터 제34회 시험까지 75문항씩 풀이.">
-<meta name="keywords" content="연도별기출, 기출문제, 2013~2025, 시험회차, 연도별풀이">
+<meta name="description" content="공인노무사 1차 2013-2026년 연도별 기출문제. 제22회부터 제35회 시험까지 회차별 풀이.">
+<meta name="keywords" content="연도별기출, 기출문제, 2013~2026, 시험회차, 연도별풀이">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://cpla.wayexam.com/years.html">
 <meta property="og:title" content="연도별 기출문제 · 공인노무사">
-<meta property="og:description" content="2013-2025년 13개년 연도별 기출문제">
+<meta property="og:description" content="2013-2026년 14개년 연도별 기출문제">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cpla.wayexam.com/years.html">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="연도별 기출문제 · 공인노무사">
-<meta name="twitter:description" content="2013-2025년 13개년 연도별 기출문제">
+<meta name="twitter:description" content="2013-2026년 14개년 연도별 기출문제">
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
 {
@@ -23,7 +23,7 @@
  "@type": "CollectionPage",
  "name": "연도별 기출문제",
  "url": "https://cpla.wayexam.com/years.html",
- "description": "2013-2025년 13개년 공인노무사 1차 기출문제"
+ "description": "2013-2026년 14개년 공인노무사 1차 기출문제"
 }
 </script>
 <script type="application/ld+json">
@@ -62,9 +62,10 @@
  const years = Object.keys(byYear).sort((a,b)=>b.localeCompare(a));
  const state = CPLA.loadState();
  const titleOf = {
- "2013":"제3회","2014":"제4회","2015":"제5회","2016":"제6회",
- "2017":"제7회","2018":"제8회","2019":"제9회","2020":"제10회",
- "2021":"제11회","2022":"제12회","2023":"제32회","2024":"제33회","2025":"제34회"
+ "2013":"제22회","2014":"제23회","2015":"제24회","2016":"제25회",
+ "2017":"제26회","2018":"제27회","2019":"제28회","2020":"제29회",
+ "2021":"제30회","2022":"제31회","2023":"제32회","2024":"제33회",
+ "2025":"제34회","2026":"제35회"
  };
  const grid = document.getElementById('year-grid');
  grid.innerHTML = years.map(y => {

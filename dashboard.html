@@ -367,7 +367,7 @@ function renderTab(tab){
  let status = '-';
  if(a) status = a.correct ? '<span class="chip green">정답</span>' : `<span class="chip danger">오답(${a.answer}번)</span>`;
  if(bk) status += ' <span class="chip purple"></span>';
- const ans = p.answer===12345 ? '전항' : p.answer+'번';
+ const ans = __ansText(p, false).replace('전항정답','전항');
  const text = (p.question||'').replace(/^\d+\.\s*/,'').slice(0,70);
  return `<tr onclick="location.href='exam.html?mode=year&year=${p.year}&q=${encodeURIComponent(p.key)}'">
  <td>${p.year}년</td>
