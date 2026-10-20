@@ -735,3 +735,15 @@ body, .hero p, .desc, .card p, .card .desc { word-break: keep-all; overflow-wrap
     .hero h1 { font-size: 18px !important; }
     .hero p { font-size: 12.5px !important; }
 }
+
+/* ===== 2026-10 헤더 (PMP 문제은행 스타일: 남색 바 + 주황 밑줄) ===== */
+.site-header{background:linear-gradient(90deg,#0b1f4d 0%,#1d3fa6 100%)!important;border-bottom:3px solid #f59e0b!important;backdrop-filter:none!important;color:#fff}
+html[data-theme="dark"] .site-header{background:linear-gradient(90deg,#071433 0%,#16307d 100%)!important}
+.site-header .brand,.site-header .brand span{color:#fff}
+.site-header .brand small{color:#c7d2fe}
+.site-header .brand .dot{background:#f59e0b!important;color:#0b1f4d!important}
+.site-header .nav a{color:#dbe4ff}
+.site-header .nav a:hover{background:rgba(255,255,255,.1);color:#fff}
+.site-header .nav a.active{background:transparent;color:#fff;box-shadow:inset 0 -3px 0 #f59e0b;border-radius:0}
+.site-header .icon-btn{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff}
+.site-header #auth-slot a,.site-header #auth-slot button{border-color:rgba(255,255,255,.3)}
