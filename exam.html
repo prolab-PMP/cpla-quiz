@@ -180,6 +180,7 @@
  else if (mode === 'year' && year) title = `${year}년 기출`;
  else if (mode === 'subject' && subject) title = `과목: ${subject}`;
  else if (mode === 'keyword' && keyword) title = `키워드: ${keyword}`;
+ else if (mode === 'form') title = `${subject||''} · ${new URLSearchParams(location.search).get('form')||(year?year+'년':'')}`;
  else title = '기출문제 풀이';
  CPLA.saveResume({
  title, url: location.pathname + location.search,
@@ -442,6 +443,7 @@
  if(mode==='year') title = `${year}년 기출`;
  else if(mode==='subject') title = `과목 · ${subject}`;
  else if(mode==='keyword') title = `키워드 · ${keyword}`;
+ else if(mode==='form') title = `${subject||''} · ${new URLSearchParams(location.search).get('form')||(year?year+'년':'')}`;
  if(onlyWrong) title = "오답노트";
  if(onlyBookmark) title = " 북마크";
  document.getElementById('filter-title').textContent = title;

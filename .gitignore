@@ -9,3 +9,6 @@ Thumbs.db
 .env
 data/users.json
 data/users.sqlite*
+push-log.txt
+pull-log.txt
+github-pull.bat

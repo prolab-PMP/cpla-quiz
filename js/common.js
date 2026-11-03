@@ -118,6 +118,7 @@
  if(mode === "year" && year) list = list.filter(p =>p.year === year);
  if(mode === "subject" && subject) list = list.filter(p =>p.subject === subject);
  if(mode === "keyword" && keyword) list = list.filter(p => (p.keywords||[]).includes(keyword));
+ if(mode === "form"){ const fm = params.get("form"); if(fm) list = list.filter(p => p.form === fm); if(subject) list = list.filter(p => p.subject === subject); if(year) list = list.filter(p => p.year === year); }
  if(onlyWrong){
  list = list.filter(p => { const a = state.attempts[p.key]; return a && a.correct === false; });
  }
