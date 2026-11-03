@@ -401,6 +401,9 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// 홈 테마 (관리자 선택)
+try { require('./sitetheme')(app, { requireAuth, requireAdmin, rootDir: __dirname }); } catch (e) { console.warn('[THEME] load failed', e.message); }
+
 // ─── 인증 API ──────────────────────────────────────────────────
 app.post('/api/signup', async (req, res) => {
   try {

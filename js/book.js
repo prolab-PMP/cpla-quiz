@@ -8,11 +8,11 @@ const bk=(b,i)=>`<button class="bk2${lt(b.c)?' lt':''}" style="--c:${b.c};--h:${
 row.innerHTML=`<div class="deco plant"><i></i><i></i><i></i><b></b></div>`+fill(mob?(n>6?0:1):(n>6?2:3))+B.map((b,i)=>bk(b,i)).join('')+fill(mob?(n>6?0:1):(n>6?2:3))+`<div class="deco stack" style="width:90px"><i style="background:#9a7ad8;width:96%"></i><i style="background:#efc24e;width:100%"></i><i style="background:#4f9fd1;width:90%"></i></div>`;
 const enc=encodeURIComponent,esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cvBox=document.getElementById('covers'),stage=cs.closest('.stage');
-if(cvBox){cvBox.style.setProperty('--cn',n<=5?n:4);cvBox.innerHTML=B.map((b,i)=>`<button class="cv" data-i="${i}" aria-label="${esc(DN(b))} 펼치기"><div class="cvf${lt(b.c)?' lt':''}" style="--c:${b.c}"><div class="top"><small>${TG(b)?TG(b)+' · ':''}${NY}개년 기출</small><h3${DN(b).length>7?' class="long"':''}>${esc(DN(b))}</h3></div><div class="stripe"></div><div class="bot"><b>${b.n}<small>문항</small></b><span>정답과 해설 포함</span><em>1위 ${esc((b.top[0]||{}).k||'')}</em></div><div class="brand">wayexam</div></div><span class="lbl2">${esc(DN(b))}</span></button>`).join('');}
+if(cvBox){cvBox.style.setProperty('--cn',n<=5?n:4);cvBox.innerHTML=B.map((b,i)=>`<button class="cv" data-i="${i}" aria-label="${esc(DN(b))} 펼치기"><div class="cvf${lt(b.c)?' lt':''}" style="--c:${b.c}"><div class="top"><small>${TG(b)?TG(b)+' · ':''}${NY}개년 기출</small><h3${DN(b).length>7?' class="long"':''}>${esc(DN(b))}</h3></div><div class="stripe"></div><div class="bot"><b>${b.n}<small>문항</small></b><span>정답과 해설 포함</span><em>1위 ${esc((b.top[0]||{}).k||'')}</em></div></div><span class="lbl2">${esc(DN(b))}</span></button>`).join('');}
 const cvs=cvBox?[...cvBox.querySelectorAll('.cv')]:[];
 const mb=[...document.querySelectorAll('.modebar button')];
-function setMode(m){stage.dataset.mode=m;mb.forEach(x=>{x.classList.toggle('on',x.dataset.m===m);x.setAttribute('aria-selected',x.dataset.m===m)});try{localStorage.setItem('wx_bookmode',m)}catch(e){}}
-let m0='shelf';try{m0=localStorage.getItem('wx_bookmode')||'shelf'}catch(e){}setMode(m0==='cover'?'cover':'shelf');
+function setMode(m){stage.dataset.mode=m;mb.forEach(x=>{x.classList.toggle('on',x.dataset.m===m);x.setAttribute('aria-selected',x.dataset.m===m)});try{localStorage.setItem('wx_bookmode2',m)}catch(e){}}
+let m0='cover';try{m0=localStorage.getItem('wx_bookmode2')||'cover'}catch(e){}setMode(m0==='shelf'?'shelf':'cover');
 mb.forEach(x=>x.addEventListener('click',()=>setMode(x.dataset.m)));
 cvs.forEach((c,i)=>c.addEventListener('click',()=>{openBook(i);clearInterval(T);document.getElementById('spread').scrollIntoView({behavior:'smooth',block:'center'});}));
 const bks=[...cs.querySelectorAll('.bk2:not(.fl)')];let cur=-1,T=null,busy=false;

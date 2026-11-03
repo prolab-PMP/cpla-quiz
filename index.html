@@ -87,7 +87,7 @@ a{color:var(--color-ink)}a:focus-visible,button:focus-visible{outline:2px solid 
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;border-radius:var(--radius-pill);font:600 15px var(--font-body);text-decoration:none;color:var(--color-ink);box-shadow:inset 0 0 0 1.5px var(--color-rule-2);transition:background-color var(--dur-micro) var(--ease-out),color var(--dur-micro) var(--ease-out)}
 .btn:hover{background:var(--color-paper-3)}.btn--p{background:var(--color-accent);color:var(--color-accent-ink);box-shadow:none}.btn--p:hover{background:var(--color-accent-deep)}
 .hero{padding:72px 0 64px}.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center}
-.hero h1{font-size:clamp(40px,5.4vw,66px);line-height:1.05}.hero p{font-size:19px;margin:20px 0 28px;max-width:30ch}.hero .acts{display:flex;gap:10px;flex-wrap:wrap}
+.hero h1{font-size:clamp(36px,4.5vw,58px);line-height:1.3;word-break:keep-all}.hero p{font-size:19px;margin:20px 0 28px;max-width:30ch}.hero .acts{display:flex;gap:10px;flex-wrap:wrap}
 .lanes{background:var(--color-paper-2);border-radius:var(--radius-card);padding:22px 22px 16px}
 .lanes h2{font-size:15px;font-weight:600;color:var(--color-ink);letter-spacing:0}.lanes .cap{font-size:13px;color:var(--color-muted);margin:2px 0 14px}
 .lanes ol{list-style:none;margin:0;padding:0}
@@ -262,6 +262,56 @@ h1,h2,h3,p,td,th{word-break:keep-all}
 .cvf .bot b{display:flex;align-items:baseline;gap:3px;white-space:nowrap}.cvf .bot b small{font:600 13px Pretendard,sans-serif;color:#6b6a78}
 .hero{padding-bottom:72px}
 .covers{margin-top:34px;position:relative;z-index:1}
+/* theme: gold (밝은 골드, 관리자 선택) */
+body.th-gold{--color-paper:#f3dc9c;--color-paper-2:#fffaf0;--color-paper-3:#fff1cf;--color-ink:#231706;--color-ink-2:#3b2a0e;--color-muted:#6f5a31;--color-rule:#e3c67c;--color-rule-2:#a98234;--color-accent:#1f1709;--color-accent-deep:#000;--color-accent-soft:#efd590;--color-accent-mid:#d39b23;--color-accent-ink:#f6cd52;--color-focus:#8a5a00;--color-warn:#e0892b;
+ background:radial-gradient(130% 70% at 50% 0%,#fff7dc 0%,#f6dd97 38%,#e2b65a 100%) fixed;color:var(--color-ink-2)}
+body.th-gold .rf{stroke:#c98d12}
+body.th-gold .fig:first-child b{color:#a8730c}
+body.th-gold .glow{background:radial-gradient(55% 50% at 50% 48%,rgba(255,250,225,.75),transparent 70%)}
+body.th-gold .scue{background:rgba(35,23,6,.78)}
+body.th-gold .scue,body.th-gold .scue *{color:#f6cd52}
+body.th-gold .nav{background:rgba(255,248,224,.55);backdrop-filter:blur(6px)}
+body.th-gold .btn--p{box-shadow:0 6px 14px -6px rgba(0,0,0,.45),inset 0 0 0 1px #3a2a0c}
+body.th-gold .stat,body.th-gold .plan,body.th-gold .pt{box-shadow:0 18px 40px -22px rgba(120,80,10,.55),inset 0 0 0 1px #ecd28d}
+body.th-gold .figs{background:rgba(255,250,235,.55)}
+body.th-gold .sl button{color:var(--color-ink-2)}
+body.th-gold .sl button.on{color:var(--color-accent-ink)}
+body.th-gold .fm em,body.th-gold .kw em{color:#9a6a08}
+body.th-gold .fm i u{background:#d39b23}
+body.th-gold .go{background:#1f1709;color:#f6cd52}
+body.th-gold .kw a:hover,body.th-gold .fm a:hover{background:#fff3d2}
+body.th-gold .hero h1{color:#1c1203;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+body.th-gold .cv .lbl2{background:#1f1709;color:#f6cd52;box-shadow:none}
+body.th-gold .cv.sel .lbl2{background:#000;color:#ffd75e;box-shadow:inset 0 0 0 2px #f6cd52}
+/* 관리자 테마 선택 */
+.thsw{position:fixed;left:14px;bottom:14px;z-index:60;display:flex;gap:4px;align-items:center;padding:6px;border-radius:999px;background:rgba(10,14,30,.86);box-shadow:0 6px 18px rgba(0,0,0,.35);font:600 12px Pretendard,sans-serif;color:#fff}
+.thsw span{padding:0 6px 0 8px;opacity:.75}
+.thsw button{border:0;border-radius:999px;padding:7px 12px;font:700 12px Pretendard,sans-serif;cursor:pointer;background:transparent;color:#fff}
+.thsw button.on{background:#fff;color:#111}
+/* theme: white (화이트 + 딥그린) */
+body.th-white{--color-paper:#f6f8f7;--color-paper-2:#ffffff;--color-paper-3:#eef4f2;--color-ink:#0f1f1c;--color-ink-2:#2a3b37;--color-muted:#5d6f6a;--color-rule:#dfe7e4;--color-rule-2:#9db3ad;--color-accent:#0f766e;--color-accent-deep:#0b5c56;--color-accent-soft:#bfe3dc;--color-accent-mid:#2fa597;--color-accent-ink:#ffffff;--color-focus:#0f766e;--color-warn:#f08c3a;
+ background:linear-gradient(180deg,#ffffff 0%,#f2f7f5 60%,#e9f2ef 100%) fixed;color:var(--color-ink-2)}
+body.th-white .glow{background:radial-gradient(55% 50% at 50% 48%,rgba(47,165,151,.12),transparent 70%)}
+body.th-white .scue{background:rgba(15,31,28,.82)}body.th-white .scue,body.th-white .scue *{color:#fff}
+body.th-white .nav{background:rgba(255,255,255,.8);backdrop-filter:blur(6px)}
+body.th-white .stat,body.th-white .plan,body.th-white .pt{box-shadow:0 16px 36px -24px rgba(15,60,50,.45),inset 0 0 0 1px var(--color-rule)}
+body.th-white .figs{background:#fff}
+body.th-white .sl button{color:var(--color-ink-2)}body.th-white .sl button.on{color:#fff}
+body.th-white .fm em,body.th-white .kw em{color:#0f766e}body.th-white .fm i u{background:#2fa597}body.th-white .go{background:#0f766e}
+body.th-white .kw a:hover,body.th-white .fm a:hover{background:#e8f5f2}
+body.th-white .cv .lbl2{background:#fff}
+/* cover style B: 수험서형 (단색 표지 + 굵은 제목 + 하단 검정 띠) */
+body.cv-b .cvf{background:var(--c);border-radius:2px 6px 6px 2px;box-shadow:0 18px 28px -14px rgba(0,0,0,.55),inset 7px 0 0 rgba(0,0,0,.12),inset 9px 0 0 rgba(255,255,255,.18)}
+body.cv-b .cvf .top{height:auto;background:transparent;padding:16% 11% 0;color:#fff}
+body.cv-b .cvf .top small{display:inline-block;padding:4px 8px;border-radius:3px;background:rgba(0,0,0,.22);font-size:10px}
+body.cv-b .cvf .top h3{margin-top:14px;font-size:clamp(22px,2.8vw,34px);line-height:1.08;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+body.cv-b .cvf.lt .top,body.cv-b .cvf.lt .top h3{color:#22180a;text-shadow:0 2px 0 rgba(255,255,255,.35)}
+body.cv-b .cvf .stripe{top:0;left:auto;right:-18%;width:62%;height:16%;transform:rotate(32deg) translate(8%,-30%);transform-origin:center;background:rgba(255,255,255,.28)}
+body.cv-b .cvf .bot{position:absolute;left:9%;right:9%;bottom:8%;padding:9% 9% 8%;border-radius:4px;background:#1b1813;color:#fff}
+body.cv-b .cvf .bot b{color:#fff}body.cv-b .cvf .bot span{color:#c8c2b4}body.cv-b .cvf .bot em{color:var(--c);filter:brightness(1.15)}
+.thsw .g{display:flex;gap:2px;align-items:center}.thsw .sep{width:1px;height:18px;background:rgba(255,255,255,.25);margin:0 4px}
+body.th-white .cv.sel .lbl2{background:var(--color-accent);color:#fff}
+body.cv-b .cvf .top h3{word-break:keep-all}body.cv-b .cvf .top h3.long{font-size:clamp(18px,2.2vw,27px)}
 .brand .bx{font:600 12px var(--font-body);color:var(--color-muted);margin-left:6px;letter-spacing:0}
 .nav ul{gap:18px;font-size:14px}
 .qk{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.qk a{font-size:13px;text-decoration:none;color:var(--color-ink-2);padding:6px 12px;border-radius:var(--radius-pill);background:var(--color-paper-2);box-shadow:inset 0 0 0 1px var(--color-rule)}.qk a:hover{color:var(--color-ink);background:var(--color-paper-3)}
@@ -277,10 +327,10 @@ h1,h2,h3,p,td,th{word-break:keep-all}
 .plan .mail{margin:14px 0 0;font-size:13px;color:var(--color-muted)}.plan .mail a{color:var(--color-ink);word-break:break-all}
 </style>
 </head>
-<body>
+<body class="th-navy cv-a">
 <header class="nav"><div class="wrap"><a class="brand" href="/">wayexam <small class="bx">공인노무사</small></a><ul><li><a href="subjects.html">과목·키워드</a></li><li><a href="years.html">연도별</a></li><li><a href="exam2.html">2차 논술</a></li><li><a href="dashboard2.html">2차 분석</a></li><li><a href="interview.html">3차 면접</a></li><li><a href="dashboard.html">학습통계</a></li></ul><div class="act"><a class="btn" id="nav-login" href="login.html">로그인</a></div></div></header>
 <main>
-<section class="hero"><div class="wrap"><div><h1>많이 나온 것부터,<br>약한 것만 다시</h1><p>공인노무사 1차 14개년 기출을 출제 빈도순으로 풉니다.</p><div class="acts"><a class="btn btn--p" id="cta-main" href="exam.html?mode=subject&amp;subject=%EB%85%B8%EB%8F%99%EB%B2%951">지금 바로 풀기</a><a class="btn" id="cta-sub" href="signup.html">무료 회원가입</a></div><div class="qk"><a href="exam.html?mode=year&amp;year=2026">2026년 최신 기출</a><a href="exam.html?mode=year&amp;year=2026&amp;exam=1">실전 모의고사</a><a href="years.html">연도별 회차표</a><a href="subjects.html">키워드로 찾기</a><a href="exam.html?wrong=1">오답노트</a></div></div>
+<section class="hero"><div class="wrap"><div><h1>많이 나온 것부터,<br>취약 키워드만 다시</h1><p>공인노무사 1차 14개년 기출을 출제 빈도순으로 풉니다.</p><div class="acts"><a class="btn btn--p" id="cta-main" href="exam.html?mode=subject&amp;subject=%EB%85%B8%EB%8F%99%EB%B2%951">지금 바로 풀기</a><a class="btn" id="cta-sub" href="signup.html">무료 회원가입</a></div><div class="qk"><a href="exam.html?mode=year&amp;year=2026">2026년 최신 기출</a><a href="exam.html?mode=year&amp;year=2026&amp;exam=1">실전 모의고사</a><a href="years.html">연도별 회차표</a><a href="subjects.html">키워드로 찾기</a><a href="exam.html?wrong=1">오답노트</a></div></div>
 <div class="stat"><div class="st-h"><h2>내 학습 현황</h2><span class="st-tag">예시 화면</span></div>
 <div class="sl" role="tablist" aria-label="구분"><button type="button" role="tab" data-i="0" class=on>전체</button><button type="button" role="tab" data-i="1">노동법Ⅰ</button><button type="button" role="tab" data-i="2">노동법Ⅱ</button><button type="button" role="tab" data-i="3">민법</button><button type="button" role="tab" data-i="4">사회보험법</button><button type="button" role="tab" data-i="5">경영학</button><button type="button" role="tab" data-i="6">경제학</button></div>
 <div class="st-top"><div class="ringw"><svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" class="rg"/><circle cx="60" cy="60" r="50" class="rf" id="st-ring"/></svg><div class="ring-n"><b id="st-pct">64</b><small>% 진도</small></div></div>
@@ -291,7 +341,7 @@ h1,h2,h3,p,td,th{word-break:keep-all}
 <a class="st-go" href="dashboard.html">내 학습통계 열기</a></div>
 <script type="application/json" id="st-data">[{"name": "전체", "pct": 64, "solved": 1516, "acc": 85, "wrong": 227, "streak": 19, "week": [45, 20, 19, 59, 40, 38, 48], "rows": [["노동법Ⅰ", 76], ["노동법Ⅱ", 90], ["민법", 70], ["사회보험법", 69]], "weak": ["노동조합", "단체협약", "보험료", "쟁의행위", "부당노동행위"]}, {"name": "노동법Ⅰ", "pct": 64, "solved": 252, "acc": 66, "wrong": 85, "streak": 7, "week": [32, 8, 31, 38, 25, 49, 59], "rows": [["노동법Ⅰ", 83], ["노동법Ⅱ", 74], ["민법", 83], ["사회보험법", 63]], "weak": ["산업안전보건법", "남녀고용평등과일가정양립지원에관한법률", "기간제및단시간근로자보호등에관한법령", "근로자퇴직급여보장법", "근로계약"]}, {"name": "노동법Ⅱ", "pct": 57, "solved": 225, "acc": 67, "wrong": 74, "streak": 10, "week": [50, 17, 22, 49, 54, 19, 16], "rows": [["노동법Ⅰ", 84], ["노동법Ⅱ", 84], ["민법", 92], ["사회보험법", 52]], "weak": ["노동조합", "단체협약", "쟁의행위", "부당노동행위", "노동위원회법"]}, {"name": "민법", "pct": 38, "solved": 150, "acc": 77, "wrong": 34, "streak": 10, "week": [25, 55, 24, 26, 54, 12, 50], "rows": [["노동법Ⅰ", 85], ["노동법Ⅱ", 89], ["민법", 82], ["사회보험법", 74]], "weak": ["채무", "대리", "소멸시효", "법인", "임대차"]}, {"name": "사회보험법", "pct": 46, "solved": 181, "acc": 58, "wrong": 76, "streak": 10, "week": [9, 11, 59, 51, 17, 52, 31], "rows": [["노동법Ⅰ", 74], ["노동법Ⅱ", 88], ["민법", 43], ["사회보험법", 51]], "weak": ["보험료", "심사", "보험급여", "사회보장기본법", "자영업자"]}, {"name": "경영학", "pct": 57, "solved": 225, "acc": 73, "wrong": 60, "streak": 17, "week": [8, 34, 50, 53, 24, 23, 48], "rows": [["노동법Ⅰ", 71], ["노동법Ⅱ", 59], ["민법", 67], ["사회보험법", 55]], "weak": ["조직", "자본", "인사평가", "마케팅", "재무"]}, {"name": "경제학", "pct": 71, "solved": 280, "acc": 71, "wrong": 81, "streak": 8, "week": [57, 53, 53, 42, 50, 25, 15], "rows": [["노동법Ⅰ", 92], ["노동법Ⅱ", 60], ["민법", 64], ["사회보험법", 59]], "weak": ["생산함수", "수요곡선", "임금", "효용함수", "인플레이션"]}]</script></div></div></section>
 <section class="bk-sec" id="sec-shelf"><div class="glow"></div><div class="wrap">
-<div class="modebar rv d1"><div role="tablist" aria-label="보기 방식"><button type="button" role="tab" data-m="shelf" class="on">책장 모드</button><button type="button" role="tab" data-m="cover">표지 모드</button></div></div><div class="stage rv d2" data-mode="shelf"><div class="bookpos"><div class="spread" id="spread"><div class="pR" id="pR"></div><div class="cover" id="cover"><div class="cf" id="cf"></div><div class="cb" id="cb"></div></div></div></div>
+<div class="modebar rv d1"><div role="tablist" aria-label="보기 방식"><button type="button" role="tab" data-m="cover" class="on">표지 모드</button><button type="button" role="tab" data-m="shelf">책장 모드</button></div></div><div class="stage rv d2" data-mode="cover"><div class="bookpos"><div class="spread" id="spread"><div class="pR" id="pR"></div><div class="cover" id="cover"><div class="cf" id="cf"></div><div class="cb" id="cb"></div></div></div></div>
 <div class="case1" id="case"><div class="row" id="row1"></div><div class="board"></div></div><div class="covers" id="covers"></div><p class="hint">책을 누르면 그 과목이 펼쳐집니다</p></div></div><script type="application/json" id="bk-data">{"books": [{"s": "노동법1", "d": "노동법 Ⅰ", "sh": "노동법Ⅰ", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#e8735a", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "산업안전보건법", "n": 18}, {"k": "남녀고용평등과일가정양립지원에관한법률", "n": 15}, {"k": "기간제및단시간근로자보호등에관한법령", "n": 15}, {"k": "근로자퇴직급여보장법", "n": 14}, {"k": "근로계약", "n": 13}, {"k": "근로복지기본법", "n": 13}]}, {"s": "노동법2", "d": "노동법 Ⅱ", "sh": "노동법Ⅱ", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#f2b33d", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "노동조합", "n": 39}, {"k": "단체협약", "n": 32}, {"k": "쟁의행위", "n": 27}, {"k": "부당노동행위", "n": 26}, {"k": "노동위원회법", "n": 23}, {"k": "교원노동조합설립및운영에관한법률", "n": 20}]}, {"s": "민법", "d": "민법", "sh": "민법", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#4f9fd1", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "채무", "n": 15}, {"k": "대리", "n": 13}, {"k": "소멸시효", "n": 13}, {"k": "법인", "n": 11}, {"k": "임대차", "n": 10}, {"k": "부당이득", "n": 10}]}, {"s": "사회보험법", "d": "사회보험법", "sh": "사회보험법", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#5fb88a", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "보험료", "n": 28}, {"k": "심사", "n": 16}, {"k": "보험급여", "n": 14}, {"k": "사회보장기본법", "n": 10}, {"k": "자영업자", "n": 10}, {"k": "구직급여", "n": 10}]}, {"s": "경영학", "d": "경영학개론", "sh": "경영학", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#9a7ad8", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "조직", "n": 11}, {"k": "자본", "n": 9}, {"k": "인사평가", "n": 8}, {"k": "마케팅", "n": 7}, {"k": "재무", "n": 5}, {"k": "사회적책임", "n": 5}]}, {"s": "경제학", "d": "경제학원론", "sh": "경제학", "tag": "1차", "q": "", "lv": 0, "n": 395, "c": "#e05d6f", "fm": [["2026년", 40, "year=2026"], ["2025년", 40, "year=2025"], ["2024년", 40, "year=2024"], ["2023년", 25, "year=2023"], ["2022년", 25, "year=2022"]], "top": [{"k": "생산함수", "n": 19}, {"k": "수요곡선", "n": 15}, {"k": "임금", "n": 10}, {"k": "효용함수", "n": 9}, {"k": "인플레이션", "n": 8}, {"k": "노동시장", "n": 8}]}], "ny": 14, "fmTitle": "최근 연도별 출제"}</script></section>
 <section class="figs" id="sec-figs"><div class="wrap"><div class="fig"><b>2,370<small>문항</small></b><span>정답과 해설 포함</span></div><div class="fig"><b>14<small>개년</small></b><span>2013~2026년 기출</span></div><div class="fig"><b>1,166<small>개</small></b><span>분류 키워드</span></div><div class="fig"><b>6<small>과목</small></b><span>필수 4과목, 선택 2과목</span></div></div></section>
 <section class="subj"><div class="wrap"><h2>과목마다 가장 많이 나온 키워드</h2><p class="lead">과목을 누르면 그 과목 문항을 바로 풀 수 있습니다.</p>

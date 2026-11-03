@@ -10,7 +10,7 @@ function f(){const r=ch.getBoundingClientRect(),p=cl(-r.top,0,r.height-innerHeig
  const si=p<.38?0:p<.66?1:2;steps.forEach((s,i)=>s.style.opacity=i===si?1:.35);}
 addEventListener('scroll',f,{passive:true});addEventListener('resize',f);f();})();
 
-(async()=>{try{const r=await fetch('/api/me',{credentials:'same-origin'});const j=await r.json();if(j&&j.user){const a=document.getElementById('nav-login');a.textContent='내 학습';a.href='dashboard.html';const c=document.getElementById('cta-sub');if(c){c.textContent='내 학습통계';c.href='dashboard.html';}}}catch(e){}})();
+(async()=>{try{const r=await fetch('/api/me',{credentials:'same-origin'});const j=await r.json();if(j&&j.user){if(j.user.is_admin)thSwitch();const a=document.getElementById('nav-login');a.textContent='내 학습';a.href='dashboard.html';const c=document.getElementById('cta-sub');if(c){c.textContent='내 학습통계';c.href='dashboard.html';}}}catch(e){}})();
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const sec=document.querySelector('.freq');if(!sec)return;
 const lanes=[...sec.querySelectorAll('.lane')];
 function g(){const r=sec.getBoundingClientRect(),h=innerHeight;const p=Math.min(1,Math.max(0,(h*0.9-r.top)/(r.height*0.9)));
@@ -32,3 +32,14 @@ function show(i){idx=i;const s=S[i];btns.forEach((b,j)=>{b.classList.toggle('on'
 function auto(){clearInterval(timer);if(!red)timer=setInterval(()=>show((idx+1)%S.length),1000);}
 btns.forEach((b,i)=>b.addEventListener('click',()=>{show(i);auto();}));
 show(0);auto();})();
+
+function thSwitch(){if(document.querySelector('.thsw'))return;const cl=document.body.classList;
+const cur=k=>([...cl].find(c=>c.startsWith(k+'-'))||'').slice(k.length+1);
+const w=document.createElement('div');w.className='thsw';
+w.innerHTML='<span>배경</span><div class="g" data-k="th"><button data-v="navy">네이비</button><button data-v="gold">골드</button><button data-v="white">화이트</button></div><i class="sep"></i><span>표지</span><div class="g" data-k="cv"><button data-v="a">기본</button><button data-v="b">수험서</button></div>';
+document.body.appendChild(w);
+const mark=()=>w.querySelectorAll('.g').forEach(g=>{const v=cur(g.dataset.k)||(g.dataset.k==='th'?'navy':'a');g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))});mark();
+w.querySelectorAll('.g button').forEach(b=>b.onclick=async()=>{const k=b.parentNode.dataset.k,v=b.dataset.v;
+ const body=k==='th'?{theme:v}:{cover:v};
+ try{const r=await fetch('/api/admin/site-theme',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw 0;
+ [...cl].filter(c=>c.startsWith(k+'-')).forEach(c=>cl.remove(c));cl.add(k+'-'+v);mark();}catch(e){alert('저장 실패');}});}
